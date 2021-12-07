@@ -60,16 +60,31 @@ configure_file(
 )
 
 set(PLUGIN_SOURCES
-    src/plugin-main.cpp)
+    src/plugin-main.cpp
+    src/obs/sourceTracker.cpp
+    src/obs/events/eventsInputs.cpp
+    src/obs/events/eventsScenes.cpp
+    src/obs/events/eventsMediaInputs.cpp
+    src/obs/events/eventsSceneItems.cpp
+    src/obs/events/eventsTransitions.cpp)
 
 if(WIN32)
     set(PLUGIN_SOURCES 
         ${PLUGIN_SOURCES} 
-        src/plugin-main.cpp)
+        src/plugin-main.cpp
+        src/obs/sourceTracker.cpp
+        src/obs/events/eventsInputs.cpp
+        src/obs/events/eventsScenes.cpp
+        src/obs/events/eventsMediaInputs.cpp
+        src/obs/events/eventsSceneItems.cpp
+        src/obs/events/eventsTransitions.cpp)
 endif()
 
 set(PLUGIN_HEADERS
-	src/plugin-macros.generated.h)
+	src/plugin-macros.generated.h
+    src/obs/sourceTracker.hpp
+    src/obs/obs.hpp
+    src/common.hpp)
 
 # --- Platform-independent build settings ---
 add_library(${CMAKE_PROJECT_NAME} MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS})
