@@ -97,9 +97,9 @@ std::vector<std::string> GetInputKindList(bool unversioned, bool includeDisabled
 	return ret;
 }
 
-static double calculate_audio_level(const struct audio_data *data, bool muted)
+static float calculate_audio_level(const struct audio_data *data, bool muted)
 {
-	double audio_level = 0.0;
+	float audio_level = 0.0;
 
 	if (muted)
 	{
@@ -119,16 +119,70 @@ static double calculate_audio_level(const struct audio_data *data, bool muted)
 		float sample = samples[i];
 		sum += sample * sample;
 	}
-	audio_level = (double)(sqrtf(sum / nr_samples));
+	audio_level = (float)(sqrtf(sum / nr_samples));
 	return audio_level;
+}
+
+// function that keep a dynamic audio level to a desired level
+static bool keep_audio_level(float audio_level, float audio_volume, float target_level, float *newAudioLevel, float min_detect_level, float margin_level)
+{
+	float level_change = target_level - (audio_level * audio_volume);
+	// blog(LOG_INFO, "level_change: %f", level_change);
+	// blog(LOG_INFO, "target_level: %f", target_level);
+	// blog(LOG_INFO, "audio_level: %f", audio_level);
+	// blog(LOG_INFO, "min_detect_level: %f", min_detect_level);
+	// if absolute value of level change is more than smoothing level,
+	// then we need to change the level
+	if ((audio_level * audio_volume) < min_detect_level) {
+		return false;
+	}
+	if (fabsf(level_change) < margin_level)
+		return false;
+	// Level is too low
+	if (level_change > 0.0)
+	{
+		// *newAudioLevel = target_level - level_change;
+		*newAudioLevel = CLAMP(audio_volume + 0.1, min_detect_level, 1.0f);
+		return true;
+	}
+	// Level is too high
+	else
+	{
+		// *newAudioLevel = target_level - level_change;
+		*newAudioLevel = CLAMP(audio_volume - 0.1, min_detect_level, 1.0f);
+		return true;
+	}
+	return false;
 }
 
 void source_audio_capture_callback(void *vptre, obs_source_t *source,
 								   const struct audio_data *audio, bool muted)
 {
-	double outputAudioLevel = obs_mul_to_db(calculate_audio_level(audio, muted) * obs_source_get_volume(source));
-	blog(LOG_INFO, "muted: %s", muted ? "true" : "false");
-	blog(LOG_INFO, "audio: %f", outputAudioLevel);
+	float inputAudioLevel = calculate_audio_level(audio, muted);
+
+	// float inputAudioLevelInDb = obs_mul_to_db(inputAudioLevel);
+
+	float desiredAudioLevelInDb = -20.0;
+	float desiredAudioLevel = obs_db_to_mul(desiredAudioLevelInDb);
+
+	float newAudioLevel = 0.0;
+	if (keep_audio_level(inputAudioLevel, obs_source_get_volume(source), desiredAudioLevel, &newAudioLevel, 0.05, 0.01))
+	{
+		blog(LOG_INFO, "newAudioLevel: %f", newAudioLevel);
+		obs_source_set_volume(source, newAudioLevel);
+	}
+	// double desiredAudioLevel = 0.05;
+	// blog(LOG_INFO, "desiredAudioLevel: %f", desiredAudioLevel);
+	// Always keep volume at -25dB
+	// const double delta = inputAudioLevel - desiredAudioLevel;
+	// blog(LOG_INFO, "delta: %f", delta);
+	// obs_source_set_volume(source, obs_db_to_mul(-25.0));
+
+	// } else {
+	// 	obs_source_set_volume(source, obs_source_get_volume(source));
+	// }
+	// blog(LOG_INFO, "muted: %s", muted ? "true" : "false");
+	// blog(LOG_INFO, "audio: %f", inputAudioLevel);
 }
 
 void source_created_signal(void *param, calldata_t *data)
