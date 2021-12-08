@@ -5,8 +5,8 @@
 ** eventInputs
 */
 
-#include "../sourceTracker.hpp"
-#include "../autoAudioLeveler/autoAudioLeveler.hpp"
+#include "../SourceTracker.hpp"
+#include "../autoAudioLeveler/AutoAudioLeveler.hpp"
 
 void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
 {
@@ -27,9 +27,12 @@ void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
     blog(LOG_INFO, "[SourceTracker::handleInputRemoved]: %s ", name.c_str());
 }
 
-void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *, std::string oldInputName, std::string inputName)
+void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldInputName, std::string inputName)
 {
     blog(LOG_INFO, "[SourceTracker::handleInputNameChanged]:");
+	std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
+	OBSSourceAutoRelease scene = obs_get_source_by_name(j[rand() % j.size()]["sceneName"].get<std::string>().c_str());
+	obs_frontend_set_current_scene(scene);
 }
 
 void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata_t *data)
