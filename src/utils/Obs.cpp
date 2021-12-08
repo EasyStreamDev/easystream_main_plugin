@@ -5,7 +5,7 @@
 ** obs
 */
 
-#include "obs.hpp"
+#include "Obs.hpp"
 
 #define CASE(x) case x: return #x;
 
@@ -253,114 +253,114 @@ std::vector<std::string> es::utils::obs::listHelper::GetHotkeyNameList()
 	return ret;
 }
 
-// std::vector<json> es::utils::obs::listHelper::GetSceneList()
-// {
-// 	std::vector<json> ret;
-// 	auto sceneEnumProc = [](void *param, obs_source_t *scene) {
-// 		auto ret = reinterpret_cast<std::vector<json>*>(param);
+std::vector<json> es::utils::obs::listHelper::GetSceneList()
+{
+	std::vector<json> ret;
+	auto sceneEnumProc = [](void *param, obs_source_t *scene) {
+		auto ret = reinterpret_cast<std::vector<json>*>(param);
 
-// 		json sceneJson;
-// 		sceneJson["sceneName"] = obs_source_get_name(scene);
-// 		sceneJson["isGroup"] = obs_source_is_group(scene);
+		json sceneJson;
+		sceneJson["sceneName"] = obs_source_get_name(scene);
+		sceneJson["isGroup"] = obs_source_is_group(scene);
 
-// 		ret->push_back(sceneJson);
-// 		return true;
-// 	};
+		ret->push_back(sceneJson);
+		return true;
+	};
 
-// 	obs_enum_scenes(sceneEnumProc, &ret);
+	obs_enum_scenes(sceneEnumProc, &ret);
 
-// 	return ret;
-// }
+	return ret;
+}
 
-// std::vector<json> es::utils::obs::listHelper::GetSceneItemList(obs_scene_t *scene, bool basic)
-// {
-// 	std::pair<std::vector<json>, bool> enumData;
-// 	enumData.second = basic;
+std::vector<json> es::utils::obs::listHelper::GetSceneItemList(obs_scene_t *scene, bool basic)
+{
+	std::pair<std::vector<json>, bool> enumData;
+	enumData.second = basic;
 
-// 	obs_scene_enum_items(scene, [](obs_scene_t*, obs_sceneitem_t* sceneItem, void* param) {
-// 		auto enumData = reinterpret_cast<std::pair<std::vector<json>, bool>*>(param);
+	obs_scene_enum_items(scene, [](obs_scene_t*, obs_sceneitem_t* sceneItem, void* param) {
+		auto enumData = reinterpret_cast<std::pair<std::vector<json>, bool>*>(param);
 
-// 		json item;
-// 		item["sceneItemId"] = obs_sceneitem_get_id(sceneItem);
-// 		// Should be slightly faster than calling obs_sceneitem_get_order_position()
-// 		item["sceneItemIndex"] = enumData->first.size();
-// 		if (!enumData->second) {
-// 			OBSSource itemSource = obs_sceneitem_get_source(sceneItem);
-// 			item["sourceName"] = obs_source_get_name(itemSource);
-// 			item["sourceType"] = StringHelper::GetSourceType(itemSource);
-// 			if (obs_source_get_type(itemSource) == OBS_SOURCE_TYPE_INPUT)
-// 				item["inputKind"] = obs_source_get_id(itemSource);
-// 			else
-// 				item["inputKind"] = nullptr;
-// 			if (obs_source_get_type(itemSource) == OBS_SOURCE_TYPE_SCENE)
-// 				item["isGroup"] = obs_source_is_group(itemSource);
-// 			else
-// 				item["isGroup"] = nullptr;
-// 		}
+		json item;
+		item["sceneItemId"] = obs_sceneitem_get_id(sceneItem);
+		// Should be slightly faster than calling obs_sceneitem_get_order_position()
+		item["sceneItemIndex"] = enumData->first.size();
+		if (!enumData->second) {
+			OBSSource itemSource = obs_sceneitem_get_source(sceneItem);
+			item["sourceName"] = obs_source_get_name(itemSource);
+			item["sourceType"] = stringHelper::GetSourceType(itemSource);
+			if (obs_source_get_type(itemSource) == OBS_SOURCE_TYPE_INPUT)
+				item["inputKind"] = obs_source_get_id(itemSource);
+			else
+				item["inputKind"] = nullptr;
+			if (obs_source_get_type(itemSource) == OBS_SOURCE_TYPE_SCENE)
+				item["isGroup"] = obs_source_is_group(itemSource);
+			else
+				item["isGroup"] = nullptr;
+		}
 
-// 		enumData->first.push_back(item);
+		enumData->first.push_back(item);
 
-// 		return true;
-// 	}, &enumData);
+		return true;
+	}, &enumData);
 
-// 	return enumData.first;
-// }
+	return enumData.first;
+}
 
-// std::vector<json> es::utils::obs::listHelper::GetTransitionList()
-// {
-// 	obs_frontend_source_list transitionList = {};
-// 	obs_frontend_get_transitions(&transitionList);
+std::vector<json> es::utils::obs::listHelper::GetTransitionList()
+{
+	obs_frontend_source_list transitionList = {};
+	obs_frontend_get_transitions(&transitionList);
 
-// 	std::vector<json> ret;
-// 	for (size_t i = 0; i < transitionList.sources.num; i++) {
-// 		obs_source_t *transition = transitionList.sources.array[i];
-// 		json transitionJson;
-// 		transitionJson["transitionName"] = obs_source_get_name(transition);
-// 		transitionJson["transitionKind"] = obs_source_get_id(transition);
-// 		transitionJson["transitionFixed"] = obs_transition_fixed(transition);
-// 		ret.push_back(transitionJson);
-// 	}
+	std::vector<json> ret;
+	for (size_t i = 0; i < transitionList.sources.num; i++) {
+		obs_source_t *transition = transitionList.sources.array[i];
+		json transitionJson;
+		transitionJson["transitionName"] = obs_source_get_name(transition);
+		transitionJson["transitionKind"] = obs_source_get_id(transition);
+		transitionJson["transitionFixed"] = obs_transition_fixed(transition);
+		ret.push_back(transitionJson);
+	}
 
-// 	obs_frontend_source_list_free(&transitionList);
+	obs_frontend_source_list_free(&transitionList);
 
-// 	return ret;
-// }
+	return ret;
+}
 
-// struct EnumInputInfo {
-// 	std::string inputKind; // For searching by input kind
-// 	std::vector<json> inputs;
-// };
+struct EnumInputInfo {
+	std::string inputKind; // For searching by input kind
+	std::vector<json> inputs;
+};
 
-// std::vector<json> es::utils::obs::listHelper::GetInputList(std::string inputKind)
-// {
-// 	EnumInputInfo inputInfo;
-// 	inputInfo.inputKind = inputKind;
+std::vector<json> es::utils::obs::listHelper::GetInputList(std::string inputKind)
+{
+	EnumInputInfo inputInfo;
+	inputInfo.inputKind = inputKind;
 
-// 	auto inputEnumProc = [](void *param, obs_source_t *input) {
-// 		// Sanity check in case the API changes
-// 		if (obs_source_get_type(input) != OBS_SOURCE_TYPE_INPUT)
-// 			return true;
+	auto inputEnumProc = [](void *param, obs_source_t *input) {
+		// Sanity check in case the API changes
+		if (obs_source_get_type(input) != OBS_SOURCE_TYPE_INPUT)
+			return true;
 
-// 		auto inputInfo = reinterpret_cast<EnumInputInfo*>(param);
+		auto inputInfo = reinterpret_cast<EnumInputInfo*>(param);
 
-// 		std::string inputKind = obs_source_get_id(input);
+		std::string inputKind = obs_source_get_id(input);
 
-// 		if (!inputInfo->inputKind.empty() && inputInfo->inputKind != inputKind)
-// 			return true;
+		if (!inputInfo->inputKind.empty() && inputInfo->inputKind != inputKind)
+			return true;
 
-// 		json inputJson;
-// 		inputJson["inputName"] = obs_source_get_name(input);
-// 		inputJson["inputKind"] = inputKind;
-// 		inputJson["unversionedInputKind"] = obs_source_get_unversioned_id(input);
+		json inputJson;
+		inputJson["inputName"] = obs_source_get_name(input);
+		inputJson["inputKind"] = inputKind;
+		inputJson["unversionedInputKind"] = obs_source_get_unversioned_id(input);
 
-// 		inputInfo->inputs.push_back(inputJson);
-// 		return true;
-// 	};
-// 	// Actually enumerates only public inputs, despite the name
-// 	obs_enum_sources(inputEnumProc, &inputInfo);
+		inputInfo->inputs.push_back(inputJson);
+		return true;
+	};
+	// Actually enumerates only public inputs, despite the name
+	obs_enum_sources(inputEnumProc, &inputInfo);
 
-// 	return inputInfo.inputs;
-// }
+	return inputInfo.inputs;
+}
 
 std::vector<std::string> es::utils::obs::listHelper::GetInputKindList(bool unversioned, bool includeDisabled)
 {
@@ -384,70 +384,71 @@ std::vector<std::string> es::utils::obs::listHelper::GetInputKindList(bool unver
 	return ret;
 }
 
-// json Utils::Obs::DataHelper::GetStats()
-// {
-// 	json ret;
+json es::utils::obs::dataHelper::GetStats()
+{
+	json ret;
 
-// 	config_t* currentProfile = obs_frontend_get_profile_config();
-// 	const char* outputMode = config_get_string(currentProfile, "Output", "Mode");
-// 	const char* recordPath = strcmp(outputMode, "Advanced") ? config_get_string(currentProfile, "SimpleOutput", "FilePath") : config_get_string(currentProfile, "AdvOut", "RecFilePath");
+	config_t* currentProfile = obs_frontend_get_profile_config();
+	const char* outputMode = config_get_string(currentProfile, "Output", "Mode");
+	const char* recordPath = strcmp(outputMode, "Advanced") ? config_get_string(currentProfile, "SimpleOutput", "FilePath") : config_get_string(currentProfile, "AdvOut", "RecFilePath");
 
-// 	video_t* video = obs_get_video();
+	video_t* video = obs_get_video();
 
-// 	ret["cpuUsage"] = os_cpu_usage_info_query(GetCpuUsageInfo());
-// 	ret["memoryUsage"] = (double)os_get_proc_resident_size() / (1024.0 * 1024.0);
-// 	ret["availableDiskSpace"] = (double)os_get_free_disk_space(recordPath) / (1024.0 * 1024.0);
-// 	ret["activeFps"] = obs_get_active_fps();
-// 	ret["averageFrameRenderTime"] = (double)obs_get_average_frame_time_ns() / 1000000.0;
-// 	ret["renderSkippedFrames"] = obs_get_lagged_frames();
-// 	ret["renderTotalFrames"] = obs_get_total_frames();
-// 	ret["outputSkippedFrames"] = video_output_get_skipped_frames(video);
-// 	ret["outputTotalFrames"] = video_output_get_total_frames(video);
+	// ret["cpuUsage"] = os_cpu_usage_info_query(GetCpuUsageInfo());
+	ret["cpuUsage"] = os_cpu_usage_info_query(nullptr); // if you want to use this ask Hrotghor it's annoying
+	ret["memoryUsage"] = (double)os_get_proc_resident_size() / (1024.0 * 1024.0);
+	ret["availableDiskSpace"] = (double)os_get_free_disk_space(recordPath) / (1024.0 * 1024.0);
+	ret["activeFps"] = obs_get_active_fps();
+	ret["averageFrameRenderTime"] = (double)obs_get_average_frame_time_ns() / 1000000.0;
+	ret["renderSkippedFrames"] = obs_get_lagged_frames();
+	ret["renderTotalFrames"] = obs_get_total_frames();
+	ret["outputSkippedFrames"] = video_output_get_skipped_frames(video);
+	ret["outputTotalFrames"] = video_output_get_total_frames(video);
 
-// 	return ret;
-// }
+	return ret;
+}
 
-// json Utils::Obs::DataHelper::GetSceneItemTransform(obs_sceneitem_t *item)
-// {
-// 	json ret;
+json es::utils::obs::dataHelper::GetSceneItemTransform(obs_sceneitem_t *item)
+{
+	json ret;
 
-// 	obs_transform_info osi;
-// 	obs_sceneitem_crop crop;
-// 	obs_sceneitem_get_info(item, &osi);
-// 	obs_sceneitem_get_crop(item, &crop);
+	obs_transform_info osi;
+	obs_sceneitem_crop crop;
+	obs_sceneitem_get_info(item, &osi);
+	obs_sceneitem_get_crop(item, &crop);
 
-// 	OBSSource source = obs_sceneitem_get_source(item);
-// 	float sourceWidth = float(obs_source_get_width(source));
-// 	float sourceHeight = float(obs_source_get_height(source));
+	OBSSource source = obs_sceneitem_get_source(item);
+	float sourceWidth = float(obs_source_get_width(source));
+	float sourceHeight = float(obs_source_get_height(source));
 
-// 	ret["sourceWidth"] = sourceWidth;
-// 	ret["sourceHeight"] = sourceHeight;
+	ret["sourceWidth"] = sourceWidth;
+	ret["sourceHeight"] = sourceHeight;
 
-// 	ret["positionX"] = osi.pos.x;
-// 	ret["positionY"] = osi.pos.y;
+	ret["positionX"] = osi.pos.x;
+	ret["positionY"] = osi.pos.y;
 
-// 	ret["rotation"] = osi.rot;
+	ret["rotation"] = osi.rot;
 
-// 	ret["scaleX"] = osi.scale.x;
-// 	ret["scaleY"] = osi.scale.y;
+	ret["scaleX"] = osi.scale.x;
+	ret["scaleY"] = osi.scale.y;
 
-// 	ret["width"] = osi.scale.x * sourceWidth;
-// 	ret["height"] = osi.scale.y * sourceHeight;
+	ret["width"] = osi.scale.x * sourceWidth;
+	ret["height"] = osi.scale.y * sourceHeight;
 
-// 	ret["alignment"] = osi.alignment;
+	ret["alignment"] = osi.alignment;
 
-// 	ret["boundsType"] = StringHelper::GetSceneItemBoundsType(osi.bounds_type);
-// 	ret["boundsAlignment"] = osi.bounds_alignment;
-// 	ret["boundsWidth"] = osi.bounds.x;
-// 	ret["boundsHeight"] = osi.bounds.y;
+	ret["boundsType"] = stringHelper::GetSceneItemBoundsType(osi.bounds_type);
+	ret["boundsAlignment"] = osi.bounds_alignment;
+	ret["boundsWidth"] = osi.bounds.x;
+	ret["boundsHeight"] = osi.bounds.y;
 
-// 	ret["cropLeft"] = int(crop.left);
-// 	ret["cropRight"] = int(crop.right);
-// 	ret["cropTop"] = int(crop.top);
-// 	ret["cropBottom"] = int(crop.bottom);
+	ret["cropLeft"] = int(crop.left);
+	ret["cropRight"] = int(crop.right);
+	ret["cropTop"] = int(crop.top);
+	ret["cropBottom"] = int(crop.bottom);
 
-// 	return ret;
-// }
+	return ret;
+}
 
 obs_hotkey_t *es::utils::obs::searchHelper::GetHotkeyByName(std::string name)
 {

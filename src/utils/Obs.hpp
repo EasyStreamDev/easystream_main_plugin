@@ -8,13 +8,11 @@
 #ifndef OBS_HPP_
 #define OBS_HPP_
 
-#include "../common.hpp"
+#include <util/config-file.h>
+#include <util/util_uint64.h>
 
-template <typename T> T* GetCalldataPointer(const calldata_t *data, const char* name) {
-	void *ptr = nullptr;
-	calldata_get_ptr(data, name, &ptr);
-	return reinterpret_cast<T*>(ptr);
-}
+#include "../common.hpp"
+#include "Json.hpp"
 
 enum ObsOutputState {
 	OBS_WEBSOCKET_OUTPUT_STARTING,
@@ -68,16 +66,16 @@ namespace es {
                 std::vector<std::string> GetProfileList();
                 std::vector<obs_hotkey_t *> GetHotkeyList();
                 std::vector<std::string> GetHotkeyNameList();
-                // std::vector<json> GetSceneList();
-                // std::vector<json> GetSceneItemList(obs_scene_t *scene, bool basic = false);
-                // std::vector<json> GetTransitionList();
-                // std::vector<json> GetInputList(std::string inputKind = "");
+                std::vector<json> GetSceneList();
+                std::vector<json> GetSceneItemList(obs_scene_t *scene, bool basic = false);
+                std::vector<json> GetTransitionList();
+                std::vector<json> GetInputList(std::string inputKind = "");
                 std::vector<std::string> GetInputKindList(bool unversioned = false, bool includeDisabled = false);
             }
 
             namespace dataHelper {
-                // json GetStats();
-                // json GetSceneItemTransform(obs_sceneitem_t *item);
+                json GetStats();
+                json GetSceneItemTransform(obs_sceneitem_t *item);
             }
 
             namespace searchHelper {

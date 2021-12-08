@@ -11,6 +11,7 @@
 #include "../common.hpp"
 
 // All utils files includes
-#include "obs.hpp"
+#include "Json.hpp"
+#include "Obs.hpp"
 
 #endif /* !UTILS_HPP_ */

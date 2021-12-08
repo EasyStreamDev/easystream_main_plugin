@@ -40,6 +40,9 @@
 #include <obs-module.h>
 #include <obs.h>
 #include <obs-frontend-api.h>
+#include <util/platform.h>
+#include <util/config-file.h>
+#include <util/util_uint64.h>
 
 #define __FUNCTION_NAME__ __func__
 
