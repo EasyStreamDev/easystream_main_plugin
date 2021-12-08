@@ -14,10 +14,10 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
 	OBSDataAutoRelease inputSettings = obs_source_get_settings(source);
 	OBSDataAutoRelease defaultInputSettings = obs_get_source_defaults(inputKind.c_str());
 
-	if (!filterAudioSources("audio_input", source)) {
-		AutoAudioLeveler AutoAudioLeveler(source);
-		blog(LOG_INFO, "Instancing Audio Leveler for %s", obs_source_get_name(source));
-	}
+	// if (!filterAudioSources("audio_input", source)) {
+	// 	AutoAudioLeveler AutoAudioLeveler(source);
+	// 	blog(LOG_INFO, "Instancing Audio Leveler for %s", obs_source_get_name(source));
+	// }
     blog(LOG_INFO, "[SourceTracker::handleInputCreated]: %s, parent: %s", inputKind.c_str(), obs_source_get_name(source));
 }
 
@@ -27,9 +27,12 @@ void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
     blog(LOG_INFO, "[SourceTracker::handleInputRemoved]: %s ", name.c_str());
 }
 
-void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *, std::string oldInputName, std::string inputName)
+void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldInputName, std::string inputName)
 {
     blog(LOG_INFO, "[SourceTracker::handleInputNameChanged]:");
+	std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
+	OBSSourceAutoRelease scene = obs_get_source_by_name(j[rand() % j.size()]["sceneName"].get<std::string>().c_str());
+	obs_frontend_set_current_scene(scene);
 }
 
 void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata_t *data)
