@@ -43,7 +43,7 @@
 
 #define __FUNCTION_NAME__ __func__
 
-//Common Files Includes
+// Common Files Includes
 #include "obs/memory.hpp"
 #include "plugin-macros.generated.h"
 
