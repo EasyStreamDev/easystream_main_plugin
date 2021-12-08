@@ -23,7 +23,7 @@ namespace es::obs
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
 
-        bool ComputeAudioLevel(float audio_level, float audio_volume, float target_level, float *newAudioLevel, float min_detect_level, float margin_level);
+        bool ComputeAudioLevel(float audio_level, float audio_volume, float target_level, float *newAudioLevel, float min_detect_level, unsigned int *count);
         float CalculateAudioLevel(const struct audio_data *data, bool muted);
     };
 }

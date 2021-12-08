@@ -99,7 +99,7 @@ void es::obs::SourceTracker::handleInputVolumeChanged(void *param, calldata_t *d
 		inputVolumeDb = -100;
 
 	std::string name(obs_source_get_name(source));
-    blog(LOG_INFO, "[SourceTracker::handleInputVolumeChanged]: %s ", name.c_str());
+    // blog(LOG_INFO, "[SourceTracker::handleInputVolumeChanged]: %s ", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputAudioSyncOffsetChanged(void *param, calldata_t *data)

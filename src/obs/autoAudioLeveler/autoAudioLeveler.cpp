@@ -16,7 +16,6 @@ es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(sour
 
 es::obs::AutoAudioLeveler::~AutoAudioLeveler()
 {
-	// Delete audio callback
 }
 
 
@@ -28,43 +27,59 @@ void es::obs::AutoAudioLeveler::InputAudioCaptureCallback(void *priv_data, obs_s
 
     // float inputAudioLevelInDb = obs_mul_to_db(inputAudioLevel);
 
-    float desiredAudioLevelInDb = -20.0;
+    float desiredAudioLevelInDb = -35.0;
     float desiredAudioLevel = obs_db_to_mul(desiredAudioLevelInDb);
 
+	float minDetectLevel = obs_db_to_mul(-50.0);
+
     float newAudioLevel = 0.0;
-    if (autoAudioLeveler->ComputeAudioLevel(inputAudioLevel, obs_source_get_volume(source), desiredAudioLevel, &newAudioLevel, 0.05, 0.01))
+	unsigned int count = 0;
+    if (autoAudioLeveler->ComputeAudioLevel(inputAudioLevel, obs_source_get_volume(source), desiredAudioLevel, &newAudioLevel, minDetectLevel, &count))
     {
-        blog(LOG_INFO, "newAudioLevel: %f", newAudioLevel);
+        // blog(LOG_INFO, "newAudioLevel: %f", newAudioLevel);
         obs_source_set_volume(source, newAudioLevel);
     }
 }
 
-bool es::obs::AutoAudioLeveler::ComputeAudioLevel(float audio_level, float audio_volume, float target_level, float *newAudioLevel, float min_detect_level, float margin_level)
+bool es::obs::AutoAudioLeveler::ComputeAudioLevel(float audio_level, float audio_volume, float target_level, float *newAudioLevel, float min_detect_level, unsigned int *count)
 {
-	float level_change = target_level - (audio_level * audio_volume);
+	*count += 1;
+
+	if (*count % 100 == 0)
+	{
+		return false;
+	}
+	float curAudioLevel = audio_level * audio_volume;
+	float level_change = target_level - curAudioLevel;
+	blog(LOG_INFO, "Mic level: %f -> %fdb", audio_level, obs_mul_to_db(audio_level));
+	blog(LOG_INFO, "Current volume: %f -> %fdb", audio_volume, obs_mul_to_db(audio_volume));
+	blog(LOG_INFO, "Current level: %f -> %fdb", curAudioLevel, obs_mul_to_db(curAudioLevel));
+	blog(LOG_INFO, "Current volumeLevel: %f", curAudioLevel);
+	blog(LOG_INFO, "MinLevel: %f", min_detect_level);
+	blog(LOG_INFO, "levelChange: %f", level_change);
+	blog(LOG_INFO, "target_level: %f", target_level);
 	// blog(LOG_INFO, "level_change: %f", level_change);
 	// blog(LOG_INFO, "target_level: %f", target_level);
-	// blog(LOG_INFO, "audio_level: %f", audio_level);
+	// blog(LOG_INFO, "audio_level: %f", audio_level);	
 	// blog(LOG_INFO, "min_detect_level: %f", min_detect_level);
 	// if absolute value of level change is more than smoothing level,
 	// then we need to change the level
-	if (fabsf(level_change) < margin_level)
-		return false;
 	// Level is too low
-	if (level_change > 0.0)
+	// if (level_change > 0.0)
+	if (audio_level < min_detect_level) {
+		return false;
+	}
+	if (curAudioLevel < target_level)
 	{
 		// *newAudioLevel = target_level - level_change;
-		*newAudioLevel = CLAMP(audio_volume + 0.1, min_detect_level, 1.0f);
+		*newAudioLevel = CLAMP(audio_volume + 0.05, min_detect_level, 1.0f);
 		return true;
 	}
 	// Level is too high
 	else
 	{
 		// *newAudioLevel = target_level - level_change;
-		// if ((audio_level * audio_volume) < min_detect_level && ) {
-		// 	return false;
-		// }
-		*newAudioLevel = CLAMP(audio_volume - 0.1, min_detect_level, 1.0f);
+		*newAudioLevel = CLAMP(audio_volume - 0.05, min_detect_level, 1.0f);
 		return true;
 	}
 	return false;
