@@ -133,9 +133,6 @@ static bool keep_audio_level(float audio_level, float audio_volume, float target
 	// blog(LOG_INFO, "min_detect_level: %f", min_detect_level);
 	// if absolute value of level change is more than smoothing level,
 	// then we need to change the level
-	if ((audio_level * audio_volume) < min_detect_level) {
-		return false;
-	}
 	if (fabsf(level_change) < margin_level)
 		return false;
 	// Level is too low
@@ -149,6 +146,9 @@ static bool keep_audio_level(float audio_level, float audio_volume, float target
 	else
 	{
 		// *newAudioLevel = target_level - level_change;
+		// if ((audio_level * audio_volume) < min_detect_level && ) {
+		// 	return false;
+		// }
 		*newAudioLevel = CLAMP(audio_volume - 0.1, min_detect_level, 1.0f);
 		return true;
 	}
