@@ -35,6 +35,7 @@
 #include <functional>
 #include <mutex>
 #include <atomic>
+#include <numeric>
 
 // Common OBS includes
 #include <obs-module.h>
