@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <cstddef>
 
 // Common C++ includes
 #include <algorithm>
@@ -33,9 +34,11 @@
 #include <utility>
 #include <vector>
 #include <functional>
-#include <mutex>
 #include <atomic>
 #include <numeric>
+#include <condition_variable>
+#include <list>
+#include <thread>
 
 // Common OBS includes
 #include <obs-module.h>

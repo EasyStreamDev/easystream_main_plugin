@@ -16,18 +16,21 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
-#include <obs-module.h>
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include "plugin-macros.generated.h"
-#include "obs/SourceTracker.hpp"
+#include "plugin-main.hpp"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
-std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::SourceTracker>(es::obs::SourceTracker());
+std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::SourceTracker>();
+std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
+os_cpu_usage_info_t *cpuUsageInfo;
+
+void test(std::shared_ptr<void>)
+{
+	blog(LOG_INFO, "[Thread::ThreadPool]: Thread start");
+	std::this_thread::sleep_for(std::chrono::seconds(5));
+	blog(LOG_INFO, "[Thread::ThreadPool]: Thread finish");
+}
 
 bool obs_module_load(void)
 {
@@ -35,6 +38,8 @@ bool obs_module_load(void)
 
 	blog(LOG_INFO, "-----------------------------------------");
 	tracker->init();
+	threadPool->push(std::function(test), nullptr);
+	cpuUsageInfo = os_cpu_usage_info_start();
 	blog(LOG_INFO, "-----------------------------------------");
 	return true;
 }
@@ -42,5 +47,13 @@ bool obs_module_load(void)
 void obs_module_unload()
 {
 	tracker.reset();
+	threadPool.reset();
+	os_cpu_usage_info_destroy(cpuUsageInfo);
+
 	blog(LOG_INFO, "plugin unloaded");
+}
+
+os_cpu_usage_info_t* GetCpuUsageInfo()
+{
+	return cpuUsageInfo;
 }
