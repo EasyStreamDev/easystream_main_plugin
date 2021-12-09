@@ -4,5 +4,3 @@ services:
     build:
       context: .
       dockerfile: ./docker/linux/Dockerfile
-    volumes:
-      - "./docker/linux:/ubuntuApp"

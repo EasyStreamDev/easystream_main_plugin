@@ -41,10 +41,10 @@ RUN apt-get update && apt-get install -y \
   && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10 \
   && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 20
 
-RUN apt-get update && apt-get install -y sudo software-properties-common
+RUN apt-get update && apt-get install -y sudo software-properties-common cmake
 
-#COPY ../plugin /ubuntuApp
+COPY ./plugin/ ubuntuApp/
 
-#RUN ./plugin/ci/linux/install-dependencies-ubuntu.sh
+#RUN ./ubuntuApp/ci/linux/install-dependencies-ubuntu.sh
 
-CMD rm -rf build && ls -R && ./ci/linux/build-ubuntu.sh && cd build && sudo make install && cd ..
+CMD ["./ubuntuApp/ci/linux/build-ubuntu.sh", "&&", "cd", "build", "&&", "sudo", "make", "install", "&&", "cd", "..", "&&", "rm", "-rf", "build"]
