@@ -15,7 +15,7 @@ if [ "${HAS_CMAKE}" = "" ]; then
 fi
 
 echo "=> Building plugin for macOS."
-cmake . \
+cmake plugin/ \
 	-DQTDIR="/tmp/obsdeps" \
 	-DLIBOBS_INCLUDE_DIR=../obs-studio/libobs \
 	-DLIBOBS_LIB=../obs-studio/libobs \
