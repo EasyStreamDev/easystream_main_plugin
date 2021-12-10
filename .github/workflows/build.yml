@@ -24,7 +24,7 @@ jobs:
         run: ./plugin/ci/linux/build-ubuntu.sh
   
   macos64Build:
-    runs-on: [macos-latest]
+    runs-on: macos-latest
     steps:
       - name: Get Current Arch
         shell: bash
