@@ -30,25 +30,18 @@ void es::obs::AutoAudioLeveler::InputAudioCaptureCallback(void *priv_data, obs_s
 
 	float inputAudioLevel = autoAudioLeveler->CalculateAudioLevel(data, muted);
 
-	// float inputAudioLevelInDb = obs_mul_to_db(inputAudioLevel);
-
 	float audioVolume = obs_source_get_volume(source);
 
-	// blog(LOG_INFO, "[es::Obs::autoAudioLeveler]test: %f", *(autoAudioLeveler->_levelToGo));
-	// unsigned int count = 0;
 	autoAudioLeveler->ComputeAudioLevel(inputAudioLevel, audioVolume);
 
 	audioVolume = autoAudioLeveler->computeLerp(audioVolume);
-	blog(LOG_INFO, "[es::Obs::autoAudioLeveler]test: %f", audioVolume);
 	obs_source_set_volume(source, audioVolume);
 }
 
 float es::obs::AutoAudioLeveler::computeLerp(float audioVolume)
 {
 	float levelChange = obs_mul_to_db(audioVolume) - _levelToGo;
-	blog(LOG_INFO, "[es::Obs::autoAudioLeveler]audioVolume: %f", audioVolume);
-	blog(LOG_INFO, "[es::Obs::autoAudioLeveler]levelToGo: %f", _levelToGo);
-	blog(LOG_INFO, "[es::Obs::autoAudioLeveler]levelChange: %f", levelChange);
+
 	if (levelChange > 0.0)
 	{
 		return CLAMP(audioVolume - 0.01, 0.0f, 1.0f);
@@ -65,30 +58,10 @@ void es::obs::AutoAudioLeveler::ComputeAudioLevel(float audioLevelMul, float aud
 	float curAudioLevel = obs_mul_to_db(audioLevelMul * audioVolume);
 	float average = std::accumulate(_levels.begin(), _levels.end(), 0.0) / _levels.size();
 	float levelChange = _desiredAudioLevel - average;
-	blog(LOG_INFO, "curAudioLevel: %fdb", curAudioLevel);
-	blog(LOG_INFO, "average: %f", average);
-	blog(LOG_INFO, "_desiredAudioLevel: %f", _desiredAudioLevel);
-	blog(LOG_INFO, "levelChange: %f", levelChange);
-	// blog(LOG_INFO, "_desiredAudioLevel: %f", _desiredAudioLevel);
-	// blog(LOG_INFO, "audio_level: %f", audio_level);
-	// blog(LOG_INFO, "min_detect_level: %f", min_detect_level);
-	// if absolute value of level change is more than smoothing level,
-	// then we need to change the level
-	// Level is too low
-	// if (level_change > 0.0)
 
 	std::clock_t curTime = std::clock();
 	double elapsedTime = (curTime - _startTime) / (double)CLOCKS_PER_SEC;
 
-	blog(LOG_INFO, "elapsedTime: %f", elapsedTime);
-
-	// if (curAudioLevel > -20)
-	// {
-	// 	_levelToGo = 0;
-	// 	_startTime = curTime;
-	// 	blog(LOG_INFO, "TEST LEO: %f", std::abs(curAudioLevel - _levels.back()));
-	// 	return;
-	// }
 	if (elapsedTime > 0.01)
 	{
 		_startTime = curTime;
@@ -102,32 +75,8 @@ void es::obs::AutoAudioLeveler::ComputeAudioLevel(float audioLevelMul, float aud
 		_levels.push_front(curAudioLevel);
 		_levels.pop_back();
 	}
-	// if last value of levels is too fat from first value
-	// then we need to change the level
 
-	// make average of last 10 frames
-
-	// if (_countFrames == 20) {
-	// 	_countFrames = 0;
-	// } else if (_countFrames < 20) {
-	// 	return;
-	// }
-
-	// if (curAudioLevel < _minDetectLevel)
-	// {
-	// 	return;
-	// }
 	_levelToGo = levelChange;
-	// if (curAudioLevel < _desiredAudioLevel)
-	// {
-	// 	// *newAudioLevel = targetLevel - level_change;
-	// }
-	// // Level is too high
-	// else
-	// {
-	// 	// *newAudioLevel = _desiredAudioLevel - level_change;
-	// 	setLevelToGo(CLAMP(audioVolume - 0.05, min_detect_level, 1.0f));
-	// }
 }
 
 float es::obs::AutoAudioLeveler::CalculateAudioLevel(const struct audio_data *data, bool muted)
