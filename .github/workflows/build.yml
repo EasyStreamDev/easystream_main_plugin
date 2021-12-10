@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/cjheckout@v2
+        uses: actions/checkout@v2
       - name: Install deps
         run: ./plugin/ci/macos/install-dependencies-macos.sh
       - name: Compile
