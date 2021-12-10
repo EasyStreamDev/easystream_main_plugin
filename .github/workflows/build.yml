@@ -1,8 +1,6 @@
 name: CI Multiplatform Build
 
 on:
-  push:
-    branches: [feature-github-ci]
   pull_request:
     branches: [ main ]
 
