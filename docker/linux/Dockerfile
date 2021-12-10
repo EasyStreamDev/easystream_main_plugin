@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-WORKDIR /ubuntuApp
+WORKDIR /usr/src/app/ubuntuApp
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -41,10 +41,10 @@ RUN apt-get update && apt-get install -y \
   && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10 \
   && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 20
 
-RUN apt-get update && apt-get install -y sudo software-properties-common cmake
+RUN apt-get update && apt-get install -y sudo software-properties-common
 
-COPY ./plugin/ ubuntuApp/
+COPY ./plugin/ ./
 
-#RUN ./ubuntuApp/ci/linux/install-dependencies-ubuntu.sh
+RUN ./ci/linux/install-dependencies-ubuntu.sh
 
-CMD ["./ubuntuApp/ci/linux/build-ubuntu.sh", "&&", "cd", "build", "&&", "sudo", "make", "install", "&&", "cd", "..", "&&", "rm", "-rf", "build"]
+CMD ["./ci/linux/build-ubuntu.sh"]
