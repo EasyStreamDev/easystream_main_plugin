@@ -32,7 +32,7 @@ void test(std::shared_ptr<void>)
 	blog(LOG_INFO, "[Thread::ThreadPool]: Thread finish");
 }
 
-bool obs_modulkqqdsd;:ad(void)
+bool obs_module_load(void)
 {
 	blog(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 
