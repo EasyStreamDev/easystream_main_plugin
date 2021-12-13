@@ -1,13 +1,20 @@
 FROM ubuntu:latest
 
-RUN apt-get update && sudo apt-get install -y \
+RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
+
+RUN apt-get update && apt-get install -y \
             g++-multilib \
             gcc-multilib \
             git \
-            wget
+            wget \
+            software-properties-common
 
-WORKDIR /usr/src/app
+WORKDIR /tmp
 
 COPY *.sh ./
 
-RUN ./ci/linux/install-dependencies-ubuntu.sh
+RUN sh -c "cat install-dependencies-ubuntu.sh | sed 's/sudo//g' | sh"
+
+WORKDIR /mnt
+
+CMD ["sh", "-c", "cat ./ci/linux/build-ubuntu.sh | sed 's/sudo//g' | sh"]
