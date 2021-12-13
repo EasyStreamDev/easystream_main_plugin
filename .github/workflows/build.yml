@@ -35,3 +35,14 @@ jobs:
         run: ./ci/linux/install-dependencies-ubuntu.sh
       - name: Compile
         run: ./ci/linux/build-ubuntu.sh
+
+  windowsBuild:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: exec download-obs-deps.cmd
+      - name: OBS deps
+        run: exec prepare-obs-windows.cmd
+      - name: Compile
+        run: exec prepare-windows.cmd
