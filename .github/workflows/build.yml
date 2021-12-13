@@ -15,6 +15,8 @@ jobs:
        uses: actions/checkout@v2
      - name: Install deps
        run: ./ci/macos/install-dependencies-macos.sh
+     - name: Install obs
+       run: ./ci/macos/install-build-obs-macos.sh
      - name: Compile
        run: ./ci/macos/build-macos.sh
 
