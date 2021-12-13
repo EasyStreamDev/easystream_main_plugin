@@ -41,8 +41,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
+        shell: cmd
         run: call ci\windows\download-obs-deps.cmd
       - name: OBS deps
+        shell: cmd
         run: call ci\windows\prepare-obs-windows.cmd
       - name: Compile
+        shell: cmd
         run: call ci\windows\prepare-windows.cmd
