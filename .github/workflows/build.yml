@@ -37,7 +37,7 @@ jobs:
         run: ./ci/linux/build-ubuntu.sh
 
   win64Build:
-    name: 'Build_win64'
+    name: 'win64Build'
     runs-on: [windows-latest]
     env:
       QT_VERSION: '5.15.2'
@@ -91,9 +91,9 @@ jobs:
           mkdir build64
           cd build64
           cmake -G"${{ env.CMAKE_GENERATOR }}" -A"x64" -DCMAKE_SYSTEM_VERSION="${{ env.CMAKE_SYSTEM_VERSION }}" -DQTDIR="${{ github.workspace }}/cmbuild/QT/${{ env.QT_VERSION }}/msvc2019_64" -DLibObs_DIR="${{ github.workspace }}\obs-studio\build64\libobs" -DLIBOBS_INCLUDE_DIR="${{ github.workspace }}\obs-studio\libobs" -DLIBOBS_LIB="${{ github.workspace }}\obs-studio\build64\libobs\RelWithDebInfo\obs.lib" -DOBS_FRONTEND_LIB="${{ github.workspace }}\obs-studio\build64\UI\obs-frontend-api\RelWithDebInfo\obs-frontend-api.lib" ..
-          msbuild /m /p:Configuration=RelWithDebInfo .\obs-text-slideshow.sln
+          msbuild /m /p:Configuration=RelWithDebInfo .\obs-easystream-main-plugin.sln
   win32Build:
-    name: 'Build_win32'
+    name: 'win32Build'
     runs-on: [windows-latest]
     env:
       QT_VERSION: '5.15.2'
