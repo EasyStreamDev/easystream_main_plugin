@@ -22,7 +22,11 @@ jobs:
       - name: Package
         if: ${{ github.event_name == 'push' }}
         run: ./ci/linux/package-macos.sh
-
+      - name: Release
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          artifacts: "package/*.dmg"
   ubuntuBuild:
     runs-on: ubuntu-latest
     steps:
@@ -41,6 +45,11 @@ jobs:
       - name: Package
         if: ${{ github.event_name == 'push' }}
         run: ./ci/linux/package-ubuntu.sh
+      - name: Release
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          artifacts: "package/*.deb"
 
   win64Build:
     name: "win64Build"
@@ -101,6 +110,11 @@ jobs:
       - name: Package
         if: ${{ github.event_name == 'push' }}
         run: ./ci/linux/package-windows.cmd
+      - name: Release
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          artifacts: "package/*.exe,package/*.zip"
 
   win32Build:
     name: "win32Build"
@@ -161,3 +175,8 @@ jobs:
       - name: Package
         if: ${{ github.event_name == 'push' }}
         run: ./ci/linux/package-windows.cmd
+      - name: Release
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          artifacts: "package/*.exe,package/*.zip"
