@@ -125,8 +125,7 @@ jobs:
         id: package
         run: |
           ci/windows/package-windows.cmd
-          ci/ci_includes.generated.cmd
-          echo "::set-output name=plugin-version::%PluginVersion%"
+          ci/windows/set-version-github.cmd
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
