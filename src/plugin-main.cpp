@@ -17,6 +17,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
 #include "plugin-main.hpp"
+#include "src/Server/include/AsioTcpServer.hpp"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
@@ -24,6 +25,17 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::SourceTracker>();
 std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
 os_cpu_usage_info_t *cpuUsageInfo;
+
+void startServer(std::shared_ptr<void>)
+{
+	std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>("0.0.0.0", 47920, tracker->getAudioMap()));
+
+	blog(LOG_INFO, "[EASYSTREAM STARTED TCP SERVER]");
+	server->start();
+	while (1) {
+		server->update();
+	};
+}
 
 void sceneSwitcherIA(std::shared_ptr<void>)
 {
@@ -53,6 +65,7 @@ bool obs_module_load(void)
 
 	blog(LOG_INFO, "-----------------------------------------");
 	tracker->init();
+	threadPool->push(std::function(startServer), nullptr);
 	threadPool->push(std::function(sceneSwitcherIA), nullptr);
 	cpuUsageInfo = os_cpu_usage_info_start();
 	blog(LOG_INFO, "-----------------------------------------");

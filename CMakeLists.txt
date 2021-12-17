@@ -30,8 +30,15 @@ if (WIN32 OR APPLE)
     include(external/FindLibObs.cmake)
 endif()
 
+if (WIN32)
+    set(BOOST_ROOT "boost_install/boost_1_78_0/cmbuild/boost")
+    set(BOOST_INCLUDE_DIR "boost_install/boost_1_78_0/cmbuild/boost/include")
+    set(BOOST_LIBRARY_DIR "boost_install/boost_1_78_0/cmbuild/boost/lib")
+endif()
+
 find_package(LibObs REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Boost COMPONENTS thread date_time program_options filesystem system REQUIRED)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -103,6 +110,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 	libobs
 	Qt5::Core
 	Qt5::Widgets
+    Boost::system
+    Boost::thread
 )
 
 # --- End of section ---
@@ -210,7 +219,7 @@ endif()
 # --- Linux-specific build settings and tasks ---
 if(UNIX OR APPLE)
     if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g3")
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
     endif()

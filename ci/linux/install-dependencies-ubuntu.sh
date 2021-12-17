@@ -12,6 +12,8 @@ sudo apt-get install -y \
 	cmake \
 	obs-studio \
 	qtbase5-dev \
+	libboost-all-dev \
+	libasio-dev \
 	libxss-dev \
 	libxtst-dev
 
