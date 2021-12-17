@@ -27,6 +27,7 @@ jobs:
           hdiutil attach Packages.dmg
           sudo installer -pkg /Volumes/Packages\ 1.2.9/Install\ Packages.pkg -target /
           ./ci/macos/package-macos.sh
+          source "./ci/ci_includes.generated.sh"
           echo "::set-output name=plugin-version::$PLUGIN_VERSION"
       - name: Release
         if: ${{ github.event_name == 'push' }}
@@ -54,6 +55,7 @@ jobs:
         id: package
         run: |
           ./ci/linux/package-ubuntu.sh
+          source "./ci/ci_includes.generated.sh"
           echo "::set-output name=plugin-version::$PLUGIN_VERSION"
       - name: Release
         if: ${{ github.event_name == 'push' }}
