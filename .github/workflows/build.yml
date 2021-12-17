@@ -125,7 +125,7 @@ jobs:
         id: package
         run: |
           ci/windows/package-windows.cmd
-          call "ci\ci_includes.generated.cmd"
+          ci/ci_includes.generated.cmd
           echo "::set-output name=plugin-version::%PluginVersion%"
       - name: Release
         if: ${{ github.event_name == 'push' }}
