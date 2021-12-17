@@ -49,11 +49,16 @@ jobs:
         run: ./ci/linux/build-ubuntu.sh
       - name: Package
         if: ${{ github.event_name == 'push' }}
-        run: ./ci/linux/package-ubuntu.sh
+        id: package
+        run: |
+          ./ci/linux/package-ubuntu.sh
+          output=$(ls -1 package/*.deb | cut -d'/' -f2 | rev | cut -c 5- | rev)
+          echo "::set-output name=package-name::$output"
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.run_tests.outputs.package-name }}
           files: ./package/*.deb
 
   # win64Build:
