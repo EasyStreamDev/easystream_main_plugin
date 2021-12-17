@@ -52,30 +52,9 @@ jobs:
         run: ./ci/linux/package-ubuntu.sh
       - name: Release
         if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2.2.0
+        uses: softprops/action-gh-release@v1
         with:
-          name: easyStream-plugin-linux.deb
-          path: "package/*.deb"
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./package/*.deb
-          asset_name: easyStream-plugin-linux.deb
-          asset_content_type: application/vnd.debian.binary-package
+          files: ./package/*.deb
 
   # win64Build:
   #   name: "win64Build"
