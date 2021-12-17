@@ -58,7 +58,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.run_tests.outputs.package-name }}
+          tag_name: ${{ steps.package.outputs.package-name }}
           files: ./package/*.deb
 
   # win64Build:
