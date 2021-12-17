@@ -34,7 +34,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.package.outputs.plugin-version }}
-          files: ./release/*.dmg
+          files: ./release/*.pkg
   ubuntuBuild:
     runs-on: ubuntu-latest
     steps:
