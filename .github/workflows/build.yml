@@ -27,13 +27,12 @@ jobs:
           hdiutil attach Packages.dmg
           sudo installer -pkg /Volumes/Packages\ 1.2.9/Install\ Packages.pkg -target /
           ./ci/macos/package-macos.sh
-          output=$(ls -1 release/*.dmg | cut -d'/' -f2 | rev | cut -c 5- | rev)
-          echo "::set-output name=package-name::$output"
+          echo "::set-output name=plugin-version::$PLUGIN_VERSION"
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.package.outputs.package-name }}
+          tag_name: ${{ steps.package.outputs.plugin-version }}
           files: ./release/*.dmg
   ubuntuBuild:
     runs-on: ubuntu-latest
@@ -55,13 +54,12 @@ jobs:
         id: package
         run: |
           ./ci/linux/package-ubuntu.sh
-          output=$(ls -1 package/*.deb | cut -d'/' -f2 | rev | cut -c 5- | rev)
-          echo "::set-output name=package-name::$output"
+          echo "::set-output name=plugin-version::$PLUGIN_VERSION"
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.package.outputs.package-name }}
+          tag_name: ${{ steps.package.outputs.plugin-version }}
           files: ./package/*.deb
 
   # win64Build:
