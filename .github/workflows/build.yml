@@ -7,31 +7,34 @@ on:
     branches: [main, feature-packager]
 
 jobs:
-  # macosBuild:
-  #   runs-on: macos-latest
+  macosBuild:
+    runs-on: macos-latest
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Install deps
-  #       run: ./ci/macos/install-dependencies-macos.sh
-  #     - name: Install obs
-  #       run: ./ci/macos/install-build-obs-macos.sh
-  #     - name: Compile
-  #       run: ./ci/macos/build-macos.sh
-  #     - name: Package
-  #       if: ${{ github.event_name == 'push' }}
-  #       run: |
-  #         wget http://s.sudre.free.fr/Software/files/Packages.dmg
-  #         hdiutil attach Packages.dmg
-  #         sudo installer -pkg /Volumes/Packages\ 1.2.9/Install\ Packages.pkg -target /
-  #         ./ci/macos/package-macos.sh
-  #     - name: Release
-  #       if: ${{ github.event_name == 'push' }}
-  #       uses: actions/upload-artifact@v2.2.0
-  #       with:
-  #         name: easyStream-plugin-macOS.dmg
-  #         path: "release/*.dmg"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install deps
+        run: ./ci/macos/install-dependencies-macos.sh
+      - name: Install obs
+        run: ./ci/macos/install-build-obs-macos.sh
+      - name: Compile
+        run: ./ci/macos/build-macos.sh
+      - name: Package
+        if: ${{ github.event_name == 'push' }}
+        id: package
+        run: |
+          wget http://s.sudre.free.fr/Software/files/Packages.dmg
+          hdiutil attach Packages.dmg
+          sudo installer -pkg /Volumes/Packages\ 1.2.9/Install\ Packages.pkg -target /
+          ./ci/macos/package-macos.sh
+          output=$(ls -1 release/*.dmg | cut -d'/' -f2 | rev | cut -c 5- | rev)
+          echo "::set-output name=package-name::$output"
+      - name: Release
+        if: ${{ github.event_name == 'push' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.package.outputs.package-name }}
+          files: ./release/*.dmg
   ubuntuBuild:
     runs-on: ubuntu-latest
     steps:
