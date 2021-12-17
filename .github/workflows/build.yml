@@ -21,12 +21,17 @@ jobs:
         run: ./ci/macos/build-macos.sh
       - name: Package
         if: ${{ github.event_name == 'push' }}
-        run: ./ci/linux/package-macos.sh
+        run: |
+          wget http://s.sudre.free.fr/Software/files/Packages.dmg
+          hdiutil attach Packages.dmg
+          sudo installer -pkg /Volumes/Packages\ 1.2.9/Install\ Packages.pkg -target /
+          ./ci/macos/package-macos.sh
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
         with:
-          artifacts: "package/*.dmg"
+          name: easyStream-plugin-macOS.dmg
+          path: "release/*.dmg"
   ubuntuBuild:
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +54,8 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
         with:
-          artifacts: "package/*.deb"
+          name: easyStream-plugin-linux.deb
+          path: "package/*.deb"
 
   win64Build:
     name: "win64Build"
@@ -109,12 +115,13 @@ jobs:
           msbuild /m /p:Configuration=RelWithDebInfo .\obs-easystream-main-plugin.sln
       - name: Package
         if: ${{ github.event_name == 'push' }}
-        run: ./ci/linux/package-windows.cmd
+        run: ci/windows/package-windows.cmd
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
         with:
-          artifacts: "package/*.exe,package/*.zip"
+          name: easyStream-plugin-windows.exe
+          path: "package/*.exe"
 
   win32Build:
     name: "win32Build"
@@ -174,9 +181,10 @@ jobs:
           msbuild /m /p:Configuration=RelWithDebInfo .\obs-easystream-main-plugin.sln
       - name: Package
         if: ${{ github.event_name == 'push' }}
-        run: ./ci/linux/package-windows.cmd
+        run: ci/windows/package-windows.cmd
       - name: Release
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
         with:
-          artifacts: "package/*.exe,package/*.zip"
+          name: easyStream-plugin-windows.exe
+          path: "package/*.exe"
