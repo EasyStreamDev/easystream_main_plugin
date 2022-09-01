@@ -33,10 +33,13 @@ void sceneSwitcherIA(std::shared_ptr<void>)
 		std::vector<std::string> windowsList = es::utils::window::GetWindowList();
 		std::vector<json> scenesList = es::utils::obs::listHelper::GetSceneList();
 		bool switched = false;
-		
-		for (auto &scene : scenesList) {
-			for (auto &window : windowsList) {
-				if (scene["sceneName"] == window && !switched) {
+
+		for (auto &scene : scenesList)
+		{
+			for (auto &window : windowsList)
+			{
+				if (scene["sceneName"] == window && !switched)
+				{
 					switched = true;
 					if (obs_source_get_name(obs_frontend_get_current_scene()) == scene["sceneName"])
 						continue;
@@ -68,7 +71,7 @@ void obs_module_unload()
 	blog(LOG_INFO, "plugin unloaded");
 }
 
-os_cpu_usage_info_t* GetCpuUsageInfo()
+os_cpu_usage_info_t *GetCpuUsageInfo()
 {
 	return cpuUsageInfo;
 }
