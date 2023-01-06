@@ -1,6 +1,5 @@
 [requires]
 qt/6.3.2
-brotli/1.0.9
 
 [generators]
 cmake
