@@ -7,7 +7,6 @@
 
 #ifndef MAIN_HPP_
 #define MAIN_HPP_
-
 #include "Common.hpp"
 
 #include "obs/SourceTracker.hpp"

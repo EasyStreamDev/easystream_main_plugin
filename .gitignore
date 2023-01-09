@@ -72,4 +72,8 @@ ci/obs-studio
 .vscode/*
 
 tmp.txt
+test2
+waveform2.wav
+tmp.txt
+out.log
 compileResource
