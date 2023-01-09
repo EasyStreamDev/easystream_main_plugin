@@ -72,3 +72,4 @@ ci/obs-studio
 .vscode/*
 
 tmp.txt
+compileResource

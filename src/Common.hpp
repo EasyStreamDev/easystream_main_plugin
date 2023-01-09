@@ -53,6 +53,7 @@
 #include <util/platform.h>
 #include <util/config-file.h>
 #include <util/util_uint64.h>
+#include <media-io/audio-resampler.h>
 
 #define __FUNCTION_NAME__ __func__
 
