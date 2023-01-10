@@ -44,7 +44,8 @@ void test(std::shared_ptr<void>)
 
 void startServer(std::shared_ptr<void>)
 {
-	std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>("0.0.0.0", 47920, tracker->getAudioMap()));
+	blog(LOG_INFO, "[EASYSTREAM SERVER TEST]");
+	std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>(std::string("0.0.0.0"), 47920, tracker->getAudioMap()));
 
 	blog(LOG_INFO, "[EASYSTREAM STARTED TCP SERVER]");
 	server->start();
@@ -81,8 +82,8 @@ bool obs_module_load(void)
 
 	blog(LOG_INFO, "-----------------------------------------");
 	tracker->init();
-	threadPool->push(std::function(test), nullptr);
 	threadPool->push(std::function(startServer), nullptr);
+	threadPool->push(std::function(test), nullptr);
 	threadPool->push(std::function(sceneSwitcherIA), nullptr);
 	cpuUsageInfo = os_cpu_usage_info_start();
 	blog(LOG_INFO, "-----------------------------------------");

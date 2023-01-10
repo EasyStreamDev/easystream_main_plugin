@@ -9,8 +9,9 @@
 
 namespace es::server
 {
-    AsioTcpServer::AsioTcpServer(const std::string &host, int port, const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps) : _audioLeveler(_mps), _endPoint(boost::asio::ip::make_address(host), port), _acceptor(_ioContext, _endPoint)
+    AsioTcpServer::AsioTcpServer(const std::string &host, int port, const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps) : _audioLeveler(_mps), /*_endPoint(boost::asio::ip::make_address(host), port),*/_acceptor(_ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
     {
+        // blog(LOG_INFO,)
         /* Getters */
         _handler["getAllMics"] = &AsioTcpServer::getAllMics;
         // _handler["getActReactCouples"]
@@ -45,7 +46,7 @@ namespace es::server
             waitForClientConnection();
             _threadContext = boost::thread([this]()
                                            { _ioContext.run(); });
-            blog(LOG_INFO, "[SERVER EASYSTREAM] new server started on port: %d", _endPoint.port());
+            blog(LOG_INFO, "[SERVER EASYSTREAM] new server started on port: %d", _acceptor.local_endpoint().port());
         }
         catch (std::exception &e)
         {

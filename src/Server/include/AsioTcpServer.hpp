@@ -7,14 +7,15 @@
 
 #ifndef ASIOTCPSERVER_HPP_
 #define ASIOTCPSERVER_HPP_
+// #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define BOOST_ASIO_DISABLE_IOCP 1
+    // static const std::string slash="\\";
+    // static const std::string slash="/";
+// #endif
 #include "AsioTcpConnection.hpp"
 #include <boost/thread.hpp>
-// #include <thread>
-// #include "IServer.hpp"
 #include "common_using.hpp"
 #include "../../plugin-main.hpp"
-// #include <boost/thread.hpp>
 #include "errorCode.hpp"
 #include "../../nlohmann/json.hpp"
 #include <iostream>
@@ -22,6 +23,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <string>
+#include <boost/make_shared.hpp>
 
 // #include "../../../../include/json.hpp"
 
@@ -89,7 +91,7 @@ namespace es::server
         // --- Network
         boost::asio::io_context _ioContext;
         boost::asio::ip::tcp::acceptor _acceptor;
-        boost::asio::ip::tcp::endpoint _endPoint;
+        // boost::asio::ip::tcp::endpoint _endPoint;
         std::vector<Shared<AsioTcpConnection>> _connections;
         // --- Request handler vars
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;

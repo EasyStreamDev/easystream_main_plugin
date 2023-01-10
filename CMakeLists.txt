@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (UNIX OR APPLE)
 
-set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage")
+set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage -shared -fPIC")
 set(CMAKE_CXX_LINKER_FLAGS "-lgcov")
 endif()
 
@@ -43,6 +43,12 @@ if (UNIX)
 elseif(WIN32 OR WIN64)
     include_directories(${CMAKE_SOURCE_DIR}/compileResource/obs-studio/libobs/)
     include_directories(${CMAKE_SOURCE_DIR}/compileResource/obs-studio/UI/obs-frontend-api/)
+endif()
+
+if(UNIX OR APPLE)
+    if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE Debug)
+    endif()
 endif()
 
 # MACRO(HEADER_DIRECTORIES_H return_list)
@@ -82,9 +88,13 @@ endif()
 #     include(external/FindLibObs.cmake)
 # endif()
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_COMPILER "-vc143")
+# set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+# set(Boost_USE_STATIC_RUNTIME OFF)
+
 if(WIN32)
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_COMPILER "-vc143")
     set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/compileResource/boostFolder")
     set(BOOST_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/compileResource/boostFolder/include/boost-1_81/boost")
     set(BOOST_LIBRARY_DIR "${CMAKE_SOURCE_DIR}/compileResource/boostFolder/lib")
@@ -177,8 +187,8 @@ if (WIN32)
     add_library(${CMAKE_PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
     target_link_libraries(${CMAKE_PROJECT_NAME} ${CONAN_LIBS} LibObs OBS_FRONTEND_LIB Boost::system Boost::thread)
 else()
-    add_library(${CMAKE_PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
-    # target_link_libraries(${CMAKE_PROJECT_NAME} ${CONAN_LIBS} LibObs OBS_FRONTEND_LIB)
+    add_library(${CMAKE_PROJECT_NAME} MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
+    target_link_libraries(${CMAKE_PROJECT_NAME} Qt6::Core Qt6::Widgets Boost::system Boost::thread)
 endif()
 
 
@@ -194,12 +204,12 @@ endif()
 # )
 
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    ${obs_main_plugin_PLATFORM_LIBS}
-    # libobs
-    Qt6::Core
-    Qt6::Widgets
-)
+# target_link_libraries(${CMAKE_PROJECT_NAME}
+#     ${obs_main_plugin_PLATFORM_LIBS}
+#     # libobs
+#     Qt6::Core
+#     Qt6::Widgets
+# )
 
 # add_executable(ServerTests ${TEST_SOURCES})
 # target_link_libraries(ServerTests
@@ -320,12 +330,10 @@ endif()
 
 # --- Linux-specific build settings and tasks ---
 if(UNIX OR APPLE)
-    if(NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g3")
     else()
-        if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g3")
-        endif()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
     endif()
 endif()
 
