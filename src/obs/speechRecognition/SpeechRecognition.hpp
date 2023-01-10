@@ -19,7 +19,7 @@ namespace es::obs {
         uint8_t fmt[4] = {'f', 'm', 't', ' '};
         uint32_t subChunkSize = 16;
         uint16_t audioFormat = 1;
-        uint16_t numOfChan = 1;
+        uint16_t numOfChan = 2;
         uint32_t samplesPerSec = 16000;
         uint32_t bytesPerSec = 16000 * 2;
         uint16_t blockAlign = 2;
