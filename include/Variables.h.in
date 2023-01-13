@@ -1,0 +1,8 @@
+#ifndef VARIABLES_H_IN
+#define VARIABLES_H_IN
+
+#define AUDIOPATH "@AUDIOPATH@"
+// #define SIMPLEFRAG "@SIMPLEFRAG@"
+
+
+#endif
