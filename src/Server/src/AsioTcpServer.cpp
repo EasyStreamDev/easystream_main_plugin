@@ -9,21 +9,25 @@
 
 namespace es::server
 {
-    AsioTcpServer::AsioTcpServer(const std::string &host, int port, const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps) : _audioLeveler(_mps), _endPoint(boost::asio::ip::make_address(host), port), _acceptor(_ioContext, _endPoint)
+    AsioTcpServer::AsioTcpServer(
+        const std::string &host,
+        int port,
+        const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps) : _audioLeveler(_mps),
+                                                                                               _endPoint(boost::asio::ip::make_address(host), port),
+                                                                                               _acceptor(_ioContext, _endPoint)
     {
         /* Getters */
         _handler["getAllMics"] = &AsioTcpServer::getAllMics;
-        // _handler["getActReactCouples"]
+        _handler["getActReactCouples"] = &AsioTcpServer::getActReactCouples;
 
         /* Setters */
         _handler["setAutoAudioLeveler"] = &AsioTcpServer::setAutoAudioLeveler;
         _handler["setMicLevel"] = &AsioTcpServer::setMicLevel;
-        // _handler["setTranscriptSubscription"]
-        // _handler["setActionReaction"]
-        _handler["setSceneSwapTrigger"] = &AsioTcpServer::setSceneSwapTrigger;
+        // _handler["setSubtitles"]
+        // _handler["setActionReaction"] = nullptr;
 
         /* Removers */
-        // _handler["removeActReact"]
+        _handler["removeActReact"] = &AsioTcpServer::removeActReact;
 
         /* Updaters */
         // _handler["updateAction"];
@@ -158,6 +162,41 @@ namespace es::server
         con->writeMessage(toSend.dump());
     }
 
+    void AsioTcpServer::getActReactCouples(const json &j, Shared<AsioTcpConnection> &con)
+    {
+        json toSend;
+        std::vector<json> areas_vec;
+
+        for (const auto &pair : this->areas)
+        {
+            const auto &elem = pair.second;
+            json area = {
+                {"name", elem.name},
+                {"id", elem.id},
+                {"isActive", elem.is_active},
+                {"action", {
+                               {"actionId", elem.action_data.id},
+                               {"type", elem.action_data.type},
+                               {"params", elem.action_data.params},
+                           }},
+                {"reaction", {
+                                 {"reactionId", elem.reaction_data.id},
+                                 {"type", elem.reaction_data.type},
+                                 {"params", elem.reaction_data.params},
+                             }},
+            };
+
+            areas_vec.push_back(std::move(area));
+        }
+
+        toSend["statusCode"] = 200;
+        toSend["message"] = std::string("OK");
+        toSend["length"] = this->areas.size();
+        toSend["actReacts"] = areas_vec;
+
+        con->writeMessage(toSend.dump());
+    }
+
     /****************/
     /* SET REQUESTS */
     /****************/
@@ -258,6 +297,37 @@ namespace es::server
         con->writeMessage(toSend.dump());
     }
 
+    /*******************/
+    /* REMOVE REQUESTS */
+    /*******************/
+
+    void AsioTcpServer::removeActReact(const json &j, Shared<AsioTcpConnection> &con)
+    {
+        json toSend;
+        json params = j["params"];
+        size_t id_to_rm = params["actReactId"];
+
+        if (this->areas.find(id_to_rm) == this->areas.end())
+        {
+            toSend["statusCode"] = 404;
+            toSend["message"] = std::string("Provided ID did not match any created action/reaction couple.");
+            con->writeMessage(toSend.dump());
+            return;
+        }
+
+        area::area_t &to_rm = this->areas[id_to_rm];
+
+        toSend["statusCode"] = 200;
+        toSend["message"] = "Act/React couple succesfully deleted.";
+        toSend["data"] = {
+            {"name", to_rm.name},
+            {"actReactId", to_rm.id},
+        };
+        this->areas.erase(to_rm.id);
+
+        con->writeMessage(toSend.dump());
+    }
+
     /****************/
     /* BAD REQUESTS */
     /****************/
@@ -271,9 +341,3 @@ namespace es::server
         con->writeMessage(toSend.dump());
     }
 }
-
-// 60 -> 100
-// 0
-
-//-40 + 60
-//

@@ -41,7 +41,7 @@
 #include <fstream>
 #include <sstream>
 
-//QT includes
+// QT includes
 #include <QStringList>
 #include <QRegularExpression>
 #include <QLibrary>
@@ -60,6 +60,48 @@
 #include "obs/Memory.hpp"
 #include "plugin-macros.generated.h"
 #include "Macros.hpp"
+#include "./nlohmann/json.hpp"
 
+namespace es
+{
+    namespace area
+    {
+        enum class ActionType
+        {
+            WORD_DETECT,
+            APP_LAUNCH,
+            KEY_PRESSED,
+        };
+
+        enum class ReactionType
+        {
+            SCENE_SWITCH,
+            TOGGLE_AUDIO,
+        };
+
+        typedef struct action_s
+        {
+            ActionType type;
+            size_t id;
+            nlohmann::json params;
+        } action_t;
+
+        typedef struct reaction_s
+        {
+            ReactionType type;
+            size_t id;
+            nlohmann::json params;
+        } reaction_t;
+
+        typedef struct area_s
+        {
+            std::string name;
+            size_t id;
+            bool is_active;
+            action_t action_data;
+            reaction_t reaction_data;
+        } area_t;
+    }
+}
 
 #endif /* !COMMON_HPP_ */
