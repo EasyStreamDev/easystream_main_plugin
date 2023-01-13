@@ -45,11 +45,15 @@ elseif(WIN32 OR WIN64)
     include_directories(${CMAKE_SOURCE_DIR}/compileResource/obs-studio/UI/obs-frontend-api/)
 endif()
 
+include_directories(${CMAKE_SOURCE_DIR}/include/)
 if(UNIX OR APPLE)
     if(NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE Debug)
     endif()
 endif()
+
+set(AUDIOPATH "${CMAKE_SOURCE_DIR}/output.wav")
+configure_file(${CMAKE_SOURCE_DIR}/include/Variables.h.in ${CMAKE_SOURCE_DIR}/include/Variables.h)
 
 # MACRO(HEADER_DIRECTORIES_H return_list)
 #     FILE(GLOB_RECURSE new_list "${CMAKE_SOURCE_DIR}/../obs-studio/libobs/*.h")

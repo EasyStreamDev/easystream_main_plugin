@@ -9,6 +9,7 @@
 #define SPEECHRECOGNITION_HPP_
 
 #include "../../Common.hpp"
+#include "Variables.h"
 namespace es::obs {
     //1597476
 
