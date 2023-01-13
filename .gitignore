@@ -78,5 +78,8 @@ tmp.txt
 out.log
 compileResource
 
+# Auto generated CMake files
+Variables.h
+
 # Audio files
 *.wav
