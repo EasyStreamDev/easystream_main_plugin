@@ -71,12 +71,15 @@ namespace es::server
 
         // --- GET REQUESTS
         void getAllMics(const json &, Shared<AsioTcpConnection> &);
-        void getAllEvents(const json &, Shared<AsioTcpConnection> &);
+        void getActReactCouples(const json &, Shared<AsioTcpConnection> &);
 
         // --- SET REQUESTS
         void setAutoAudioLeveler(const json &, Shared<AsioTcpConnection> &);
         void setMicLevel(const json &, Shared<AsioTcpConnection> &);
         void setSceneSwapTrigger(const json &, Shared<AsioTcpConnection> &);
+
+        // --- REMOVE REQUESTS
+        void removeActReact(const json &, Shared<AsioTcpConnection> &);
 
         // --- BAD REQUESTS
         void badCommand(Shared<AsioTcpConnection> &);
@@ -97,6 +100,9 @@ namespace es::server
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;
         std::vector<st_instruction_t> _sceneSwapTriggers;
         const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_audioLeveler;
+
+        // TMP - @todo : use a shared map with mutex
+        std::unordered_map<size_t, area::area_t> areas;
     };
 }
 

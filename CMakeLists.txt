@@ -17,6 +17,7 @@ set(LINUX_MAINTAINER_EMAIL "contact@easystream.io")
 
 # TAKE NOTE: No need to edit things past this point
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/build/")
+
 # set(CMAKE_PREFIX_PATH "${QTDIR}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -25,19 +26,20 @@ set(CMAKE_AUTOUIC ON)
 # In case you need C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if (UNIX OR APPLE)
 
-set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage -shared -fPIC")
-set(CMAKE_CXX_LINKER_FLAGS "-lgcov")
+if(UNIX OR APPLE)
+    set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage -shared -fPIC")
+    set(CMAKE_CXX_LINKER_FLAGS "-lgcov")
 endif()
 
-if (WIN32)
+if(WIN32)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    set(CONAN_DISABLE_CHECK_COMPILER True CACHE BOOL "" FORCE )
+    set(CONAN_DISABLE_CHECK_COMPILER True CACHE BOOL "" FORCE)
     conan_basic_setup()
 endif()
+
 # set(LibObs_DIR "${CMAKE_SOURCE_DIR}/../obsBuildDir/libobs")
-if (UNIX) 
+if(UNIX)
     set(LibObs_DIR "/usr/local/lib/cmake/libobs")
     include_directories("/usr/local/include/obs")
 elseif(WIN32 OR WIN64)
@@ -46,6 +48,7 @@ elseif(WIN32 OR WIN64)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/)
+
 if(UNIX OR APPLE)
     if(NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE Debug)
@@ -56,25 +59,25 @@ set(AUDIOPATH "${CMAKE_SOURCE_DIR}/output.wav")
 configure_file(${CMAKE_SOURCE_DIR}/include/Variables.h.in ${CMAKE_SOURCE_DIR}/include/Variables.h)
 
 # MACRO(HEADER_DIRECTORIES_H return_list)
-#     FILE(GLOB_RECURSE new_list "${CMAKE_SOURCE_DIR}/../obs-studio/libobs/*.h")
-#     SET(dir_list "")
-#     FOREACH(file_path ${new_list})
-#         GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
-#         SET(dir_list ${dir_list} ${dir_path})
-#     ENDFOREACH()
-#     LIST(REMOVE_DUPLICATES dir_list)
-#     SET(${return_list} ${dir_list})
+# FILE(GLOB_RECURSE new_list "${CMAKE_SOURCE_DIR}/../obs-studio/libobs/*.h")
+# SET(dir_list "")
+# FOREACH(file_path ${new_list})
+# GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+# SET(dir_list ${dir_list} ${dir_path})
+# ENDFOREACH()
+# LIST(REMOVE_DUPLICATES dir_list)
+# SET(${return_list} ${dir_list})
 # ENDMACRO()
 
 # MACRO(HEADER_DIRECTORIES_HPP return_list)
-#     FILE(GLOB_RECURSE new_list "${CMAKE_SOURCE_DIR}/../obs-studio/libobs/*.hpp")
-#     SET(dir_list "")
-#     FOREACH(file_path ${new_list})
-#         GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
-#         SET(dir_list ${dir_list} ${dir_path})
-#     ENDFOREACH()
-#     LIST(REMOVE_DUPLICATES dir_list)
-#     SET(${return_list} ${dir_list})
+# FILE(GLOB_RECURSE new_list "${CMAKE_SOURCE_DIR}/../obs-studio/libobs/*.hpp")
+# SET(dir_list "")
+# FOREACH(file_path ${new_list})
+# GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+# SET(dir_list ${dir_list} ${dir_path})
+# ENDFOREACH()
+# LIST(REMOVE_DUPLICATES dir_list)
+# SET(${return_list} ${dir_list})
 # ENDMACRO()
 
 # set(cHeader "")
@@ -89,13 +92,13 @@ configure_file(${CMAKE_SOURCE_DIR}/include/Variables.h.in ${CMAKE_SOURCE_DIR}/in
 # message(STATUS "[INFO] Found ${cppHeader_count} header directories.")
 
 # if(WIN32 OR APPLE)
-#     include(external/FindLibObs.cmake)
+# include(external/FindLibObs.cmake)
 # endif()
 
 # set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
-# set(Boost_USE_STATIC_RUNTIME OFF)
 
+# set(Boost_USE_STATIC_RUNTIME OFF)
 if(WIN32)
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_COMPILER "-vc143")
@@ -112,7 +115,8 @@ if(WIN32 OR WIN64)
     add_library(LibObs SHARED IMPORTED)
     set_property(TARGET LibObs PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/RelWithDebInfo/obs.dll")
     set_property(TARGET LibObs PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/RelWithDebInfo/obs.lib")
-    # obs-frontend 
+
+    # obs-frontend
     message("okayyy let's gooooo")
     add_library(OBS_FRONTEND_LIB SHARED IMPORTED)
     set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/RelWithDebInfo/obs-frontend-api.dll")
@@ -121,14 +125,14 @@ endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 find_package(Boost COMPONENTS thread date_time program_options filesystem system REQUIRED)
+
 if(WIN32)
     include_directories(${CONAN_INCLUDE_DIRS})
 endif()
 
 # if(NOT CMAKE_BUILD_TYPE)
-#     set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 # endif()
-
 configure_file(
     src/plugin-macros.h.in
     ../src/plugin-macros.generated.h
@@ -154,11 +158,11 @@ configure_file(
 file(GLOB_RECURSE PLUGIN_SOURCES src/*.cpp)
 file(GLOB_RECURSE TEST_SOURCES Tests/*.cpp)
 
-
 set(PLUGIN_HEADERS
     src/plugin-macros.generated.h)
 
 include_directories(${CMAKE_SOURCE_DIR}/Tests/include)
+
 # --- Platform-specific settings ---
 if(APPLE)
     find_library(COCOA Cocoa)
@@ -171,8 +175,8 @@ if(APPLE)
 endif()
 
 if(WIN32)
-    # set(obs_main_plugin_PLATFORM_SOURCES
-    #     src/utils/WindowWin32.cpp)
+# set(obs_main_plugin_PLATFORM_SOURCES
+# src/utils/WindowWin32.cpp)
 elseif(APPLE)
     set(obs_main_plugin_PLATFORM_SOURCES
         src/utils/WindowMacOS.mm)
@@ -186,8 +190,7 @@ else()
 endif()
 
 # --- Platform-independent build settings ---
-
-if (WIN32)
+if(WIN32)
     add_library(${CMAKE_PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
     target_link_libraries(${CMAKE_PROJECT_NAME} ${CONAN_LIBS} LibObs OBS_FRONTEND_LIB Boost::system Boost::thread)
 else()
@@ -195,32 +198,30 @@ else()
     target_link_libraries(${CMAKE_PROJECT_NAME} Qt6::Core Qt6::Widgets Boost::system Boost::thread)
 endif()
 
-
 # find_package(GTest REQUIRED)
 # include_directories(${GTEST_INCLUDE_DIRS})
 
 # enable_testing()
 
 # include_directories(
-#     "${LIBOBS_INCLUDE_DIR}/../UI/obs-frontend-api"
-#     ${Qt6Core_INCLUDES}
-#     ${Qt6Widgets_INCLUDES}
+# "${LIBOBS_INCLUDE_DIR}/../UI/obs-frontend-api"
+# ${Qt6Core_INCLUDES}
+# ${Qt6Widgets_INCLUDES}
 # )
 
-
 # target_link_libraries(${CMAKE_PROJECT_NAME}
-#     ${obs_main_plugin_PLATFORM_LIBS}
-#     # libobs
-#     Qt6::Core
-#     Qt6::Widgets
+# ${obs_main_plugin_PLATFORM_LIBS}
+# # libobs
+# Qt6::Core
+# Qt6::Widgets
 # )
 
 # add_executable(ServerTests ${TEST_SOURCES})
 # target_link_libraries(ServerTests
-#     Boost::system
-#     Boost::thread
-#     GTest::gtest_main
-#     pthread
+# Boost::system
+# Boost::thread
+# GTest::gtest_main
+# pthread
 # )
 
 # include(GoogleTest)
@@ -231,8 +232,8 @@ endif()
 # --- Windows-specific build settings and tasks ---
 if(WIN32)
     # if(NOT DEFINED OBS_FRONTEND_LIB)
-    #     set(OBS_FRONTEND_LIB "OBS_FRONTEND_LIB-NOTFOUND" CACHE FILEPATH "OBS frontend library")
-    #     message(FATAL_ERROR "Could not find OBS Frontend API\'s library !")
+    # set(OBS_FRONTEND_LIB "OBS_FRONTEND_LIB-NOTFOUND" CACHE FILEPATH "OBS frontend library")
+    # message(FATAL_ERROR "Could not find OBS Frontend API\'s library !")
     # endif()
 
     # Enable Multicore Builds and disable FH4 (to not depend on VCRUNTIME140_1.DLL when building with VS2019)
@@ -244,12 +245,12 @@ if(WIN32)
         set(ARCH_NAME "64bit")
         set(OBS_BUILDDIR_ARCH "build64")
 
-        # if(MSVC)
-        #     # Hardcoded path to w32-pthreads atm because find_library not properly finding w32-pthreads.lib
-        #     target_link_libraries(
-        #         ${CMAKE_PROJECT_NAME}
-        #         ${CMAKE_CURRENT_SOURCE_DIR}/obs-studio/build64/deps/w32-pthreads/RelWithDebInfo/w32-pthreads.lib)
-        # endif()
+    # if(MSVC)
+    # # Hardcoded path to w32-pthreads atm because find_library not properly finding w32-pthreads.lib
+    # target_link_libraries(
+    # ${CMAKE_PROJECT_NAME}
+    # ${CMAKE_CURRENT_SOURCE_DIR}/obs-studio/build64/deps/w32-pthreads/RelWithDebInfo/w32-pthreads.lib)
+    # endif()
     else()
         set(ARCH_NAME "32bit")
         set(OBS_BUILDDIR_ARCH "build32")
@@ -267,7 +268,7 @@ if(WIN32)
     )
 
     # target_link_libraries(${CMAKE_PROJECT_NAME}
-    #     "${OBS_FRONTEND_LIB}"
+    # "${OBS_FRONTEND_LIB}"
     # )
 
     # --- Release package helper ---
@@ -351,8 +352,9 @@ if(UNIX AND NOT APPLE)
 
     if(${BUILD_UBUNTU})
         install(TARGETS ${CMAKE_PROJECT_NAME}
+
             # LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
-            LIBRARY DESTINATION "/usr/lib/x86_64-linux-gnu/obs-plugins")
+            LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
         install(FILES ${locale_files}
             DESTINATION "/usr/share/obs/obs-plugins/${CMAKE_PROJECT_NAME}/locale")
     else()

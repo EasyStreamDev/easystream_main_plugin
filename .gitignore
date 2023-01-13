@@ -77,3 +77,6 @@ waveform2.wav
 tmp.txt
 out.log
 compileResource
+
+# Audio files
+*.wav
