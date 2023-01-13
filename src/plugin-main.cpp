@@ -32,8 +32,11 @@ void test(std::shared_ptr<void>)
 {
 	blog(LOG_INFO, "[Thread::ThreadPool]: Thread start");
 	std::this_thread::sleep_for(std::chrono::seconds(2));
-	std::vector<json> j = es::utils::obs::listHelper::GetMicsList();
+	// std::vector<json> j = es::utils::obs::listHelper::GetMicsList();
+	// bool hasAlreadyStarted = false;
 	obs_source_t *source = obs_get_source_by_name("Mic/Aux");
+	// while (!source)
+		// source = obs_get_source_by_name("Mic/Aux");
 	if (source)
 	{
 		es::obs::SpeechRecognition r(source);

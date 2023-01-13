@@ -53,6 +53,8 @@ void es::obs::SourceTracker::onFrontendEvent(enum obs_frontend_event event, void
 {
     es::obs::SourceTracker *self = static_cast<es::obs::SourceTracker*>(privateData);
 
+	
+
     if (!self->_obsLoaded) {
 		if (event == OBS_FRONTEND_EVENT_FINISHED_LOADING) {
 			blog(LOG_INFO, "[EventHandler::OnFrontendEvent] OBS has finished loading. Connecting final handlers and enabling events...");
@@ -189,6 +191,12 @@ try {
 	const char *name = obs_source_get_name(target);
 	if (!name) {
 		return;
+	}
+
+	auto tmp = self->_audioLevelers.find(name);
+
+	if (tmp != self->_audioLevelers.end()) {
+		tmp->second->stopCapture();
 	}
 
 	auto found = self->_sources.find(std::string(name));

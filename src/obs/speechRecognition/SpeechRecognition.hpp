@@ -10,9 +10,9 @@
 
 #include "../../Common.hpp"
 namespace es::obs {
+    //1597476
 
-
-    typedef struct {
+    typedef struct wavHeader_s{
         uint8_t riff[4] = {'R', 'I', 'F', 'F'};
         uint32_t chunkSize = 0;
         uint8_t wave[4] = {'W', 'A', 'V', 'E'};
@@ -20,12 +20,12 @@ namespace es::obs {
         uint32_t subChunkSize = 16;
         uint16_t audioFormat = 1;
         uint16_t numOfChan = 2;
-        uint32_t samplesPerSec = 16000;
-        uint32_t bytesPerSec = 16000 * 2;
-        uint16_t blockAlign = 2;
+        uint32_t samplesPerSec = 48000;
+        uint32_t bytesPerSec = 0;
+        uint16_t blockAlign = 0;
         uint16_t bitsPerSample = 16;
         uint8_t subchunk2ID[4] = {'d', 'a', 't', 'a'};
-        uint32_t subchunk2Size;
+        uint32_t subchunk2Size = 0;
     } wavHeader;
 
     class SpeechRecognition
@@ -47,6 +47,7 @@ namespace es::obs {
             std::ofstream myfile;
             int bytes_per_channel;
             bool _headerWav;
+            wavHeader _wavFile;
     };
 }
 
