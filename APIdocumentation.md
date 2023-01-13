@@ -55,7 +55,6 @@ Récupération des données de toutes les couples actions / réaction enregistr�
     "length": "integer",
     "actReacts": [
         {
-            "name": "string",
             "actReactId": "integer",
             "isActive": "boolean",
             "action": {
@@ -66,6 +65,7 @@ Récupération des données de toutes les couples actions / réaction enregistr�
                 }
             },
             "reaction": {
+                "name": "string",
                 "reactionId": "integer",
                 "type": "reaction_type",
                 "params": {
@@ -179,7 +179,6 @@ Lorsque l'action est détectée, la réaction est déclenchée automatiquement.
 {
     "command": "setActionReaction",
     "params": {
-        "name": "string",
         "action": {
             "type": "action_type",
             "params": {
@@ -187,6 +186,7 @@ Lorsque l'action est détectée, la réaction est déclenchée automatiquement.
             }
         },
         "reaction": {
+            "name": "string",
             "type": "reaction_type",
             "params": {
                 "..."
@@ -202,7 +202,6 @@ Lorsque l'action est détectée, la réaction est déclenchée automatiquement.
     "statusCode": "integer",
     "message": "string",
     "data": {
-        "name": "string",
         "actionId": "integer",
         "reactionId": "integer",
         "actReactId": "integer",
@@ -235,7 +234,6 @@ Suppression d'un couple action/reaction au niveau du plugin.
     "statusCode": "integer",
     "message": "string",
     "data": {
-        "name": "string",
         "actReactId": "integer"
     }
 }
@@ -272,7 +270,6 @@ Si la requête est invalide, l'action reste inchangée.
     "statusCode": "integer",
     "message": "string",
     "data": {
-        "name": "string",
         "actionId": "integer"
     }
 }
@@ -294,6 +291,7 @@ Si la requête est invalide, l'action reste inchangée.
 {
     "command": "updateReaction",
     "params": {
+        "name": "string",
         "reactionId": "integer",
         "type": "reaction_type",
         "params": {
@@ -309,8 +307,7 @@ Si la requête est invalide, l'action reste inchangée.
     "statusCode": "integer",
     "message": "string",
     "data": {
-        "name": "string",
-        "actionId": "integer"
+        "reactionId": "integer"
     }
 }
 ```

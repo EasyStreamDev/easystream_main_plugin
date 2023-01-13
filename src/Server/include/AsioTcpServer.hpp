@@ -7,20 +7,28 @@
 
 #ifndef ASIOTCPSERVER_HPP_
 #define ASIOTCPSERVER_HPP_
-
-#include "IServer.hpp"
-#include "common_using.hpp"
-#include <thread>
-#include <vector>
-// #include <boost/thread.hpp>
+#define BOOST_ASIO_DISABLE_IOCP 1
+#include "AsioTcpConnection.hpp"
 #include <boost/thread.hpp>
+// #include <thread>
+// #include "IServer.hpp"
+#include "common_using.hpp"
+#include "../../plugin-main.hpp"
+// #include <boost/thread.hpp>
+#include "errorCode.hpp"
+#include "../../nlohmann/json.hpp"
+#include <iostream>
+#include <vector>
 #include <unordered_map>
 #include <algorithm>
-#include "AsioTcpConnection.hpp"
+#include <string>
+
 // #include "../../../../include/json.hpp"
 
 namespace es::server
 {
+    
+
     enum TriggerType
     {
         APP_CHANGE = 0,
@@ -73,6 +81,7 @@ namespace es::server
 
         // --- BAD REQUESTS
         void badCommand(Shared<AsioTcpConnection> &);
+        void generateMobileInformation();
 
         /********************/
         /* Member variables */
@@ -81,9 +90,9 @@ namespace es::server
         // --- Thread
         boost::thread _threadContext;
         // --- Network
+        boost::asio::io_context _ioContext;
         boost::asio::ip::tcp::acceptor _acceptor;
         boost::asio::ip::tcp::endpoint _endPoint;
-        boost::asio::io_context _ioContext;
         std::vector<Shared<AsioTcpConnection>> _connections;
         // --- Request handler vars
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;

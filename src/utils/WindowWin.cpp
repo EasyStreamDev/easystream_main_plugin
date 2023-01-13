@@ -135,7 +135,7 @@ HWND getHWNDfromTitle(std::string title)
 
 	const char *lp = title.c_str();
 
-	hwnd = FindWindowEx(NULL, NULL, NULL, lp.c_str());
+	hwnd = FindWindowEx(NULL, NULL, NULL, lp);
 	return hwnd;
 }
 

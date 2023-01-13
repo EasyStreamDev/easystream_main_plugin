@@ -7,6 +7,7 @@
 
 #ifndef ASIOTCPCONNECTION_HPP_
 #define ASIOTCPCONNECTION_HPP_
+#define BOOST_ASIO_DISABLE_IOCP 1
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
