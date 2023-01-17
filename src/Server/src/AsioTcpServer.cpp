@@ -11,7 +11,6 @@ namespace es::server
 {
     AsioTcpServer::AsioTcpServer(const std::string &host, int port, const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps) : _audioLeveler(_mps), /*_endPoint(boost::asio::ip::make_address(host), port),*/ _acceptor(_ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
     {
-        // blog(LOG_INFO,)
         /* Getters */
         _handler["getAllMics"] = &AsioTcpServer::getAllMics;
         _handler["getActReactCouples"] = &AsioTcpServer::getActReactCouples;
@@ -19,19 +18,15 @@ namespace es::server
         /* Setters */
         _handler["setAutoAudioLeveler"] = &AsioTcpServer::setAutoAudioLeveler;
         _handler["setMicLevel"] = &AsioTcpServer::setMicLevel;
-        // _handler["setSubtitles"]
-        // _handler["setActionReaction"] = nullptr;
+        _handler["setSubtitles"] = nullptr;
+        _handler["setActionReaction"] = nullptr;
 
         /* Removers */
         _handler["removeActReact"] = &AsioTcpServer::removeActReact;
 
         /* Updaters */
-        // _handler["updateAction"];
-        // _handler["updateReaction"];
-    }
-
-    AsioTcpServer::~AsioTcpServer()
-    {
+        _handler["updateAction"] = nullptr;
+        _handler["updateReaction"] = nullptr;
     }
 
     /***********/
@@ -237,56 +232,6 @@ namespace es::server
             // level -= 60;
             // std::cout << "level is: " << level << std::endl;
             tmp->second->setDesiredLevel(level);
-            toSend["statusCode"] = 200;
-            toSend["message"] = std::string("OK");
-        }
-        con->writeMessage(toSend.dump());
-    }
-
-    void AsioTcpServer::setSceneSwapTrigger(const json &j, Shared<AsioTcpConnection> &con)
-    {
-        json toSend;
-        int j_trigger_type = j["args"]["triggerType"];
-        auto j_trigger_value = std::string(j["args"]["triggerValue"]);
-        auto j_target_scene_name = std::string(j["args"]["targetScene"]);
-
-        // Find target scene
-        // @dev (Romain) : use std::find_if instead
-        bool target_scene_not_found = false;
-        for (const auto scene : es::utils::obs::listHelper::GetSceneList())
-        {
-            if (j_target_scene_name == std::string(scene["sceneName"]))
-            {
-                target_scene_not_found = true;
-                break;
-            }
-        }
-
-        // Check if type in TriggerType enum values
-        if (j["args"]["triggerType"] < 0 || j["args"]["triggerType"] > 1)
-        {
-            toSend["statusCode"] = 404;
-            toSend["message"] = std::string("Trigger type not found");
-        }
-        else if (target_scene_not_found)
-        {
-            toSend["statusCode"] = 404;
-            toSend["message"] = std::string("Target scene not found");
-        }
-        else // Request is valid
-        {
-            auto triggerInstruction = st_instruction_t({TriggerType(j_trigger_type),
-                                                        j_trigger_value,
-                                                        j_target_scene_name});
-            this->_sceneSwapTriggers.push_back(triggerInstruction);
-
-            blog(
-                LOG_INFO,
-                "[SERVER EASYSTREAM] added instruction :\n--- type : %d\n--- value : %s\n--- target_scene_name : %s",
-                triggerInstruction.type,
-                triggerInstruction.value.c_str(),
-                triggerInstruction.target_scene_name.c_str());
-
             toSend["statusCode"] = 200;
             toSend["message"] = std::string("OK");
         }

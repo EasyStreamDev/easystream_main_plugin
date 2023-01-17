@@ -9,23 +9,27 @@
 
 using nlohmann::json;
 
-es::server::AsioTcpConnection::AsioTcpConnection(boost::asio::ip::tcp::socket &sock): _connected(true) ,_socket(std::move(sock))
+namespace es::server
 {
-}
-
-es::server::AsioTcpConnection::~AsioTcpConnection()
-{
-}
-
-void es::server::AsioTcpConnection::readMessage()
-{
-    if (!_socket.is_open()) {
-        std::cout << "socket is closed" << std::endl;
-        return;
+    AsioTcpConnection::AsioTcpConnection(boost::asio::ip::tcp::socket &sock) : _connected(true), _socket(std::move(sock))
+    {
     }
 
-    std::memset(_buffer, 0, MSGMAX);
-    _socket.async_read_some(boost::asio::buffer(_buffer, MSGMAX), [this](boost::system::error_code ec, std::size_t length) {
+    AsioTcpConnection::~AsioTcpConnection()
+    {
+    }
+
+    void AsioTcpConnection::readMessage()
+    {
+        if (!_socket.is_open())
+        {
+            std::cout << "Socket is closed" << std::endl;
+            return;
+        }
+
+        std::memset(_buffer, 0, MSGMAX);
+        _socket.async_read_some(boost::asio::buffer(_buffer, MSGMAX), [this](boost::system::error_code ec, std::size_t length)
+                                {
         if (!ec) {
             std::string msg(_buffer);
             try {
@@ -47,18 +51,18 @@ void es::server::AsioTcpConnection::readMessage()
             _connected = false;
             return;
         }
-        readMessage();
-    });
-}
+        readMessage(); });
+    }
 
-void es::server::AsioTcpConnection::writeMessage(const std::string &msg)
-{
-    char buffer[MSGMAX];
+    void AsioTcpConnection::writeMessage(const std::string &msg)
+    {
+        char buffer[MSGMAX];
 
-    std::cout << "0" << std::endl;
-    std::memset(buffer, 0, MSGMAX);
-    std::memcpy(buffer, msg.data(), msg.size());
-    boost::asio::async_write(_socket, boost::asio::buffer(buffer, MSGMAX), [this](boost::system::error_code ec, std::size_t length) {
+        std::cout << "0" << std::endl;
+        std::memset(buffer, 0, MSGMAX);
+        std::memcpy(buffer, msg.data(), msg.size());
+        boost::asio::async_write(_socket, boost::asio::buffer(buffer, MSGMAX), [this](boost::system::error_code ec, std::size_t length)
+                                 {
         (void)length;
         if (!ec)
             std::cout << "[SERVER EASYSTREAM]: Message sent to " << _socket.remote_endpoint() << std::endl;
@@ -66,24 +70,24 @@ void es::server::AsioTcpConnection::writeMessage(const std::string &msg)
             std::cout << "[SERVER EASYSTREAM]: Write failed: " << ec.message() << std::endl;
             _connected = false;
             _socket.close();
-        }
-    });
-}
+        } });
+    }
 
-const boost::asio::ip::tcp::socket &es::server::AsioTcpConnection::getSocket() const
-{
-    return (_socket);
-}
+    const boost::asio::ip::tcp::socket &AsioTcpConnection::getSocket() const
+    {
+        return (_socket);
+    }
 
-const std::vector<nlohmann::json> es::server::AsioTcpConnection::getMessage()
-{
-    std::vector<nlohmann::json> tmp = _messages;
+    const std::vector<nlohmann::json> AsioTcpConnection::getMessage()
+    {
+        std::vector<nlohmann::json> tmp = _messages;
 
-    _messages.clear();
-    return (tmp);
-}
+        _messages.clear();
+        return (tmp);
+    }
 
-bool es::server::AsioTcpConnection::isConnected() const
-{
-    return (_connected);
+    bool AsioTcpConnection::isConnected() const
+    {
+        return (_connected);
+    }
 }
