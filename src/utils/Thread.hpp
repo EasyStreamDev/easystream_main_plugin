@@ -10,49 +10,52 @@
 
 #include "../Common.hpp"
 
-namespace es::thread
+namespace es
 {
-    class ThreadPool
+    namespace thread
     {
-    public:
-        class Task
+        class ThreadPool
         {
         public:
-            Task();
-            Task(const Task &t){};
-            Task(std::function<void(std::shared_ptr<void>)> callback_function, std::shared_ptr<void> data);
+            class Task
+            {
+            public:
+                Task();
+                Task(const Task &t){};
+                Task(std::function<void(std::shared_ptr<void>)> callback_function, std::shared_ptr<void> data);
 
-            void await_completion();
+                void await_completion();
 
-        protected:
-            std::mutex _mutex;
-            std::condition_variable _is_complete;
-            std::atomic<bool> _is_dead;
-            std::function<void(std::shared_ptr<void>)> _callback;
-            std::shared_ptr<void> _data;
+            protected:
+                std::mutex _mutex;
+                std::condition_variable _is_complete;
+                std::atomic<bool> _is_dead;
+                std::function<void(std::shared_ptr<void>)> _callback;
+                std::shared_ptr<void> _data;
 
-            friend class es::thread::ThreadPool;
+                friend class es::thread::ThreadPool;
+            };
+
+            ThreadPool(std::size_t size);
+            ThreadPool(const ThreadPool &tp){};
+            ~ThreadPool();
+
+            std::shared_ptr<es::thread::ThreadPool::Task> push(std::function<void(std::shared_ptr<void>)> callback_function,
+                                                               std::shared_ptr<void> data);
+
+            void pop(std::shared_ptr<es::thread::ThreadPool::Task> work);
+
+        private:
+            void work();
+
+            std::list<std::thread> _workers;
+            std::atomic<bool> _worker_stop;
+            std::atomic<uint32_t> _worker_idx;
+            std::list<std::shared_ptr<::es::thread::ThreadPool::Task>> _tasks;
+            std::mutex _tasks_lock;
+            std::condition_variable _tasks_cv;
         };
-
-        ThreadPool(std::size_t size);
-        ThreadPool(const ThreadPool &tp){};
-        ~ThreadPool();
-
-        std::shared_ptr<es::thread::ThreadPool::Task> push(std::function<void(std::shared_ptr<void>)> callback_function,
-                                                           std::shared_ptr<void> data);
-
-        void pop(std::shared_ptr<es::thread::ThreadPool::Task> work);
-
-    private:
-        void work();
-
-        std::list<std::thread> _workers;
-        std::atomic<bool> _worker_stop;
-        std::atomic<uint32_t> _worker_idx;
-        std::list<std::shared_ptr<::es::thread::ThreadPool::Task>> _tasks;
-        std::mutex _tasks_lock;
-        std::condition_variable _tasks_cv;
-    };
+    }
 }
 
 #endif /* !THREAD_HPP_ */
