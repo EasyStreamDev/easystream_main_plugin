@@ -35,11 +35,11 @@ void thread_sleep_ms(uint ms)
 void startSpeechRecognition(std::shared_ptr<void>)
 {
     thread_sleep_ms(2000);
-    blog(LOG_INFO, "### [EASYSTREAM] - Speech recognition starting...");
+    blog(LOG_INFO, "###  - Speech recognition starting...");
 
     // es::TranscriptorManager tm;
     obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-    blog(LOG_INFO, "### [EASYSTREAM] - Speech recognition started.");
+    blog(LOG_INFO, "###  - Speech recognition started.");
 
     if (source)
     {
@@ -54,19 +54,19 @@ void startSpeechRecognition(std::shared_ptr<void>)
         }
     }
     // tm.stop();
-    blog(LOG_INFO, "### [EASYSTREAM] - Speech recognition has ended.");
+    blog(LOG_INFO, "###  - Speech recognition has ended.");
 }
 
 void startServer(std::shared_ptr<void>)
 {
     thread_sleep_ms(2000);
-    blog(LOG_INFO, "### [EASYSTREAM] - Creating server...");
+    blog(LOG_INFO, "###  - Creating server...");
     std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>(std::string("0.0.0.0"), 47920, tracker->getAudioMap()));
-    blog(LOG_INFO, "### [EASYSTREAM] - Server created.");
+    blog(LOG_INFO, "###  - Server created.");
 
-    blog(LOG_INFO, "### [EASYSTREAM] - Starting server...");
+    blog(LOG_INFO, "###  - Starting server...");
     server->start();
-    blog(LOG_INFO, "### [EASYSTREAM] - Server started. Now running !");
+    blog(LOG_INFO, "###  - Server started. Now running !");
 
     while (1)
     {
@@ -102,7 +102,7 @@ void sceneSwitcherIA(std::shared_ptr<void>)
 
 bool obs_module_load(void)
 {
-    blog(LOG_INFO, "### [EASYSTREAM] - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
+    blog(LOG_INFO, "###  - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
 
     blog(LOG_INFO, "### -----------------------------------------");
     tracker->init();

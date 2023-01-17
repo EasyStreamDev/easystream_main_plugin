@@ -17,13 +17,13 @@ namespace es::obs
 
         if (!obs_audio || !input)
         {
-            blog(LOG_INFO, "### [EASYSTREAM::SourceRecorder] - Error getting source data.");
+            blog(LOG_INFO, "### [SourceRecorder] - Error getting source data.");
             return;
         }
 
         resample_info resample_to = {48000, AUDIO_FORMAT_16BIT, SPEAKERS_STEREO};
 
-        // blog(LOG_INFO, "### [EASYSTREAMMMMMMMMMMMMMMMMMMMMMMMMMMMM] %d, %d, %d", resample_to.samples_per_sec, resample_to.format, resample_to.speakers);
+        // blog(LOG_INFO, "### [MMMMMMMMMMMMMMMMMMMMMMMMMMM] %d, %d, %d", resample_to.samples_per_sec, resample_to.format, resample_to.speakers);
         if (obs_audio->samples_per_sec != resample_to.samples_per_sec || obs_audio->format != resample_to.format || obs_audio->speakers != resample_to.speakers)
         {
             resample_info src = {
@@ -36,10 +36,10 @@ namespace es::obs
             {
                 throw std::string("Failed to create audio resampler");
             }
-            // blog(LOG_INFO, "### [EASYSTREAMMMMMMMMMMMMMMMMMMMMMMMMMMMM] %d, %d, %d", obs_audio->samples_per_sec, obs_audio->format, obs_audio->speakers);
+            // blog(LOG_INFO, "### [MMMMMMMMMMMMMMMMMMMMMMMMMMM] %d, %d, %d", obs_audio->samples_per_sec, obs_audio->format, obs_audio->speakers);
         }
 
-        blog(LOG_INFO, "### [EASYSTREAM::SourceRecorder] - Recorder set for input: %s", obs_source_get_name(_source));
+        blog(LOG_INFO, "### [SourceRecorder] - Recorder set for input: %s", obs_source_get_name(_source));
         obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
     }
 
@@ -71,7 +71,7 @@ namespace es::obs
 
         if (!success || !out[0])
         {
-            blog(LOG_INFO, "### [EASYSTREAM::SourceRecorder] - Failed resampling input audio data.");
+            blog(LOG_INFO, "### [SourceRecorder] - Failed resampling input audio data.");
             return;
         }
         size = sizeof(int16_t) * out_frames * self->_wavFile.numOfChan;
