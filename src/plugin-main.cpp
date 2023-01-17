@@ -27,40 +27,52 @@ std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::Sour
 std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
 os_cpu_usage_info_t *cpuUsageInfo;
 
-void test(std::shared_ptr<void>)
+void thread_sleep_ms(uint ms)
 {
-    blog(LOG_INFO, "[Thread::ThreadPool]: Thread start");
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    // std::vector<json> j = es::utils::obs::listHelper::GetMicsList();
-    // bool hasAlreadyStarted = false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+void startSpeechRecongnition(std::shared_ptr<void>)
+{
+    thread_sleep_ms(2000);
+    blog(LOG_INFO, "[EASYSTREAM] - Speech recognition starting...");
+
     obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-    // while (!source)
-    // source = obs_get_source_by_name("Mic/Aux");
+    blog(LOG_INFO, "[EASYSTREAM] - Speech recognition started.");
+
     if (source)
     {
-        es::obs::SpeechRecognition r(source);
+        es::obs::SpeechRecognition recogniser(source);
+
         while (1)
-            ;
+        {
+            thread_sleep_ms(5);
+        }
     }
-    blog(LOG_INFO, "[Thread::ThreadPool]: Thread finish");
+    blog(LOG_INFO, "[EASYSTREAM] - Speech recognition has ended.");
 }
 
 void startServer(std::shared_ptr<void>)
 {
-    blog(LOG_INFO, "[EASYSTREAM SERVER TEST]");
+    thread_sleep_ms(2000);
+    blog(LOG_INFO, "[EASYSTREAM] - Creating server...");
     std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>(std::string("0.0.0.0"), 47920, tracker->getAudioMap()));
+    blog(LOG_INFO, "[EASYSTREAM] - Server created.");
 
-    blog(LOG_INFO, "[EASYSTREAM STARTED TCP SERVER]");
+    blog(LOG_INFO, "[EASYSTREAM] - Starting server...");
     server->start();
+    blog(LOG_INFO, "[EASYSTREAM] - Server started. Now running !");
+
     while (1)
     {
         server->update();
-    };
+        thread_sleep_ms(5);
+    }
 }
 
 void sceneSwitcherIA(std::shared_ptr<void>)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    thread_sleep_ms(2000);
     while (1)
     {
         std::vector<std::string> windowsList = es::utils::window::GetWindowList();
@@ -85,15 +97,16 @@ void sceneSwitcherIA(std::shared_ptr<void>)
 
 bool obs_module_load(void)
 {
-    blog(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
+    blog(LOG_INFO, "[EASYSTREAM] - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
 
     blog(LOG_INFO, "-----------------------------------------");
     tracker->init();
     threadPool->push(std::function(startServer), nullptr);
-    threadPool->push(std::function(test), nullptr);
+    threadPool->push(std::function(startSpeechRecongnition), nullptr);
     threadPool->push(std::function(sceneSwitcherIA), nullptr);
     cpuUsageInfo = os_cpu_usage_info_start();
     blog(LOG_INFO, "-----------------------------------------");
+
     return true;
 }
 
