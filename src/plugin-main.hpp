@@ -11,7 +11,8 @@
 
 #include "obs/SourceTracker.hpp"
 #include "utils/Thread.hpp"
+#include "obs/speechRecognition/transcription/TranscriptorManager.hpp"
 
-os_cpu_usage_info_t* GetCpuUsageInfo();
+os_cpu_usage_info_t *GetCpuUsageInfo();
 
 #endif /* !MAIN_HPP_ */

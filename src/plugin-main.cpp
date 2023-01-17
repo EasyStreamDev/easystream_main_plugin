@@ -32,11 +32,12 @@ void thread_sleep_ms(uint ms)
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-void startSpeechRecongnition(std::shared_ptr<void>)
+void startSpeechRecognition(std::shared_ptr<void>)
 {
     thread_sleep_ms(2000);
     blog(LOG_INFO, "[EASYSTREAM] - Speech recognition starting...");
 
+    es::TranscriptorManager tm;
     obs_source_t *source = obs_get_source_by_name("Mic/Aux");
     blog(LOG_INFO, "[EASYSTREAM] - Speech recognition started.");
 
@@ -44,11 +45,15 @@ void startSpeechRecongnition(std::shared_ptr<void>)
     {
         es::obs::SpeechRecognition recogniser(source);
 
+        tm.start();
         while (1)
         {
+            // Feed files to the transcriptor manager using \
+            // the tm.transcriptFile function (callback parameter)
             thread_sleep_ms(5);
         }
     }
+    tm.stop();
     blog(LOG_INFO, "[EASYSTREAM] - Speech recognition has ended.");
 }
 
@@ -102,7 +107,7 @@ bool obs_module_load(void)
     blog(LOG_INFO, "-----------------------------------------");
     tracker->init();
     threadPool->push(std::function(startServer), nullptr);
-    threadPool->push(std::function(startSpeechRecongnition), nullptr);
+    threadPool->push(std::function(startSpeechRecognition), nullptr);
     threadPool->push(std::function(sceneSwitcherIA), nullptr);
     cpuUsageInfo = os_cpu_usage_info_start();
     blog(LOG_INFO, "-----------------------------------------");
