@@ -3,7 +3,7 @@
 
 #include "Transcriptor.hpp"
 
-namespace es
+namespace es::transcription
 {
     class TranscriptorManager
     {

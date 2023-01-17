@@ -15,7 +15,7 @@ using WS_OutMessage = ws_socket::websocket_outgoing_message;
 using WS_InMessage = ws_socket::websocket_incoming_message;
 using json = nlohmann::json;
 
-namespace es
+namespace es::transcription
 {
     class Transcriptor
     {

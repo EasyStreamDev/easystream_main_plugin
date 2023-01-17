@@ -1,6 +1,6 @@
 #include "Transcriptor.hpp"
 
-namespace es
+namespace es::transcription
 {
     Transcriptor::Transcriptor()
     {

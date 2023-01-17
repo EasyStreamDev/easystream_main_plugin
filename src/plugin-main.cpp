@@ -37,7 +37,7 @@ void startSpeechRecognition(std::shared_ptr<void>)
     thread_sleep_ms(2000);
     blog(LOG_INFO, "[EASYSTREAM] - Speech recognition starting...");
 
-    es::TranscriptorManager tm;
+    // es::TranscriptorManager tm;
     obs_source_t *source = obs_get_source_by_name("Mic/Aux");
     blog(LOG_INFO, "[EASYSTREAM] - Speech recognition started.");
 
@@ -45,7 +45,7 @@ void startSpeechRecognition(std::shared_ptr<void>)
     {
         es::obs::SpeechRecognition recogniser(source);
 
-        tm.start();
+        // tm.start();
         while (1)
         {
             // Feed files to the transcriptor manager using \
@@ -53,7 +53,7 @@ void startSpeechRecognition(std::shared_ptr<void>)
             thread_sleep_ms(5);
         }
     }
-    tm.stop();
+    // tm.stop();
     blog(LOG_INFO, "[EASYSTREAM] - Speech recognition has ended.");
 }
 
