@@ -2,20 +2,20 @@
 ** EPITECH PROJECT, 2021
 ** easystream_main_plugin
 ** File description:
-** SpeechRecognition
+** SourceRecorder
 */
 
-#ifndef SPEECHRECOGNITION_HPP_
-#define SPEECHRECOGNITION_HPP_
+#ifndef SOURCERECORDER_HPP_
+#define SOURCERECORDER_HPP_
 
-#include "../../Common.hpp"
+#include "../../../Common.hpp"
 #include "Variables.h"
 
 namespace es::obs
 {
     // 1597476
 
-    typedef struct wavHeader_s
+    typedef struct wav_header_s
     {
         uint8_t riff[4] = {'R', 'I', 'F', 'F'};
         uint32_t chunkSize = 0;
@@ -30,27 +30,23 @@ namespace es::obs
         uint16_t bitsPerSample = 16;
         uint8_t subchunk2ID[4] = {'d', 'a', 't', 'a'};
         uint32_t subchunk2Size = 0;
-    } wavHeader;
+    } wav_header_t;
 
-    class SpeechRecognition
+    class SourceRecorder
     {
     public:
-        SpeechRecognition(obs_source_t *input);
-        ~SpeechRecognition();
+        SourceRecorder(obs_source_t *input);
+        ~SourceRecorder();
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
 
     private:
         obs_source_t *_source;
-        audio_resampler_t *resampler = nullptr;
-        std::string text;
-        std::vector<std::string *> output;
-        std::chrono::steady_clock::time_point last_caption_at;
-        std::ofstream myfile;
-        int bytes_per_channel;
+        audio_resampler_t *_resampler = nullptr;
+        std::ofstream _outFile;
         bool _headerWav;
-        wavHeader _wavFile;
+        wav_header_t _wavFile;
     };
 }
 
-#endif /* !SPEECHRECOGNITION_HPP_ */
+#endif /* !SOURCERECORDER_HPP_ */

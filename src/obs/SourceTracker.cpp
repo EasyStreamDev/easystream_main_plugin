@@ -9,8 +9,8 @@
 
 void es::obs::SourceTracker::init()
 {
-    blog(LOG_INFO, "SourceTracker::SourceTracker()");
-    blog(LOG_INFO, "[SourceTracker::SourceTracker] Setting up...");
+    blog(LOG_INFO, "### SourceTracker::SourceTracker()");
+    blog(LOG_INFO, "### [SourceTracker::SourceTracker] Setting up...");
 
     obs_frontend_add_event_callback(onFrontendEvent, this);
 
@@ -23,7 +23,7 @@ void es::obs::SourceTracker::init()
         blog(LOG_ERROR,  "[SourceTracker::SourceTracker] Unable to get libobs signal handler!");
     }
 
-    blog(LOG_INFO, "[SourceTracker::SourceTracker] Finished.");
+    blog(LOG_INFO, "### [SourceTracker::SourceTracker] Finished.");
 }
 
 es::obs::SourceTracker::SourceTracker(): _obsLoaded(false)
@@ -32,7 +32,7 @@ es::obs::SourceTracker::SourceTracker(): _obsLoaded(false)
 
 es::obs::SourceTracker::~SourceTracker()
 {
-    blog(LOG_INFO, "[SourceTracker::~SourceTracker] Shutting down...");
+    blog(LOG_INFO, "### [SourceTracker::~SourceTracker] Shutting down...");
 
     obs_frontend_remove_event_callback(onFrontendEvent, this);
 
@@ -46,7 +46,7 @@ es::obs::SourceTracker::~SourceTracker()
     }
 
 	_sources.clear();
-    blog(LOG_INFO, "[SourceTracker::~SourceTracker] Finished.");
+    blog(LOG_INFO, "### [SourceTracker::~SourceTracker] Finished.");
 }
 
 void es::obs::SourceTracker::onFrontendEvent(enum obs_frontend_event event, void *privateData)
@@ -57,7 +57,7 @@ void es::obs::SourceTracker::onFrontendEvent(enum obs_frontend_event event, void
 
     if (!self->_obsLoaded) {
 		if (event == OBS_FRONTEND_EVENT_FINISHED_LOADING) {
-			blog(LOG_INFO, "[EventHandler::OnFrontendEvent] OBS has finished loading. Connecting final handlers and enabling events...");
+			blog(LOG_INFO, "### [EventHandler::OnFrontendEvent] OBS has finished loading. Connecting final handlers and enabling events...");
 			// Connect source signals and enable events only after OBS has fully loaded (to reduce extra logging).
 			self->_obsLoaded = true;
 
@@ -76,7 +76,7 @@ void es::obs::SourceTracker::onFrontendEvent(enum obs_frontend_event event, void
 				return true;
 			}, privateData);
 
-			blog(LOG_INFO, "[EventHandler::OnFrontendEvent] Finished.");
+			blog(LOG_INFO, "### [EventHandler::OnFrontendEvent] Finished.");
 		} else {
 			return;
 		}
@@ -85,7 +85,7 @@ void es::obs::SourceTracker::onFrontendEvent(enum obs_frontend_event event, void
     switch (event) {
 		case OBS_FRONTEND_EVENT_EXIT:
         {
-			blog(LOG_INFO, "[SourceTracker::OnFrontendEvent] OBS is unloading. Disabling events...");
+			blog(LOG_INFO, "### [SourceTracker::OnFrontendEvent] OBS is unloading. Disabling events...");
 			// Disconnect source signals and disable events when OBS starts unloading (to reduce extra logging).
 			self->_obsLoaded = false;
 
@@ -104,7 +104,7 @@ void es::obs::SourceTracker::onFrontendEvent(enum obs_frontend_event event, void
 				return true;
 			}, privateData);
 
-			blog(LOG_INFO, "[SourceTracker::OnFrontendEvent] Finished.");
+			blog(LOG_INFO, "### [SourceTracker::OnFrontendEvent] Finished.");
 
 			break;
         }

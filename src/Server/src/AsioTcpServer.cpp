@@ -40,11 +40,11 @@ namespace es::server
             waitForClientConnection();
             _threadContext = boost::thread([this]()
                                            { _ioContext.run(); });
-            blog(LOG_INFO, "[SERVER EASYSTREAM] new server started on port: %d", _acceptor.local_endpoint().port());
+            blog(LOG_INFO, "### [SERVER EASYSTREAM] new server started on port: %d", _acceptor.local_endpoint().port());
         }
         catch (std::exception &e)
         {
-            blog(LOG_INFO, "[SERVER EASYSTREAM] Exception: %s", e.what());
+            blog(LOG_INFO, "### [SERVER EASYSTREAM] Exception: %s", e.what());
             return false;
         }
 

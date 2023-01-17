@@ -17,20 +17,20 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
 	if (!filterAudioSources("audio_input", source)) {
 		std::string tmp(obs_source_get_name(source));
 		_audioLevelers.insert(std::pair<std::string, std::shared_ptr<AutoAudioLeveler>>(tmp,  std::make_shared<AutoAudioLeveler>(source)));
-		blog(LOG_INFO, "Instancing Audio Leveler for %s", obs_source_get_name(source));
+		blog(LOG_INFO, "### Instancing Audio Leveler for %s", obs_source_get_name(source));
 	}
-    blog(LOG_INFO, "[SourceTracker::handleInputCreated]: %s, parent: %s", inputKind.c_str(), obs_source_get_name(source));
+    blog(LOG_INFO, "### [SourceTracker::handleInputCreated]: %s, parent: %s", inputKind.c_str(), obs_source_get_name(source));
 }
 
 void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
 {
 	std::string name(obs_source_get_name(source));
-    blog(LOG_INFO, "[SourceTracker::handleInputRemoved]: %s ", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputRemoved]: %s ", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldInputName, std::string inputName)
 {
-    blog(LOG_INFO, "[SourceTracker::handleInputNameChanged]:");
+    blog(LOG_INFO, "### [SourceTracker::handleInputNameChanged]:");
 	std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
 	OBSSourceAutoRelease scene = obs_get_source_by_name(j[rand() % j.size()]["sceneName"].get<std::string>().c_str());
 	obs_frontend_set_current_scene(scene);
@@ -49,7 +49,7 @@ void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata
 
 	std::string name(obs_source_get_name(source));
 	bool active = obs_source_active(source);
-    blog(LOG_INFO, "[SourceTracker::handleInputActiveStateChanged]: %s", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputActiveStateChanged]: %s", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputShowStateChanged(void *param, calldata_t *data)
@@ -65,7 +65,7 @@ void es::obs::SourceTracker::handleInputShowStateChanged(void *param, calldata_t
 
 	std::string name(obs_source_get_name(source));
 	bool showing = obs_source_showing(source);
-    blog(LOG_INFO, "[SourceTracker::handleInputShowStateChanged]: %s", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputShowStateChanged]: %s", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputMuteStateChanged(void *param, calldata_t *data)
@@ -81,7 +81,7 @@ void es::obs::SourceTracker::handleInputMuteStateChanged(void *param, calldata_t
 
 	std::string name = obs_source_get_name(source);
 	bool muted = obs_source_muted(source);
-    blog(LOG_INFO, "[SourceTracker::handleInputMuteStateChanged]: %s", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputMuteStateChanged]: %s", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputVolumeChanged(void *param, calldata_t *data)
@@ -103,7 +103,7 @@ void es::obs::SourceTracker::handleInputVolumeChanged(void *param, calldata_t *d
 		inputVolumeDb = -100;
 
 	std::string name(obs_source_get_name(source));
-    // blog(LOG_INFO, "[SourceTracker::handleInputVolumeChanged]: %s ", name.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleInputVolumeChanged]: %s ", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputAudioSyncOffsetChanged(void *param, calldata_t *data)
@@ -121,7 +121,7 @@ void es::obs::SourceTracker::handleInputAudioSyncOffsetChanged(void *param, call
 
 	std::string name(obs_source_get_name(source));
 	long offset = inputAudioSyncOffset / 1000000;
-    blog(LOG_INFO, "[SourceTracker::handleInputAudioSyncOffsetChanged]: %s ", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputAudioSyncOffsetChanged]: %s ", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputAudioTracksChanged(void *param, calldata_t *data)
@@ -136,7 +136,7 @@ void es::obs::SourceTracker::handleInputAudioTracksChanged(void *param, calldata
 		return;
 
 	std::string name(obs_source_get_name(source));
-    blog(LOG_INFO, "[SourceTracker::handleInputAudioTracksChanged]: %s ", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputAudioTracksChanged]: %s ", name.c_str());
 }
 
 void es::obs::SourceTracker::handleInputAudioMonitorTypeChanged(void *param, calldata_t *data)
@@ -151,5 +151,5 @@ void es::obs::SourceTracker::handleInputAudioMonitorTypeChanged(void *param, cal
 		return;
 
 	std::string name(obs_source_get_name(source));
-    blog(LOG_INFO, "[SourceTracker::handleInputAudioMonitorTypeChanged]: %s ", name.c_str());
+    blog(LOG_INFO, "### [SourceTracker::handleInputAudioMonitorTypeChanged]: %s ", name.c_str());
 }

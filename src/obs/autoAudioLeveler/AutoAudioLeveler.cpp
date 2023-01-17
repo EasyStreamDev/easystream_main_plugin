@@ -17,7 +17,7 @@ es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(sour
 
 	_levels = std::list(60, _desiredAudioLevel);
 
-	blog(LOG_INFO, "[es::Obs::autoAudioLeveler] Auto audio leveler created for input: %s", obs_source_get_name(_source));
+	blog(LOG_INFO, "### [es::Obs::autoAudioLeveler] Auto audio leveler created for input: %s", obs_source_get_name(_source));
 }
 
 es::obs::AutoAudioLeveler::~AutoAudioLeveler()
