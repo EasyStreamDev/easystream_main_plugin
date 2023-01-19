@@ -11,23 +11,26 @@
 #include "../../Common.hpp"
 #include "Response.hpp"
 
-namespace es {
-    class Action {
-        public:
-            Action(Response *response);
-            ~Action();
+namespace es
+{
+    class Action
+    {
+    public:
+        Action(Response *response);
+        ~Action();
 
-            virtual void Solve() = 0;
+        virtual void Solve() = 0;
 
-            void ActivateResponse() const;
+        void ActivateResponse() const;
 
-            bool IsTrue() const;
-            void Reset();
+        const bool IsTrue() const;
+        void Reset();
 
-        protected:
-            bool _IsTrue = false;
-            Response *_Response = nullptr;
-        private:
+    protected:
+        bool _isTrue = false;
+        Response *_response = nullptr;
+
+    private:
     };
 }
 

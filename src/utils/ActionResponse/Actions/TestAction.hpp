@@ -10,16 +10,18 @@
 
 #include "../Action.hpp"
 
-namespace es {
-    class TestAction : public Action {
-        public:
-            TestAction(Response *response);
-            ~TestAction();
+namespace es
+{
+    class TestAction : public Action
+    {
+    public:
+        TestAction(Response *response);
+        ~TestAction();
 
-            virtual void Solve() override;
+        virtual void Solve() override;
 
-        protected:
-        private:
+    protected:
+    private:
     };
 }
 

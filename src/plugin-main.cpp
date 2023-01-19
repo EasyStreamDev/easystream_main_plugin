@@ -57,9 +57,10 @@ void startSpeechRecognition(std::shared_ptr<void>)
     blog(LOG_INFO, "###  - Speech recognition has ended.");
 }
 
-void ActionResponseAlgo(std::shared_ptr<void>)
+void startAREASystem(std::shared_ptr<void>)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    thread_sleep_ms(2000);
+    blog(LOG_INFO, "###  - AREA system starting...");
 
     // INIT ACTIONRESPONSE MAIN
     es::ActionResponseMain ARmain;
@@ -71,16 +72,15 @@ void ActionResponseAlgo(std::shared_ptr<void>)
 
     blog(LOG_INFO, "### [ALGO] ARea Added");
 
-    // es::TestResponses *OnEteinsOBS = new es::TestResponses();
-    // es::TestAction *LEMOtETEindre = new es::TestAction(OnEteinsOBS);
-
-    // ARmain.AddAction(LEMOtETEindre);
-    //
-    while (1)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        ARmain.Update();
+        // es::TestResponses *OnEteinsOBS = new es::TestResponses();
+        // es::TestAction *LEMOtETEindre = new es::TestAction(OnEteinsOBS);
+        // ARmain.AddAction(LEMOtETEindre);
     }
+
+    blog(LOG_INFO, "###  - AREA system started...");
+    ARmain.run(); // Run AREA system loop
+    blog(LOG_INFO, "###  - AREA system has stopped.");
 }
 
 void startServer(std::shared_ptr<void>)
@@ -92,8 +92,8 @@ void startServer(std::shared_ptr<void>)
 
     blog(LOG_INFO, "###  - Starting server...");
     server->start();
-    blog(LOG_INFO, "###  - Server started. Now running !");
 
+    blog(LOG_INFO, "###  - Server started. Now running !");
     while (1)
     {
         server->update();
@@ -118,7 +118,9 @@ void sceneSwitcherIA(std::shared_ptr<void>)
                 {
                     switched = true;
                     if (obs_source_get_name(obs_frontend_get_current_scene()) == scene["sceneName"])
+                    {
                         continue;
+                    }
                     obs_frontend_set_current_scene(obs_scene_get_source(obs_get_scene_by_name(scene["sceneName"].get<std::string>().c_str())));
                 }
             }
@@ -129,14 +131,17 @@ void sceneSwitcherIA(std::shared_ptr<void>)
 bool obs_module_load(void)
 {
     blog(LOG_INFO, "###  - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
-
     blog(LOG_INFO, "### -----------------------------------------");
+
     tracker->init();
+
     threadPool->push(std::function(startServer), nullptr);
     threadPool->push(std::function(startSpeechRecognition), nullptr);
     threadPool->push(std::function(sceneSwitcherIA), nullptr);
-    threadPool->push(std::function(ActionResponseAlgo), nullptr);
+    threadPool->push(std::function(startAREASystem), nullptr);
+
     cpuUsageInfo = os_cpu_usage_info_start();
+
     blog(LOG_INFO, "### -----------------------------------------");
 
     return true;

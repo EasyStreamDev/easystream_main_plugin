@@ -11,19 +11,22 @@
 #include "../../Common.hpp"
 #include "Action.hpp"
 
-namespace es {
-    class ActionResponseMain {
-        public:
-            ActionResponseMain();
-            ~ActionResponseMain();
+namespace es
+{
+    class ActionResponseMain
+    {
+    public:
+        ActionResponseMain();
+        ~ActionResponseMain();
 
-            void Update();
+        void run();
 
-            void AddAction(Action *action);
+        void Update();
+        void AddAction(Action *action);
 
-        protected:
-        private:
-            std::vector<Action *> _actions;
+    private:
+        std::mutex _actions_mutex;
+        std::vector<Action *> _actions;
     };
 }
 

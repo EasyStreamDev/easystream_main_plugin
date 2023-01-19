@@ -40,6 +40,7 @@
 #include <thread>
 #include <fstream>
 #include <sstream>
+#include <mutex>
 
 // QT includes
 #include <QStringList>

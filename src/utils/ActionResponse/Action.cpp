@@ -9,25 +9,28 @@
 
 es::Action::Action(Response *response)
 {
-    _Response = response;
+    this->_response = response;
 }
 
 es::Action::~Action()
 {
+    delete this->_response;
 }
 
 void es::Action::ActivateResponse() const
 {
-    if (_Response)
-        _Response->Resolve();
+    if (this->_response)
+    {
+        this->_response->Resolve();
+    }
 }
 
-bool es::Action::IsTrue() const
+const bool es::Action::IsTrue() const
 {
-    return _IsTrue;
+    return this->_isTrue;
 }
 
 void es::Action::Reset()
 {
-    _IsTrue = false;
+    this->_isTrue = false;
 }

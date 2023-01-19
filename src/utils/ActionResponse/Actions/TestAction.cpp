@@ -18,5 +18,5 @@ es::TestAction::~TestAction()
 
 void es::TestAction::Solve()
 {
-    _IsTrue = true;
+    this->_isTrue = true;
 }
