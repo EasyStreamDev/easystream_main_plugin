@@ -45,6 +45,32 @@ void test(std::shared_ptr<void>)
     blog(LOG_INFO, "[Thread::ThreadPool]: Thread finish");
 }
 
+void ActionResponseAlgo(std::shared_ptr<void>)
+{
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    // INIT ACTIONRESPONSE MAIN
+    es::ActionResponseMain ARmain;
+
+    es::TestResponses *testResponses = new es::TestResponses();
+    es::TestAction *testAction = new es::TestAction(testResponses);
+
+    ARmain.AddAction(testAction);
+
+    blog(LOG_INFO, "### [ALGO] ARea Added");
+
+    // es::TestResponses *OnEteinsOBS = new es::TestResponses();
+    // es::TestAction *LEMOtETEindre = new es::TestAction(OnEteinsOBS);
+
+    // ARmain.AddAction(LEMOtETEindre);
+    //
+    while (1)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        ARmain.Update();
+    }
+}
+
 void startServer(std::shared_ptr<void>)
 {
     blog(LOG_INFO, "[EASYSTREAM SERVER TEST]");
@@ -92,6 +118,7 @@ bool obs_module_load(void)
     threadPool->push(std::function(startServer), nullptr);
     threadPool->push(std::function(test), nullptr);
     threadPool->push(std::function(sceneSwitcherIA), nullptr);
+    threadPool->push(std::function(ActionResponseAlgo), nullptr);
     cpuUsageInfo = os_cpu_usage_info_start();
     blog(LOG_INFO, "-----------------------------------------");
     return true;
