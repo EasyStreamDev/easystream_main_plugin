@@ -114,6 +114,8 @@ jobs:
         with:
           tag_name: ${{ steps.package.outputs.plugin-version }}
           files: ./package/*.exe
+          name: easyStream-plugin-windows.exe
+          path: "package/*.exe"
   win32Build:
     name: "win32Build"
     runs-on: [windows-latest]
@@ -184,6 +186,8 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.package.outputs.plugin-version }}
+          files: ./package/*.exe
           name: easyStream-plugin-windows.exe
           path: "package/*.exe"
     # macosBuild:
