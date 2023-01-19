@@ -28,7 +28,7 @@ namespace es::obs
 
     public:
         AutoAudioLeveler(obs_source_t *input);
-        ~AutoAudioLeveler();
+        ~AutoAudioLeveler() = default;
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
 

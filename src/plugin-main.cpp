@@ -18,7 +18,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 
 #include "plugin-main.hpp"
 #include "src/Server/include/AsioTcpServer.hpp"
-#include "obs/speechRecognition/SpeechRecognition.hpp"
+#include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
@@ -27,22 +27,34 @@ std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::Sour
 std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
 os_cpu_usage_info_t *cpuUsageInfo;
 
-void test(std::shared_ptr<void>)
+void thread_sleep_ms(uint ms)
 {
-    blog(LOG_INFO, "[Thread::ThreadPool]: Thread start");
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    // std::vector<json> j = es::utils::obs::listHelper::GetMicsList();
-    // bool hasAlreadyStarted = false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+void startSpeechRecognition(std::shared_ptr<void>)
+{
+    thread_sleep_ms(2000);
+    blog(LOG_INFO, "###  - Speech recognition starting...");
+
+    // es::TranscriptorManager tm;
     obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-    // while (!source)
-    // source = obs_get_source_by_name("Mic/Aux");
+    blog(LOG_INFO, "###  - Speech recognition started.");
+
     if (source)
     {
-        es::obs::SpeechRecognition r(source);
+        es::obs::SourceRecorder recorder(source);
+
+        // tm.start();
         while (1)
-            ;
+        {
+            // Feed files to the transcriptor manager using \
+            // the tm.transcriptFile function (callback parameter)
+            thread_sleep_ms(5);
+        }
     }
-    blog(LOG_INFO, "[Thread::ThreadPool]: Thread finish");
+    // tm.stop();
+    blog(LOG_INFO, "###  - Speech recognition has ended.");
 }
 
 void ActionResponseAlgo(std::shared_ptr<void>)
@@ -73,20 +85,25 @@ void ActionResponseAlgo(std::shared_ptr<void>)
 
 void startServer(std::shared_ptr<void>)
 {
-    blog(LOG_INFO, "[EASYSTREAM SERVER TEST]");
+    thread_sleep_ms(2000);
+    blog(LOG_INFO, "###  - Creating server...");
     std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>(std::string("0.0.0.0"), 47920, tracker->getAudioMap()));
+    blog(LOG_INFO, "###  - Server created.");
 
-    blog(LOG_INFO, "[EASYSTREAM STARTED TCP SERVER]");
+    blog(LOG_INFO, "###  - Starting server...");
     server->start();
+    blog(LOG_INFO, "###  - Server started. Now running !");
+
     while (1)
     {
         server->update();
-    };
+        thread_sleep_ms(5);
+    }
 }
 
 void sceneSwitcherIA(std::shared_ptr<void>)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    thread_sleep_ms(2000);
     while (1)
     {
         std::vector<std::string> windowsList = es::utils::window::GetWindowList();
@@ -111,16 +128,17 @@ void sceneSwitcherIA(std::shared_ptr<void>)
 
 bool obs_module_load(void)
 {
-    blog(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
+    blog(LOG_INFO, "###  - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
 
-    blog(LOG_INFO, "-----------------------------------------");
+    blog(LOG_INFO, "### -----------------------------------------");
     tracker->init();
     threadPool->push(std::function(startServer), nullptr);
-    threadPool->push(std::function(test), nullptr);
+    threadPool->push(std::function(startSpeechRecognition), nullptr);
     threadPool->push(std::function(sceneSwitcherIA), nullptr);
     threadPool->push(std::function(ActionResponseAlgo), nullptr);
     cpuUsageInfo = os_cpu_usage_info_start();
-    blog(LOG_INFO, "-----------------------------------------");
+    blog(LOG_INFO, "### -----------------------------------------");
+
     return true;
 }
 
@@ -130,7 +148,7 @@ void obs_module_unload()
     threadPool.reset();
     os_cpu_usage_info_destroy(cpuUsageInfo);
 
-    blog(LOG_INFO, "plugin unloaded");
+    blog(LOG_INFO, "### plugin unloaded");
 }
 
 os_cpu_usage_info_t *GetCpuUsageInfo()
