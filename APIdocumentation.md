@@ -21,14 +21,17 @@ Le client demande la liste de tous les micros ainsi que des données disponibles
 {
     "statusCode": "integer",
     "message": "string",
-    "length": "integer",
-    "mics": [
-        {
-            "name": "string",
-            "level": "integer",
-            "isActive": "boolean",
-        },
-    ]
+    "data": {
+        "length": "integer",
+        "mics": [
+            {
+                "name": "string",
+                "level": "integer",
+                "isActive": "boolean",
+            },
+            ...
+        ]
+    }
 }
 ```
 
@@ -52,29 +55,31 @@ Récupération des données de toutes les couples actions / réaction enregistr�
 {
     "statusCode": "integer",
     "message": "string",
-    "length": "integer",
-    "actReacts": [
-        {
-            "actReactId": "integer",
-            "isActive": "boolean",
-            "action": {
-                "actionId": "integer",
-                "type": "action_type",
-                "params": {
-                    "..." // Depends on action type
+    "data": {
+        "length": "integer",
+        "actReacts": [
+            {
+                "actReactId": "integer",
+                "isActive": "boolean",
+                "action": {
+                    "actionId": "integer",
+                    "type": "action_type",
+                    "params": {
+                        "..." // Depends on action type
+                    }
+                },
+                "reaction": {
+                    "name": "string",
+                    "reactionId": "integer",
+                    "type": "reaction_type",
+                    "params": {
+                        "..." // Depends on reaction type
+                    }
                 }
             },
-            "reaction": {
-                "name": "string",
-                "reactionId": "integer",
-                "type": "reaction_type",
-                "params": {
-                    "..." // Depends on reaction type
-                }
-            }
-        },
-        "..." // Next element
-    ]
+            "..." // Next element
+        ]
+    }
 }
 ```
 
