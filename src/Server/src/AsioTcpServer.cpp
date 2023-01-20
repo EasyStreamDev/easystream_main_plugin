@@ -19,7 +19,7 @@ namespace es::server
         _handler["setAutoAudioLeveler"] = &AsioTcpServer::setAutoAudioLeveler;
         _handler["setMicLevel"] = &AsioTcpServer::setMicLevel;
         _handler["setSubtitles"] = nullptr;
-        _handler["setActionReaction"] = nullptr;
+        _handler["setActionReaction"] = &AsioTcpServer::setNewARea;
 
         /* Removers */
         _handler["removeActReact"] = &AsioTcpServer::removeActReact;
@@ -162,7 +162,7 @@ namespace es::server
         {
             const auto &elem = pair.second;
             json area = {
-                {"name", elem.name},
+                // {"name", elem.name},
                 {"id", elem.id},
                 {"isActive", elem.is_active},
                 {"action", {
@@ -171,6 +171,7 @@ namespace es::server
                                {"params", elem.action_data.params},
                            }},
                 {"reaction", {
+                                 {"name", elem.reaction_data.name},
                                  {"reactionId", elem.reaction_data.id},
                                  {"type", elem.reaction_data.type},
                                  {"params", elem.reaction_data.params},
@@ -238,6 +239,66 @@ namespace es::server
         con->writeMessage(toSend.dump());
     }
 
+    void AsioTcpServer::setNewARea(const json &j, Shared<AsioTcpConnection> &con)
+    {
+        area::action_t action;
+        area::reaction_t reaction;
+        json result;
+
+        try
+        {
+            const json action_data = j["params"]["action"];
+            const json reaction_data = j["params"]["reaction"];
+
+            // Setting up action_t struct
+            action.type = ACTION_TYPE_MAP.at(action_data["type"]);
+            action.params = action_data["params"];
+
+            // Setting up reaction_t struct
+            reaction.name = reaction_data["name"];
+            reaction.type = REACTION_TYPE_MAP.at(reaction_data["type"]);
+            reaction.params = reaction_data["params"];
+        }
+        catch (const std::exception &e)
+        {
+            // Send error to client.
+        }
+
+        // Call add function of the ARea system
+        // result = area_system.addARea(action, reaction);
+
+        // Send result to client.
+    }
+
+    /*******************/
+    /* UPDATE REQUESTS */
+    /*******************/
+
+    void AsioTcpServer::updateAction(const json &j, Shared<AsioTcpConnection> &con)
+    {
+        size_t area_id;            // Area ID to modify
+        area::action_t new_action; // New action data
+        json result;               // Result of the updating (Success, Error, Message)
+
+        try
+        {
+            const json data = j["params"];
+
+            // Getting ARea ID
+            area_id = data["actionId"];
+
+            // Getting new_action type
+            new_action.type = ACTION_TYPE_MAP.at(data["type"]);
+            // Getting new_action parameters
+            new_action.params = data["params"];
+        }
+        catch (const std::exception &e)
+        {
+            // Invalid request data
+        }
+        // result = area_system.updateActionWithId(area_id, new_action)
+    }
+
     /*******************/
     /* REMOVE REQUESTS */
     /*******************/
@@ -261,7 +322,7 @@ namespace es::server
         toSend["statusCode"] = 200;
         toSend["message"] = "Act/React couple succesfully deleted.";
         toSend["data"] = {
-            {"name", to_rm.name},
+            {"reaction_name", to_rm.reaction_data.name},
             {"actReactId", to_rm.id},
         };
         this->areas.erase(to_rm.id);

@@ -31,6 +31,22 @@ namespace es::server
 {
     class AsioTcpServer : public boost::enable_shared_from_this<AsioTcpServer>
     {
+        /*********************/
+        /* USEFULL CONSTANTS */
+        /*********************/
+    public:
+        // Mapping of std::string to enum on the different action types
+        const std::unordered_map<std::string, es::area::ActionType> ACTION_TYPE_MAP = {
+            {"WORD_DETECT", es::area::ActionType::WORD_DETECT},
+            {"APP_LAUNCH", es::area::ActionType::APP_LAUNCH},
+            {"KEY_PRESSED", es::area::ActionType::KEY_PRESSED},
+        };
+        // Mapping of std::string to enum on the different reaction types
+        const std::unordered_map<std::string, es::area::ReactionType> REACTION_TYPE_MAP = {
+            {"SCENE_SWITCH", es::area::ReactionType::SCENE_SWITCH},
+            {"TOGGLE_AUDIO_COMPRESSOR", es::area::ReactionType::TOGGLE_AUDIO_COMPRESSOR},
+        };
+
         /***********/
         /* METHODS */
         /***********/
@@ -57,6 +73,10 @@ namespace es::server
         // --- SET requests
         void setAutoAudioLeveler(const json &, Shared<AsioTcpConnection> &);
         void setMicLevel(const json &, Shared<AsioTcpConnection> &);
+        void setNewARea(const json &, Shared<AsioTcpConnection> &);
+
+        // --- UPDATE requests
+        void updateAction(const json &, Shared<AsioTcpConnection> &);
 
         // --- REMOVE requests
         void removeActReact(const json &, Shared<AsioTcpConnection> &);

@@ -78,26 +78,27 @@ namespace es
         enum class ReactionType
         {
             SCENE_SWITCH,
-            TOGGLE_AUDIO,
+            TOGGLE_AUDIO_COMPRESSOR,
         };
 
         typedef struct action_s
         {
-            ActionType type;
             size_t id;
+            ActionType type;
             nlohmann::json params;
         } action_t;
 
         typedef struct reaction_s
         {
-            ReactionType type;
             size_t id;
+            std::string name;
+            ReactionType type;
             nlohmann::json params;
         } reaction_t;
 
         typedef struct area_s
         {
-            std::string name;
+            // std::string name;
             size_t id;
             bool is_active;
             action_t action_data;
