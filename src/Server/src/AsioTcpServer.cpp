@@ -25,8 +25,8 @@ namespace es::server
         _handler["removeActReact"] = &AsioTcpServer::removeActReact;
 
         /* Updaters */
-        _handler["updateAction"] = nullptr;
-        _handler["updateReaction"] = nullptr;
+        _handler["updateAction"] = &AsioTcpServer::updateAction;
+        _handler["updateReaction"] = &AsioTcpServer::updateReaction;
     }
 
     /***********/
@@ -113,7 +113,27 @@ namespace es::server
             {
                 if (_handler.find(req["command"]) != _handler.end())
                 {
-                    (this->*_handler[req["command"]])(req, con);
+                    try
+                    {
+                        // Call method corresponding to the sent command.
+                        (this->*_handler[req["command"]])(req, con);
+                    }
+                    catch (const json::type_error &type_error)
+                    {
+                        // Method .at of json was walled on a non-object
+                        if (type_error.id == 304)
+                        {
+                            this->badRequest(con, "wrongly formulated.");
+                        }
+                    }
+                    catch (const json::out_of_range &oor_error)
+                    {
+                        // Invalid key was given to the .at method of json
+                        if (oor_error.id == 403)
+                        {
+                            this->badRequest(con, "incomplete - missing value");
+                        }
+                    }
                 }
                 else
                 {
@@ -158,11 +178,12 @@ namespace es::server
         json toSend;
         std::vector<json> areas_vec;
 
+        // @todo : retrieve areas from area system and iterate on it.
+
         for (const auto &pair : this->areas)
         {
             const auto &elem = pair.second;
             json area = {
-                // {"name", elem.name},
                 {"id", elem.id},
                 {"isActive", elem.is_active},
                 {"action", {
@@ -195,47 +216,59 @@ namespace es::server
 
     void AsioTcpServer::setAutoAudioLeveler(const json &j, Shared<AsioTcpConnection> &con)
     {
-        json toSend;
-        json args_ = j["args"];
-        bool enable_ = args_["enable"];
-        auto source_ = this->_audioLeveler.find(args_["source"]);
+        const json &params = j.at("params");
+        const bool &enable = params.at("enable");
 
-        if (source_ == this->_audioLeveler.end())
-        {
-            toSend["statusCode"] = 404;
-            toSend["message"] = std::string("Not found");
+        { // @todo : toggle AALeveler for only one audio input
+          // auto source = this->_audioLeveler.find(params["source"]);
+          // if (source == this->_audioLeveler.end())
+          // {
+          //     toSend["statusCode"] = 404;
+          //     toSend["message"] = std::string("Not found");
+          // }
+          // else
         }
-        else if (enable_)
+
+        if (enable)
         {
-            // enable
+            // @todo : globally enable AAL
         }
         else
         {
-            // disable
+            // @todo : globally disable AAL
         }
+
+        // Send success response
+        const json toSend = {
+            {"statusCode", 200},
+            {"message", std::string("OK")},
+        };
         con->writeMessage(toSend.dump());
     }
 
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
     {
-        json toSend;
-        float value = j["args"]["value"];
-        auto tmp = _audioLeveler.find(j["args"]["micId"]);
+        const std::string &mic_name = j.at("params").at("name");
 
-        if (tmp == _audioLeveler.end())
+        auto mic_iterator = _audioLeveler.find(mic_name);
+        // Check if microphone exists
+        if (mic_iterator == _audioLeveler.end())
         {
-            toSend["statusCode"] = 404;
-            toSend["message"] = std::string("Not found");
+            this->notFound(con, "specified microphone does not exist.");
+            return;
         }
-        else
-        {
-            float level = ((value * 60) / 100) - 60;
-            // level -= 60;
-            // std::cout << "level is: " << level << std::endl;
-            tmp->second->setDesiredLevel(level);
-            toSend["statusCode"] = 200;
-            toSend["message"] = std::string("OK");
-        }
+
+        const float &value = j.at("params").at("level");
+        const float desired_level = ((value * 60) / 100) - 60; // desired_level -= 60; ??
+
+        // Update microphone level
+        mic_iterator->second->setDesiredLevel(desired_level);
+
+        // Send success response
+        json toSend = {
+            {"statusCode", 200},
+            {"message", std::string("OK")},
+        };
         con->writeMessage(toSend.dump());
     }
 
@@ -243,31 +276,31 @@ namespace es::server
     {
         area::action_t action;
         area::reaction_t reaction;
-        json result;
 
-        try
-        {
-            const json action_data = j["params"]["action"];
-            const json reaction_data = j["params"]["reaction"];
+        const json action_data = j.at("params").at("action");
+        const json reaction_data = j.at("params").at("reaction");
 
-            // Setting up action_t struct
-            action.type = ACTION_TYPE_MAP.at(action_data["type"]);
-            action.params = action_data["params"];
+        // Setting up action_t struct
+        action.type = ACTION_TYPE_MAP.at(action_data.at("type"));
+        action.params = action_data.at("params");
 
-            // Setting up reaction_t struct
-            reaction.name = reaction_data["name"];
-            reaction.type = REACTION_TYPE_MAP.at(reaction_data["type"]);
-            reaction.params = reaction_data["params"];
-        }
-        catch (const std::exception &e)
-        {
-            // Send error to client.
-        }
+        // Setting up reaction_t struct
+        reaction.name = reaction_data.at("name");
+        reaction.type = REACTION_TYPE_MAP.at(reaction_data.at("type"));
+        reaction.params = reaction_data.at("params");
 
         // Call add function of the ARea system
-        // result = area_system.addARea(action, reaction);
+        // const json &result = area_system.addARea(action, reaction);
 
-        // Send result to client.
+        // Send response to client.
+        json toSend = {
+            {"statusCode", 200},
+            {"message", "Act/React couple succesfully created."},
+            // {"data", {
+            //              {"actReactId", result["id"]},
+            //          }},
+        };
+        con->writeMessage(toSend.dump());
     }
 
     /*******************/
@@ -276,27 +309,50 @@ namespace es::server
 
     void AsioTcpServer::updateAction(const json &j, Shared<AsioTcpConnection> &con)
     {
-        size_t area_id;            // Area ID to modify
+        const json &data = j.at("params");
         area::action_t new_action; // New action data
-        json result;               // Result of the updating (Success, Error, Message)
 
-        try
-        {
-            const json data = j["params"];
+        // Getting ID of ARea to update
+        const size_t area_id = data.at("actionId");
 
-            // Getting ARea ID
-            area_id = data["actionId"];
+        // Getting new_action type
+        new_action.type = ACTION_TYPE_MAP.at(data.at("type"));
+        // Getting new_action parameters
+        new_action.params = data.at("params");
 
-            // Getting new_action type
-            new_action.type = ACTION_TYPE_MAP.at(data["type"]);
-            // Getting new_action parameters
-            new_action.params = data["params"];
-        }
-        catch (const std::exception &e)
-        {
-            // Invalid request data
-        }
-        // result = area_system.updateActionWithId(area_id, new_action)
+        // @todo : call func and get result of the updating (Success, Error, Message)
+        // const json &result = area_system.updateActionWithId(area_id, new_action)
+
+        // Send success response
+        const json toSend = {
+            {"statusCode", 200},
+            {"message", std::string("OK")},
+        };
+        con->writeMessage(toSend.dump());
+    }
+
+    void AsioTcpServer::updateReaction(const json &j, Shared<AsioTcpConnection> &con)
+    {
+        const json &data = j.at("params");
+        area::reaction_t new_reaction; // New action data
+
+        // Getting ID of ARea to update
+        const size_t &area_id = data.at("actionId");
+
+        // Getting new_reaction type
+        new_reaction.type = REACTION_TYPE_MAP.at(data.at("type"));
+        // Getting new_reaction parameters
+        new_reaction.params = data.at("params");
+
+        // @todo : call func and get result of the updating (Success, Error, Message)
+        // const json &result = area_system.updateReactionWithId(area_id, new_action)
+
+        // Send success response
+        const json toSend = {
+            {"statusCode", 200},
+            {"message", std::string("OK")},
+        };
+        con->writeMessage(toSend.dump());
     }
 
     /*******************/
@@ -306,26 +362,31 @@ namespace es::server
     void AsioTcpServer::removeActReact(const json &j, Shared<AsioTcpConnection> &con)
     {
         json toSend;
-        json params = j["params"];
-        size_t id_to_rm = params["actReactId"];
+        const json params = j.at("params");
+        const size_t id_to_rm = params.at("actReactId");
 
         if (this->areas.find(id_to_rm) == this->areas.end())
         {
-            toSend["statusCode"] = 404;
-            toSend["message"] = std::string("Provided ID did not match any created action/reaction couple.");
-            con->writeMessage(toSend.dump());
+            this->notFound(
+                con,
+                "Provided ID did not match any existing action/reaction couple.");
             return;
         }
 
-        area::area_t &to_rm = this->areas[id_to_rm];
+        // @todo : Use function to remove ARea
+        const area::area_t &to_rm = this->areas[id_to_rm];
+        const std::string name_of_removed = to_rm.reaction_data.name;
 
+        // Actually erase area
+        this->areas.erase(to_rm.id);
+
+        // Send success message
         toSend["statusCode"] = 200;
         toSend["message"] = "Act/React couple succesfully deleted.";
         toSend["data"] = {
-            {"reaction_name", to_rm.reaction_data.name},
-            {"actReactId", to_rm.id},
+            {"actReactId", id_to_rm},
+            {"reaction_name", name_of_removed},
         };
-        this->areas.erase(to_rm.id);
 
         con->writeMessage(toSend.dump());
     }
@@ -339,7 +400,32 @@ namespace es::server
         json toSend;
 
         toSend["statusCode"] = 404;
-        toSend["message"] = "The requested action does not exist";
+        toSend["message"] = "The requested action does not exist.";
+        con->writeMessage(toSend.dump());
+    }
+
+    void AsioTcpServer::badRequest(Shared<AsioTcpConnection> &con, const std::string &msg)
+    {
+        json toSend;
+
+        toSend["statusCode"] = 400;
+        toSend["message"] = std::string("Bad request: ") + msg;
+        con->writeMessage(toSend.dump());
+    }
+
+    void AsioTcpServer::notFound(Shared<AsioTcpConnection> &con, const std::string &msg)
+    {
+        json toSend;
+
+        toSend["statusCode"] = 404;
+        if (!msg.empty())
+        {
+            toSend["message"] = std::string("Not found: ") + msg;
+        }
+        else
+        {
+            toSend["message"] = std::string("Not found.");
+        }
         con->writeMessage(toSend.dump());
     }
 }

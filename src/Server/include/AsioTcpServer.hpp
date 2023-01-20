@@ -77,12 +77,15 @@ namespace es::server
 
         // --- UPDATE requests
         void updateAction(const json &, Shared<AsioTcpConnection> &);
+        void updateReaction(const json &j, Shared<AsioTcpConnection> &con);
 
         // --- REMOVE requests
         void removeActReact(const json &, Shared<AsioTcpConnection> &);
 
         // --- BAD requests
         void badCommand(Shared<AsioTcpConnection> &);
+        void badRequest(Shared<AsioTcpConnection> &, const std::string & = "");
+        void notFound(Shared<AsioTcpConnection> &, const std::string & = "");
         void generateMobileInformation(){};
 
         /********************/
