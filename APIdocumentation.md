@@ -109,23 +109,18 @@ Activation / désactivation la gestion de volume automatique sur une entrée aud
 <br>  
 
 ---
-### **Setting microphones input level**
+### **Setting microphone input level**
 * **Description**  
-Mise à jour de la valeur d'entrée de microphones.  
+Mise à jour de la valeur d'entrée d'un microphone.  
 
 * **Request**  
 ```json
 {
     "command": "setMicLevel",
     "params": {
-        "mics": [
-            {
-                "name": "string",
-                "level": "integer",
-                "setActive": "boolean",
-            },
-            "..."
-        ]
+        "name": "string",
+        "level": "integer",
+        "setActive": "boolean",
     }
 },
 ```
