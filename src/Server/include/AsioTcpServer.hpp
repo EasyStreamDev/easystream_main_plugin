@@ -82,10 +82,14 @@ namespace es::server
         // --- REMOVE requests
         void removeActReact(const json &, Shared<AsioTcpConnection> &);
 
-        // --- BAD requests
+        // --- RESPONSES
+
+        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = nullptr);
         void badCommand(Shared<AsioTcpConnection> &);
         void badRequest(Shared<AsioTcpConnection> &, const std::string & = "");
         void notFound(Shared<AsioTcpConnection> &, const std::string & = "");
+
+        // --- MISCELLANEOUS
         void generateMobileInformation(){};
 
         /********************/

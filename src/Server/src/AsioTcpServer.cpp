@@ -165,17 +165,15 @@ namespace es::server
             m["isActive"] = _audioLeveler.find(m["micName"])->second->isActive();
         }
 
-        toSend["statusCode"] = 200;
-        toSend["message"] = std::string("OK");
-        toSend["length"] = mics.size();
-        toSend["mics"] = mics;
-
-        con->writeMessage(toSend.dump());
+        const json response_data = {
+            {"length", mics.size()},
+            {"mics", mics},
+        };
+        this->sendSuccess(con, "OK", response_data);
     }
 
     void AsioTcpServer::getActReactCouples(const json &j, Shared<AsioTcpConnection> &con)
     {
-        json toSend;
         std::vector<json> areas_vec;
 
         // @todo : retrieve areas from area system and iterate on it.
@@ -202,12 +200,11 @@ namespace es::server
             areas_vec.push_back(std::move(area));
         }
 
-        toSend["statusCode"] = 200;
-        toSend["message"] = std::string("OK");
-        toSend["length"] = this->areas.size();
-        toSend["actReacts"] = areas_vec;
-
-        con->writeMessage(toSend.dump());
+        const json response_data = {
+            {"length", this->areas.size()},
+            {"actReacts", areas_vec},
+        };
+        this->sendSuccess(con, "OK", response_data);
     }
 
     /****************/
@@ -238,12 +235,7 @@ namespace es::server
             // @todo : globally disable AAL
         }
 
-        // Send success response
-        const json toSend = {
-            {"statusCode", 200},
-            {"message", std::string("OK")},
-        };
-        con->writeMessage(toSend.dump());
+        this->sendSuccess(con);
     }
 
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
@@ -265,11 +257,7 @@ namespace es::server
         mic_iterator->second->setDesiredLevel(desired_level);
 
         // Send success response
-        json toSend = {
-            {"statusCode", 200},
-            {"message", std::string("OK")},
-        };
-        con->writeMessage(toSend.dump());
+        this->sendSuccess(con);
     }
 
     void AsioTcpServer::setNewARea(const json &j, Shared<AsioTcpConnection> &con)
@@ -293,14 +281,12 @@ namespace es::server
         // const json &result = area_system.addARea(action, reaction);
 
         // Send response to client.
-        json toSend = {
-            {"statusCode", 200},
-            {"message", "Act/React couple succesfully created."},
-            // {"data", {
-            //              {"actReactId", result["id"]},
-            //          }},
-        };
-        con->writeMessage(toSend.dump());
+        // json response_data = {
+        //     {"data", {
+        //                  {"actReactId", result["id"]},
+        //              }},
+        // };
+        this->sendSuccess(con, "Act/React couple succesfully created.");
     }
 
     /*******************/
@@ -324,11 +310,7 @@ namespace es::server
         // const json &result = area_system.updateActionWithId(area_id, new_action)
 
         // Send success response
-        const json toSend = {
-            {"statusCode", 200},
-            {"message", std::string("OK")},
-        };
-        con->writeMessage(toSend.dump());
+        this->sendSuccess(con);
     }
 
     void AsioTcpServer::updateReaction(const json &j, Shared<AsioTcpConnection> &con)
@@ -348,11 +330,7 @@ namespace es::server
         // const json &result = area_system.updateReactionWithId(area_id, new_action)
 
         // Send success response
-        const json toSend = {
-            {"statusCode", 200},
-            {"message", std::string("OK")},
-        };
-        con->writeMessage(toSend.dump());
+        this->sendSuccess(con);
     }
 
     /*******************/
@@ -380,20 +358,34 @@ namespace es::server
         // Actually erase area
         this->areas.erase(to_rm.id);
 
-        // Send success message
-        toSend["statusCode"] = 200;
-        toSend["message"] = "Act/React couple succesfully deleted.";
-        toSend["data"] = {
+        const json response_data = {
             {"actReactId", id_to_rm},
             {"reaction_name", name_of_removed},
         };
+        // Send success message
+        this->sendSuccess(
+            con,
+            "Act/React couple succesfully deleted.",
+            response_data);
+    }
+
+    /*************/
+    /* RESPONSES */
+    /*************/
+
+    void AsioTcpServer::sendSuccess(Shared<AsioTcpConnection> &con, const std::string &msg, const json &data)
+    {
+        json toSend;
+
+        toSend["statusCode"] = 200;
+        toSend["message"] = msg.empty() ? std::string("OK") : msg;
+        if (data)
+        {
+            toSend["data"] = data;
+        }
 
         con->writeMessage(toSend.dump());
     }
-
-    /****************/
-    /* BAD REQUESTS */
-    /****************/
 
     void AsioTcpServer::badCommand(Shared<AsioTcpConnection> &con)
     {
