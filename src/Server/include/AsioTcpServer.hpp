@@ -51,7 +51,11 @@ namespace es::server
         /* METHODS */
         /***********/
     public:
-        AsioTcpServer(const std::string &host, int port, const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &);
+        AsioTcpServer(
+            const std::string &host,
+            int port,
+            const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &,
+            es::ActionReactionMain *);
         ~AsioTcpServer() = default;
 
         // --- Network
@@ -108,6 +112,7 @@ namespace es::server
         const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_audioLeveler;
 
         // TMP - @todo : use a shared map with mutex
+        es::ActionReactionMain *_ARmain_ptr = nullptr;
         std::unordered_map<size_t, area::area_t> areas;
     };
 }

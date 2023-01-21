@@ -7,8 +7,8 @@
 
 #include "TestAction.hpp"
 
-es::TestAction::TestAction(Response *response)
-    : Action(response)
+es::TestAction::TestAction(Reaction *reaction, const size_t &area_id)
+    : Action(reaction, area_id)
 {
 }
 

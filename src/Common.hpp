@@ -66,8 +66,12 @@
 
 namespace es
 {
+    using json = nlohmann::json;
+
     namespace area
     {
+        static size_t ID_COUNTER = 1; // 0 will be used as non-existing area ID
+
         enum class ActionType
         {
             WORD_DETECT,
@@ -85,7 +89,7 @@ namespace es
         {
             size_t id;
             ActionType type;
-            nlohmann::json params;
+            json params;
         } action_t;
 
         typedef struct reaction_s
@@ -93,7 +97,7 @@ namespace es
             size_t id;
             std::string name;
             ReactionType type;
-            nlohmann::json params;
+            json params;
         } reaction_t;
 
         typedef struct area_s

@@ -9,7 +9,15 @@
 
 namespace es::server
 {
-    AsioTcpServer::AsioTcpServer(const std::string &host, int port, const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps) : _audioLeveler(_mps), /*_endPoint(boost::asio::ip::make_address(host), port),*/ _acceptor(_ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+    AsioTcpServer::AsioTcpServer(
+        const std::string &host,
+        int port,
+        const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps,
+        es::ActionReactionMain *ARmain_ptr)
+        : _audioLeveler(_mps),
+          _ARmain_ptr(ARmain_ptr),
+          /*_endPoint(boost::asio::ip::make_address(host), port),*/
+          _acceptor(_ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
     {
         /* Getters */
         _handler["getAllMics"] = &AsioTcpServer::getAllMics;
@@ -264,29 +272,36 @@ namespace es::server
     {
         area::action_t action;
         area::reaction_t reaction;
-
         const json action_data = j.at("params").at("action");
         const json reaction_data = j.at("params").at("reaction");
 
         // Setting up action_t struct
         action.type = ACTION_TYPE_MAP.at(action_data.at("type"));
         action.params = action_data.at("params");
-
         // Setting up reaction_t struct
         reaction.name = reaction_data.at("name");
         reaction.type = REACTION_TYPE_MAP.at(reaction_data.at("type"));
         reaction.params = reaction_data.at("params");
 
-        // Call add function of the ARea system
-        // const json &result = area_system.addARea(action, reaction);
+        // Create AREA within AREA system.
+        const json result = this->_ARmain_ptr->CreateArea(action, reaction);
 
-        // Send response to client.
-        // json response_data = {
-        //     {"data", {
-        //                  {"actReactId", result["id"]},
-        //              }},
-        // };
-        this->sendSuccess(con, "Act/React couple succesfully created.");
+        // Error on creation of AREA
+        if (result.at("return_value") != 0)
+        {
+            this->badRequest(con, result.at("message"));
+            return;
+        }
+        // AREA successfully created
+        const json response_data = {
+            {"data", {
+                         {"actReactId", result.at("area_id")},
+                     }},
+        };
+        this->sendSuccess(
+            con,
+            "Act/React couple succesfully created.",
+            response_data);
     }
 
     /*******************/
@@ -306,31 +321,55 @@ namespace es::server
         // Getting new_action parameters
         new_action.params = data.at("params");
 
-        // @todo : call func and get result of the updating (Success, Error, Message)
-        // const json &result = area_system.updateActionWithId(area_id, new_action)
+        // Call to updating function
+        const json result = _ARmain_ptr->UpdateAction(area_id, new_action);
+        const int &ret_val = result.at("return_value");
+        const std::string msg = result.at("message");
 
-        // Send success response
-        this->sendSuccess(con);
+        if (ret_val != 0)
+        {
+            this->notFound(con, msg);
+            return;
+        }
+
+        this->sendSuccess(
+            con,
+            msg,
+            json({
+                {"actReactId", area_id},
+            }));
     }
 
     void AsioTcpServer::updateReaction(const json &j, Shared<AsioTcpConnection> &con)
     {
         const json &data = j.at("params");
-        area::reaction_t new_reaction; // New action data
-
         // Getting ID of ARea to update
         const size_t &area_id = data.at("actionId");
+        // New action data
+        area::reaction_t new_reaction;
 
         // Getting new_reaction type
         new_reaction.type = REACTION_TYPE_MAP.at(data.at("type"));
         // Getting new_reaction parameters
         new_reaction.params = data.at("params");
 
-        // @todo : call func and get result of the updating (Success, Error, Message)
-        // const json &result = area_system.updateReactionWithId(area_id, new_action)
+        // Call to updating function
+        const json result = _ARmain_ptr->UpdateReaction(area_id, new_reaction);
+        const int &ret_val = result.at("return_value");
+        const std::string msg = result.at("message");
 
-        // Send success response
-        this->sendSuccess(con);
+        if (ret_val != 0)
+        {
+            this->notFound(con, msg);
+            return;
+        }
+
+        this->sendSuccess(
+            con,
+            msg,
+            json({
+                {"actReactId", area_id},
+            }));
     }
 
     /*******************/
@@ -339,34 +378,27 @@ namespace es::server
 
     void AsioTcpServer::removeActReact(const json &j, Shared<AsioTcpConnection> &con)
     {
-        json toSend;
         const json params = j.at("params");
         const size_t id_to_rm = params.at("actReactId");
 
-        if (this->areas.find(id_to_rm) == this->areas.end())
+        // Call delete AREA function
+        const json result = this->_ARmain_ptr->DeleteArea(id_to_rm);
+        const int &ret_val = result.at("return_value");
+        const std::string msg = result.at("message");
+
+        // Error on AREA deletion
+        if (ret_val != 0)
         {
-            this->notFound(
-                con,
-                "Provided ID did not match any existing action/reaction couple.");
-            return;
+            this->notFound(con, msg);
         }
 
-        // @todo : Use function to remove ARea
-        const area::area_t &to_rm = this->areas[id_to_rm];
-        const std::string name_of_removed = to_rm.reaction_data.name;
-
-        // Actually erase area
-        this->areas.erase(to_rm.id);
-
-        const json response_data = {
-            {"actReactId", id_to_rm},
-            {"reaction_name", name_of_removed},
-        };
         // Send success message
         this->sendSuccess(
             con,
-            "Act/React couple succesfully deleted.",
-            response_data);
+            msg,
+            json({
+                {"actReactId", id_to_rm},
+            }));
     }
 
     /*************/

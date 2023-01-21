@@ -15,7 +15,7 @@ namespace es
     class TestAction : public Action
     {
     public:
-        TestAction(Response *response);
+        TestAction(Reaction *reaction, const size_t &area_id);
         ~TestAction();
 
         virtual void Solve() override;

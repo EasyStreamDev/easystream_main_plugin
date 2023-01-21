@@ -7,21 +7,22 @@
 
 #include "Action.hpp"
 
-es::Action::Action(Response *response)
+es::Action::Action(Reaction *reaction, const size_t &area_id)
+    : _id(area_id)
 {
-    this->_response = response;
+    this->_reaction = reaction;
 }
 
 es::Action::~Action()
 {
-    delete this->_response;
+    delete this->_reaction;
 }
 
 void es::Action::ActivateResponse() const
 {
-    if (this->_response)
+    if (this->_reaction)
     {
-        this->_response->Resolve();
+        this->_reaction->Resolve();
     }
 }
 

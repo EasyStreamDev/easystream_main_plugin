@@ -25,6 +25,10 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
 std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::SourceTracker>();
 std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
+
+const int SERV_PORT = 47920;
+es::ActionReactionMain g_ARmain;
+
 os_cpu_usage_info_t *cpuUsageInfo;
 
 void thread_sleep_ms(uint ms)
@@ -60,17 +64,16 @@ void startSpeechRecognition(std::shared_ptr<void>)
 void startAREASystem(std::shared_ptr<void>)
 {
     thread_sleep_ms(2000);
+
     blog(LOG_INFO, "###  - AREA system starting...");
-
     // INIT ACTIONRESPONSE MAIN
-    es::ActionResponseMain ARmain;
 
-    es::TestResponses *testResponses = new es::TestResponses();
-    es::TestAction *testAction = new es::TestAction(testResponses);
+    // es::TestResponses *testResponses = new es::TestResponses();
+    // es::TestAction *testAction = new es::TestAction(testResponses);
 
-    ARmain.AddAction(testAction);
+    // g_ARmain.AddAction(testAction);
 
-    blog(LOG_INFO, "### [ALGO] ARea Added");
+    // blog(LOG_INFO, "### [ALGO] ARea Added");
 
     {
         // es::TestResponses *OnEteinsOBS = new es::TestResponses();
@@ -78,16 +81,22 @@ void startAREASystem(std::shared_ptr<void>)
         // ARmain.AddAction(LEMOtETEindre);
     }
 
-    blog(LOG_INFO, "###  - AREA system started...");
-    ARmain.run(); // Run AREA system loop
+    blog(LOG_INFO, "###  - AREA system started.");
+    g_ARmain.run(); // Run AREA system loop
     blog(LOG_INFO, "###  - AREA system has stopped.");
 }
 
 void startServer(std::shared_ptr<void>)
 {
     thread_sleep_ms(2000);
+
     blog(LOG_INFO, "###  - Creating server...");
-    std::shared_ptr<es::server::AsioTcpServer> server(std::make_shared<es::server::AsioTcpServer>(std::string("0.0.0.0"), 47920, tracker->getAudioMap()));
+    std::shared_ptr<es::server::AsioTcpServer> server(
+        std::make_shared<es::server::AsioTcpServer>(
+            std::string("0.0.0.0"),
+            SERV_PORT,
+            tracker->getAudioMap(),
+            &g_ARmain));
     blog(LOG_INFO, "###  - Server created.");
 
     blog(LOG_INFO, "###  - Starting server...");
@@ -135,10 +144,10 @@ bool obs_module_load(void)
 
     tracker->init();
 
+    threadPool->push(std::function(startAREASystem), nullptr);
     threadPool->push(std::function(startServer), nullptr);
     threadPool->push(std::function(startSpeechRecognition), nullptr);
     threadPool->push(std::function(sceneSwitcherIA), nullptr);
-    threadPool->push(std::function(startAREASystem), nullptr);
 
     cpuUsageInfo = os_cpu_usage_info_start();
 

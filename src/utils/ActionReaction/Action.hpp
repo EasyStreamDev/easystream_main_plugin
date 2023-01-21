@@ -9,14 +9,14 @@
 #define ACTION_HPP_
 
 #include "../../Common.hpp"
-#include "Response.hpp"
+#include "Reaction.hpp"
 
 namespace es
 {
     class Action
     {
     public:
-        Action(Response *response);
+        Action(Reaction *reaction, const size_t &area_id);
         ~Action();
 
         virtual void Solve() = 0;
@@ -26,11 +26,12 @@ namespace es
         const bool IsTrue() const;
         void Reset();
 
+        inline const size_t &GetId() const { return this->_id; }
+
     protected:
         bool _isTrue = false;
-        Response *_response = nullptr;
-
-    private:
+        Reaction *_reaction = nullptr;
+        const size_t _id;
     };
 }
 
