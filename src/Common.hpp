@@ -40,6 +40,7 @@
 #include <thread>
 #include <fstream>
 #include <sstream>
+#include <mutex>
 
 // QT includes
 #include <QStringList>
@@ -65,8 +66,12 @@
 
 namespace es
 {
+    using json = nlohmann::json;
+
     namespace area
     {
+        static size_t ID_COUNTER = 1; // 0 will be used as non-existing area ID
+
         enum class ActionType
         {
             WORD_DETECT,
@@ -74,29 +79,64 @@ namespace es
             KEY_PRESSED,
         };
 
+        static const std::string ActionTypeToString(const ActionType &t_)
+        {
+            switch (t_)
+            {
+            case ActionType::WORD_DETECT:
+                return "WORD_DETECT";
+            case ActionType::APP_LAUNCH:
+                return "APP_LAUNCH";
+            case ActionType::KEY_PRESSED:
+                return "KEY_PRESSED";
+            default:
+                break;
+            }
+            return "UNKNOWN_TYPE";
+        }
+
         enum class ReactionType
         {
             SCENE_SWITCH,
-            TOGGLE_AUDIO,
+            TOGGLE_AUDIO_COMPRESSOR,
         };
+
+        static const std::string ReactionTypeToString(const ReactionType &t_)
+        {
+            switch (t_)
+            {
+            case ReactionType::SCENE_SWITCH:
+                return "SCENE_SWITCH";
+            case ReactionType::TOGGLE_AUDIO_COMPRESSOR:
+                return "TOGGLE_AUDIO_COMPRESSOR";
+            default:
+                break;
+            }
+            return "UNKNOWN_TYPE";
+        }
+
+        /**************/
+        /* STRUCTURES */
+        /**************/
 
         typedef struct action_s
         {
-            ActionType type;
             size_t id;
-            nlohmann::json params;
+            ActionType type;
+            json params;
         } action_t;
 
         typedef struct reaction_s
         {
-            ReactionType type;
             size_t id;
-            nlohmann::json params;
+            std::string name;
+            ReactionType type;
+            json params;
         } reaction_t;
 
         typedef struct area_s
         {
-            std::string name;
+            // std::string name;
             size_t id;
             bool is_active;
             action_t action_data;
