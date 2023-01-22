@@ -82,23 +82,27 @@ namespace es
         Reaction *react = nullptr;
         Action *act = nullptr;
 
-        if (REACTION_TYPE_TO_CREATE_FUNC[react_data.type]) {
-            react = REACTION_TYPE_TO_CREATE_FUNC[react_data.type](area_id, react_data.params);
-        } else
+        if (REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type))
+        {
+            react = REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type)(area_id, react_data.params);
+        }
+        else
             return {
                 {"return_value", 1}, // 1 = not found
                 {"area_id", area_id},
                 {"message", "Unknown reaction"},
-                };
-        if (react && ACTION_TYPE_TO_CREATE_FUNC[act_data.type]) {
-            act = ACTION_TYPE_TO_CREATE_FUNC[act_data.type](react, area_id, act_data.params);
-        } else
-            return {
-            {"return_value", 1}, // 1 = not found
-            {"area_id", area_id},
-            {"message", "Unknown action"},
             };
-        
+        if (react && ACTION_TYPE_TO_CREATE_FUNC.at(act_data.type))
+        {
+            act = ACTION_TYPE_TO_CREATE_FUNC.at(act_data.type)(react, area_id, act_data.params);
+        }
+        else
+            return {
+                {"return_value", 1}, // 1 = not found
+                {"area_id", area_id},
+                {"message", "Unknown action"},
+            };
+
         this->AddAction(act);
 
         const json result = {
