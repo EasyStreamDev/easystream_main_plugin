@@ -90,7 +90,7 @@ namespace es
     /* METHODS CALLED BY THE PLUGIN'S SERVER */
     /*****************************************/
 
-    const std::vector<area::area_t> ActionReactionMain::GetAreas(void) const
+    const std::vector<area::area_t> ActionReactionMain::GetAreas(void)
     {
         std::vector<area::area_t> areas_;
 
