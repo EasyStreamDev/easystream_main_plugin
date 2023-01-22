@@ -368,6 +368,7 @@ Si la requête est invalide, l'action reste inchangée.
     "type": "TOGGLE_AUDIO_COMPRESSOR",
     "params": {
         "audio-source": "audio_source_identifier"
+        "toggle": "bool"
     }
 }
 ```
