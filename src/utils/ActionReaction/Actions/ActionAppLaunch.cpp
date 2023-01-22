@@ -6,11 +6,12 @@
 */
 
 #include "ActionAppLaunch.hpp"
+#include "../../Window.hpp"
 
 es::ActionAppLaunch::ActionAppLaunch(Reaction *reaction, const size_t &area_id, const json &param)
     : Action(reaction, area_id, param)
 {
-    // _appName = param["AppName"].get<std::string>();
+    _appName = param.at("app_name").get<std::string>();
     oldWindowsList = es::utils::window::GetWindowList();
 }
 
@@ -29,4 +30,13 @@ void es::ActionAppLaunch::Solve()
     }
 
     oldWindowsList = es::utils::window::GetWindowList();
+}
+
+es::area::action_t es::ActionAppLaunch::ToStruct()
+{
+    return {
+        _id,
+        es::area::ActionType::APP_LAUNCH,
+        {{"app_name", _appName}}
+    };
 }

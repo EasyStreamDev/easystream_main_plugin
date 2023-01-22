@@ -66,6 +66,19 @@ void startAREASystem(std::shared_ptr<void>)
     thread_sleep_ms(2000);
 
     blog(LOG_INFO, "###  - AREA system started.");
+    es::area::action_t act1 = {
+        0,
+        es::area::ActionType::WORD_DETECT,
+        {{"words", "juice"}}
+    };
+    es::area::reaction_t react1 = {
+        0,
+        "",
+        es::area::ReactionType::SCENE_SWITCH,
+        {{"scene", "Klondike"}}
+    };
+    g_ARmain.CreateArea(act1, react1);
+
     g_ARmain.run(); // Run AREA system loop
     blog(LOG_INFO, "###  - AREA system has stopped.");
 }

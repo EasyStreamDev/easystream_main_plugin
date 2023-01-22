@@ -19,6 +19,7 @@ namespace es
         ~ActionKeyPressed();
 
         virtual void Solve() override;
+        virtual es::area::action_t ToStruct() override;
 
     protected:
     private:

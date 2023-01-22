@@ -20,6 +20,8 @@ namespace es
 
         virtual void Resolve() = 0;
 
+        virtual es::area::reaction_t ToStruct() = 0;
+
     protected:
         const size_t _id;
     };

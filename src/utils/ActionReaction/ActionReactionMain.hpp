@@ -24,7 +24,6 @@ namespace es
     class ActionReactionMain
     {
     public:
-        // @todo: set functions to create actions / reactions
         const std::unordered_map<area::ActionType, std::function<Action *(Reaction *, const size_t &, const json &)>>
             ACTION_TYPE_TO_CREATE_FUNC = {
                 {area::ActionType::KEY_PRESSED, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action *

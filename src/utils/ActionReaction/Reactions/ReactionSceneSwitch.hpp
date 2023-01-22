@@ -19,6 +19,7 @@ namespace es
         ~ReactionSceneSwitch();
 
         virtual void Resolve() override;
+        virtual es::area::reaction_t ToStruct() override;
 
     protected:
     private:
