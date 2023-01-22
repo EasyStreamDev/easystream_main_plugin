@@ -230,13 +230,9 @@ namespace es::server
           // else
         }
 
-        if (enable)
+        for (auto it : this->_audioLeveler)
         {
-            // @todo : globally enable AAL
-        }
-        else
-        {
-            // @todo : globally disable AAL
+            it.second->SetActive(enable);
         }
 
         this->sendSuccess(con);
