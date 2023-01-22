@@ -26,14 +26,18 @@ namespace es
         const bool IsTrue() const;
         void Reset();
 
+        inline void SetId(const size_t &id) { this->_id = id; }
+        void SetReaction(Reaction *);
+
         inline const size_t &GetId() const { return this->_id; }
+        inline Reaction *GetReaction() const { return this->_reaction; }
 
         virtual es::area::action_t ToStruct() = 0;
 
     protected:
         bool _isTrue = false;
         Reaction *_reaction = nullptr;
-        const size_t _id;
+        size_t _id;
     };
 }
 

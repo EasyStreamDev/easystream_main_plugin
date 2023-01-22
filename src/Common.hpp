@@ -79,11 +79,45 @@ namespace es
             KEY_PRESSED,
         };
 
+        static const std::string ActionTypeToString(const ActionType &t_)
+        {
+            switch (t_)
+            {
+            case ActionType::WORD_DETECT:
+                return "WORD_DETECT";
+            case ActionType::APP_LAUNCH:
+                return "APP_LAUNCH";
+            case ActionType::KEY_PRESSED:
+                return "KEY_PRESSED";
+            default:
+                break;
+            }
+            return "UNKNOWN_TYPE";
+        }
+
         enum class ReactionType
         {
             SCENE_SWITCH,
             TOGGLE_AUDIO_COMPRESSOR,
         };
+
+        static const std::string ReactionTypeToString(const ReactionType &t_)
+        {
+            switch (t_)
+            {
+            case ReactionType::SCENE_SWITCH:
+                return "SCENE_SWITCH";
+            case ReactionType::TOGGLE_AUDIO_COMPRESSOR:
+                return "TOGGLE_AUDIO_COMPRESSOR";
+            default:
+                break;
+            }
+            return "UNKNOWN_TYPE";
+        }
+
+        /**************/
+        /* STRUCTURES */
+        /**************/
 
         typedef struct action_s
         {

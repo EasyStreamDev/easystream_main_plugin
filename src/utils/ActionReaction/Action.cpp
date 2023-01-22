@@ -35,3 +35,9 @@ void es::Action::Reset()
 {
     this->_isTrue = false;
 }
+
+void es::Action::SetReaction(Reaction *new_reaction_)
+{
+    delete this->_reaction;
+    this->_reaction = new_reaction_;
+}

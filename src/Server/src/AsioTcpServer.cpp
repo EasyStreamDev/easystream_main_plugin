@@ -184,32 +184,28 @@ namespace es::server
     {
         std::vector<json> areas_vec;
 
-        // @todo : retrieve areas from area system and iterate on it.
-
-        for (const auto &pair : this->areas)
+        for (const auto &area : this->_ARmain_ptr->GetAreas())
         {
-            const auto &elem = pair.second;
-            json area = {
-                {"id", elem.id},
-                {"isActive", elem.is_active},
+            json area_data = {
+                {"id", area.id},
+                {"isActive", area.is_active},
                 {"action", {
-                               {"actionId", elem.action_data.id},
-                               {"type", elem.action_data.type},
-                               {"params", elem.action_data.params},
+                               //  {"actionId", area.action_data.id},
+                               {"type", area::ActionTypeToString(area.action_data.type)},
+                               {"params", area.action_data.params},
                            }},
                 {"reaction", {
-                                 {"name", elem.reaction_data.name},
-                                 {"reactionId", elem.reaction_data.id},
-                                 {"type", elem.reaction_data.type},
-                                 {"params", elem.reaction_data.params},
+                                 //  {"reactionId", area.reaction_data.id},
+                                 {"name", area.reaction_data.name},
+                                 {"type", area::ReactionTypeToString(area.reaction_data.type)},
+                                 {"params", area.reaction_data.params},
                              }},
             };
-
-            areas_vec.push_back(std::move(area));
+            areas_vec.push_back(std::move(area_data));
         }
 
         const json response_data = {
-            {"length", this->areas.size()},
+            {"length", areas_vec.size()},
             {"actReacts", areas_vec},
         };
         this->sendSuccess(con, "OK", response_data);
@@ -336,7 +332,7 @@ namespace es::server
             con,
             msg,
             json({
-                {"actReactId", area_id},
+                {"actReactId", result.at("area_id")},
             }));
     }
 
@@ -368,7 +364,7 @@ namespace es::server
             con,
             msg,
             json({
-                {"actReactId", area_id},
+                {"actReactId", result.at("area_id")},
             }));
     }
 
@@ -397,7 +393,7 @@ namespace es::server
             con,
             msg,
             json({
-                {"actReactId", id_to_rm},
+                {"actReactId", result.at("area_id")},
             }));
     }
 

@@ -50,6 +50,7 @@ namespace es
         void Update();
         void AddAction(Action *action);
         const bool RemoveAction(const size_t &id);
+        const bool AreaExists(const size_t &id);
 
         /*****************************************/
         /* METHODS CALLED BY THE PLUGIN'S SERVER */
@@ -61,7 +62,7 @@ namespace es
         // - 3 : other...
         // The field 'message' has to be present and will be sent to the client.
 
-        const std::unordered_map<size_t, area::area_t> GetAreas(void) const;
+        const std::vector<area::area_t> GetAreas(void) const;
         const json CreateArea(const area::action_t &, const area::reaction_t &);
         const json DeleteArea(const size_t &);
         const json UpdateAction(const size_t &, const area::action_t &);
