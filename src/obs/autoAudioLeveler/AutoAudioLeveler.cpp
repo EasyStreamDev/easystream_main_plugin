@@ -20,10 +20,6 @@ es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(sour
 	blog(LOG_INFO, "[es::Obs::autoAudioLeveler] Auto audio leveler created for input: %s", obs_source_get_name(_source));
 }
 
-es::obs::AutoAudioLeveler::~AutoAudioLeveler()
-{
-}
-
 void es::obs::AutoAudioLeveler::InputAudioCaptureCallback(void *priv_data, obs_source_t *source, const struct audio_data *data, bool muted)
 {
 	AutoAudioLeveler *autoAudioLeveler = static_cast<es::obs::AutoAudioLeveler *>(priv_data);
@@ -36,7 +32,7 @@ void es::obs::AutoAudioLeveler::InputAudioCaptureCallback(void *priv_data, obs_s
 
 	audioVolume = autoAudioLeveler->computeLerp(audioVolume);
 
-	if (_isActive)
+	if (autoAudioLeveler->IsActive())
 		obs_source_set_volume(source, audioVolume);
 }
 
@@ -110,4 +106,9 @@ float es::obs::AutoAudioLeveler::CalculateAudioLevel(const struct audio_data *da
 void es::obs::AutoAudioLeveler::SetActive(bool active)
 {
 	_isActive = active;
+}
+
+bool es::obs::AutoAudioLeveler::IsActive() const
+{
+	return _isActive;
 }

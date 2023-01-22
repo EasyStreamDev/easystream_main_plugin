@@ -34,6 +34,7 @@ namespace es
 
     void ActionReactionMain::Update()
     {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         this->_actions_mutex.lock();
         for (auto it : _actions)
         {

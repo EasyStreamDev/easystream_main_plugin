@@ -19,12 +19,12 @@ namespace es
         ~ActionAppLaunch();
 
         virtual void Solve() override;
+        virtual es::area::action_t ToStruct() override;
 
     protected:
     private:
         std::string _appName = "";
         std::vector<std::string> oldWindowsList;
-
     };
 }
 

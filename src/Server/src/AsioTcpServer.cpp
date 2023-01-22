@@ -170,7 +170,7 @@ namespace es::server
             float tmpValue = _audioLeveler.find(m["micName"])->second->getDesiredLevel() + 60;
 
             m["value"] = floor((tmpValue * 100) / 60);
-            m["isActive"] = _audioLeveler.find(m["micName"])->second->isActive();
+            m["isActive"] = _audioLeveler.find(m["micName"])->second->IsActive();
         }
 
         const json response_data = {

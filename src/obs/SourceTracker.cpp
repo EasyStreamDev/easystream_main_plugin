@@ -220,11 +220,6 @@ namespace es::obs
 
         auto tmp = self->_audioLevelers.find(name);
 
-        if (tmp != self->_audioLevelers.end())
-        {
-            tmp->second->stopCapture();
-        }
-
         auto found = self->_sources.find(std::string(name));
         if (found == self->_sources.end())
         {

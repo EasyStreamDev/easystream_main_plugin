@@ -28,6 +28,8 @@ namespace es
 
         inline const size_t &GetId() const { return this->_id; }
 
+        virtual es::area::action_t ToStruct() = 0;
+
     protected:
         bool _isTrue = false;
         Reaction *_reaction = nullptr;

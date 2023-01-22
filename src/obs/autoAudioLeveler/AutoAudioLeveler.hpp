@@ -37,6 +37,7 @@ namespace es::obs
         const float &getDesiredLevel() const;
         void setDesiredLevel(const float &);
 
+        bool IsActive() const;
         void SetActive(bool);
     };
 }

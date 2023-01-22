@@ -10,7 +10,7 @@
 es::ActionWordDetect::ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param)
     : Action(reaction, area_id, param)
 {
-    // _word = param["Word"].get<std::string>();
+    _word = param["words"].get<std::string>();
 }
 
 es::ActionWordDetect::~ActionWordDetect()
@@ -33,4 +33,13 @@ void es::ActionWordDetect::Solve()
  
     if (str.find(_word) != std::string::npos)
         this->_isTrue = true;
+}
+
+es::area::action_t es::ActionWordDetect::ToStruct()
+{
+    return {
+        _id,
+        es::area::ActionType::WORD_DETECT,
+        {{"words", _word}}
+    };
 }
