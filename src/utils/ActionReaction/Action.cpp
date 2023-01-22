@@ -7,7 +7,7 @@
 
 #include "Action.hpp"
 
-es::Action::Action(Reaction *reaction, const size_t &area_id)
+es::Action::Action(Reaction *reaction, const size_t &area_id, const json &param)
     : _id(area_id)
 {
     this->_reaction = reaction;

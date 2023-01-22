@@ -65,22 +65,6 @@ void startAREASystem(std::shared_ptr<void>)
 {
     thread_sleep_ms(2000);
 
-    blog(LOG_INFO, "###  - AREA system starting...");
-    // INIT ACTIONRESPONSE MAIN
-
-    // es::TestResponses *testResponses = new es::TestResponses();
-    // es::TestAction *testAction = new es::TestAction(testResponses);
-
-    // g_ARmain.AddAction(testAction);
-
-    // blog(LOG_INFO, "### [ALGO] ARea Added");
-
-    {
-        // es::TestResponses *OnEteinsOBS = new es::TestResponses();
-        // es::TestAction *LEMOtETEindre = new es::TestAction(OnEteinsOBS);
-        // ARmain.AddAction(LEMOtETEindre);
-    }
-
     blog(LOG_INFO, "###  - AREA system started.");
     g_ARmain.run(); // Run AREA system loop
     blog(LOG_INFO, "###  - AREA system has stopped.");

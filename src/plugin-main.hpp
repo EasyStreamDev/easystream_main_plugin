@@ -12,8 +12,6 @@
 #include "obs/SourceTracker.hpp"
 #include "utils/Thread.hpp"
 #include "utils/ActionReaction/ActionReactionMain.hpp"
-#include "utils/ActionReaction/Actions/TestAction.hpp"
-#include "utils/ActionReaction/Reactions/TestReaction.hpp"
 // #include "obs/speechRecognition/transcription/TranscriptorManager.hpp"
 
 os_cpu_usage_info_t *GetCpuUsageInfo();

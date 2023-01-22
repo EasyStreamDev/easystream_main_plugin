@@ -16,7 +16,7 @@ namespace es
     class Action
     {
     public:
-        Action(Reaction *reaction, const size_t &area_id);
+        Action(Reaction *reaction, const size_t &area_id, const json &param);
         ~Action();
 
         virtual void Solve() = 0;

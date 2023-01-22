@@ -7,7 +7,7 @@
 
 #include "Reaction.hpp"
 
-es::Reaction::Reaction(const size_t &area_id)
+es::Reaction::Reaction(const size_t &area_id, const json &param)
     : _id(area_id)
 {
 }

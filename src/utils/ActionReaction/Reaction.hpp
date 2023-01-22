@@ -15,7 +15,7 @@ namespace es
     class Reaction
     {
     public:
-        Reaction(const size_t &);
+        Reaction(const size_t &, const json &param);
         ~Reaction() = default;
 
         virtual void Resolve() = 0;

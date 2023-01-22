@@ -28,7 +28,6 @@ namespace es
     {
         while (1)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
             this->Update();
         }
     }
@@ -80,12 +79,27 @@ namespace es
     {
         const size_t area_id = area::ID_COUNTER++;
 
-        // @todo : create reaction with parameters
-        Reaction *testResponse = new TestReaction(area_id);
-        // @todo : create action with parameters
-        Action *testAction = new TestAction(testResponse, area_id);
+        Reaction *react = nullptr;
+        Action *act = nullptr;
 
-        this->AddAction(testAction);
+        if (REACTION_TYPE_TO_CREATE_FUNC[react_data.type]) {
+            react = REACTION_TYPE_TO_CREATE_FUNC[react_data.type](area_id, react_data.params);
+        } else
+            return {
+                {"return_value", 1}, // 1 = not found
+                {"area_id", area_id},
+                {"message", "Unknown reaction"},
+                };
+        if (react && ACTION_TYPE_TO_CREATE_FUNC[act_data.type]) {
+            act = ACTION_TYPE_TO_CREATE_FUNC[act_data.type](react, area_id, act_data.params);
+        } else
+            return {
+            {"return_value", 1}, // 1 = not found
+            {"area_id", area_id},
+            {"message", "Unknown action"},
+            };
+        
+        this->AddAction(act);
 
         const json result = {
             {"return_value", 0}, // 0 = success

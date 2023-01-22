@@ -11,10 +11,13 @@
 #include "../../Common.hpp"
 
 // Actions includes
-#include "Actions/TestAction.hpp"
+#include "Actions/ActionKeyPressed.hpp"
+#include "Actions/ActionAppLaunch.hpp"
+#include "Actions/ActionWordDetect.hpp"
 
 // Reaction includes
-#include "Reactions/TestReaction.hpp"
+#include "Reactions/ReactionSceneSwitch.hpp"
+#include "Reactions/ReactionToggleAudioCompressor.hpp"
 
 namespace es
 {
@@ -22,16 +25,16 @@ namespace es
     {
     public:
         // @todo: set functions to create actions / reactions
-        const std::unordered_map<area::ActionType, Action *(*)(const json &)>
+        const std::unordered_map<area::ActionType, std::function<Action*(Reaction *, const size_t &, const json &)>>
             ACTION_TYPE_TO_CREATE_FUNC = {
-                {area::ActionType::KEY_PRESSED, nullptr},
-                {area::ActionType::APP_LAUNCH, nullptr},
-                {area::ActionType::WORD_DETECT, nullptr},
+                {area::ActionType::KEY_PRESSED, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action* { return new ActionKeyPressed(reaction, area_id, param); }},
+                {area::ActionType::APP_LAUNCH, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action* { return new ActionAppLaunch(reaction, area_id, param); }},
+                {area::ActionType::WORD_DETECT, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action* { return new ActionWordDetect(reaction, area_id, param); }},
         };
-        const std::unordered_map<area::ReactionType, Reaction *(*)(const json &)>
+        const std::unordered_map<area::ReactionType, std::function<Reaction*(const size_t &, const json &)>>
             REACTION_TYPE_TO_CREATE_FUNC = {
-                {area::ReactionType::SCENE_SWITCH, nullptr},
-                {area::ReactionType::TOGGLE_AUDIO_COMPRESSOR, nullptr},
+                {area::ReactionType::SCENE_SWITCH, [](const size_t &area_id, const json &param) -> Reaction* { return new ReactionSceneSwitch(area_id, param); }},
+                {area::ReactionType::TOGGLE_AUDIO_COMPRESSOR, [](const size_t &area_id, const json &param) -> Reaction* { return new ReactionToggleAudioCompressor(area_id, param); }},
         };
 
     public:
