@@ -285,6 +285,7 @@ namespace es::server
             this->badRequest(con, result.at("message"));
             return;
         }
+
         // AREA successfully created
         const json response_data = {
             {"actReactId", result.at("area_id")},
@@ -335,7 +336,7 @@ namespace es::server
     {
         const json &data = j.at("params");
         // Getting ID of ARea to update
-        const size_t &area_id = data.at("actionId");
+        const size_t &area_id = data.at("reactionId");
         // New action data
         area::reaction_t new_reaction;
 
