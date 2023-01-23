@@ -13,9 +13,8 @@
 
 #include "obs/SourceTracker.hpp"
 #include "utils/Thread.hpp"
-#include "utils/ActionResponse/ActionResponseMain.hpp"
-#include "utils/ActionResponse/Actions/TestAction.hpp"
-#include "utils/ActionResponse/Responses/TestResponses.hpp"
+#include "utils/ActionReaction/ActionReactionMain.hpp"
+// #include "obs/speechRecognition/transcription/TranscriptorManager.hpp"
 
 os_cpu_usage_info_t *GetCpuUsageInfo();
 
