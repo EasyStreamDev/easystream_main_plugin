@@ -113,10 +113,6 @@ namespace es::server
         {
             std::vector<json> requests_ = con->getMessage();
 
-            // if (requests_.empty()) // @dev (Romain) : Is necessary ?
-            // {
-            //     continue;
-            // }
             for (const auto &req : requests_)
             {
                 if (_handler.find(req["command"]) != _handler.end())
@@ -291,9 +287,7 @@ namespace es::server
         }
         // AREA successfully created
         const json response_data = {
-            {"data", {
-                         {"actReactId", result.at("area_id")},
-                     }},
+            {"actReactId", result.at("area_id")},
         };
         this->sendSuccess(
             con,
@@ -408,10 +402,6 @@ namespace es::server
 
         toSend["statusCode"] = 200;
         toSend["message"] = msg.empty() ? std::string("OK") : msg;
-        // if (!data.empty())
-        // {
-        //     toSend += data;
-        // }
 
         con->writeMessage(toSend.dump() + "\r\n");
     }
