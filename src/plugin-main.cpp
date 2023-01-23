@@ -66,18 +66,18 @@ void startAREASystem(std::shared_ptr<void>)
     thread_sleep_ms(2000);
 
     blog(LOG_INFO, "###  - AREA system started.");
-    es::area::action_t act1 = {
-        0,
-        es::area::ActionType::WORD_DETECT,
-        {{"words", "juice"}}
-    };
-    es::area::reaction_t react1 = {
-        0,
-        "",
-        es::area::ReactionType::SCENE_SWITCH,
-        {{"scene", "Klondike"}}
-    };
-    g_ARmain.CreateArea(act1, react1);
+    // es::area::action_t act1 = {
+    //     0,
+    //     es::area::ActionType::WORD_DETECT,
+    //     {{"words", "juice"}}
+    // };
+    // es::area::reaction_t react1 = {
+    //     0,
+    //     "",
+    //     es::area::ReactionType::SCENE_SWITCH,
+    //     {{"scene", "Klondike"}}
+    // };
+    // g_ARmain.CreateArea(act1, react1);
 
     g_ARmain.run(); // Run AREA system loop
     blog(LOG_INFO, "###  - AREA system has stopped.");
@@ -104,7 +104,8 @@ void startServer(std::shared_ptr<void>)
     while (1)
     {
         mSeconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - checkPoint);
-        if (mSeconds.count() > 1) { 
+        if (mSeconds.count() > 1)
+        {
             server->update();
             checkPoint = std::chrono::steady_clock::now();
         }
