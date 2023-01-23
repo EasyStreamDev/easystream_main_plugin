@@ -62,7 +62,7 @@ namespace es
         // - 3 : other...
         // The field 'message' has to be present and will be sent to the client.
 
-        const std::vector<area::area_t> GetAreas(void) const;
+        const std::vector<area::area_t> GetAreas(void);
         const json CreateArea(const area::action_t &, const area::reaction_t &);
         const json DeleteArea(const size_t &);
         const json UpdateAction(const size_t &, const area::action_t &);

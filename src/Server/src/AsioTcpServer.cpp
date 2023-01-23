@@ -399,14 +399,10 @@ namespace es::server
 
     void AsioTcpServer::sendSuccess(Shared<AsioTcpConnection> &con, const std::string &msg, const json &data)
     {
-        json toSend;
+        json toSend = data;
 
         toSend["statusCode"] = 200;
         toSend["message"] = msg.empty() ? std::string("OK") : msg;
-        if (data)
-        {
-            toSend["data"] = data;
-        }
 
         con->writeMessage(toSend.dump());
     }
