@@ -77,7 +77,7 @@ namespace es::server
                     tmpJson["socketPort"] = _connections.back()->getSocket().remote_endpoint().port();
                     tmpJson["Message"] = std::string("succesfully connected");
                     tmpJson["statusCode"] = 200;
-                    _connections.back()->writeMessage(tmpJson.dump());
+                    _connections.back()->writeMessage(tmpJson.dump() + "\r\n");
                 }
                 else // New connection error
                 {
@@ -113,10 +113,10 @@ namespace es::server
         {
             std::vector<json> requests_ = con->getMessage();
 
-            if (requests_.empty()) // @dev (Romain) : Is necessary ?
-            {
-                continue;
-            }
+            // if (requests_.empty()) // @dev (Romain) : Is necessary ?
+            // {
+            //     continue;
+            // }
             for (const auto &req : requests_)
             {
                 if (_handler.find(req["command"]) != _handler.end())
@@ -234,6 +234,11 @@ namespace es::server
         {
             it.second->SetActive(enable);
         }
+        // else
+        // {
+        //     // disable
+        // }
+        // con->writeMessage(toSend.dump() + "\r\n");
 
         this->sendSuccess(con);
     }
@@ -399,16 +404,16 @@ namespace es::server
 
     void AsioTcpServer::sendSuccess(Shared<AsioTcpConnection> &con, const std::string &msg, const json &data)
     {
-        json toSend;
+        json toSend = data;
 
         toSend["statusCode"] = 200;
         toSend["message"] = msg.empty() ? std::string("OK") : msg;
-        if (data)
-        {
-            toSend["data"] = data;
-        }
+        // if (!data.empty())
+        // {
+        //     toSend += data;
+        // }
 
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     void AsioTcpServer::badCommand(Shared<AsioTcpConnection> &con)

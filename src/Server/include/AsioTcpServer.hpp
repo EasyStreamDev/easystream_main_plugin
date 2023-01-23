@@ -88,7 +88,7 @@ namespace es::server
 
         // --- RESPONSES
 
-        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = nullptr);
+        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = "");
         void badCommand(Shared<AsioTcpConnection> &);
         void badRequest(Shared<AsioTcpConnection> &, const std::string & = "");
         void notFound(Shared<AsioTcpConnection> &, const std::string & = "");

@@ -27,28 +27,31 @@ namespace es::server
             return;
         }
 
-        std::memset(_buffer, 0, MSGMAX);
-        _socket.async_read_some(boost::asio::buffer(_buffer, MSGMAX), [this](boost::system::error_code ec, std::size_t length)
+        std::memset(_receiver, 0, MSGMAX);
+        _socket.async_read_some(boost::asio::buffer(_receiver, MSGMAX), [this](boost::system::error_code ec, std::size_t length)
                                 {
         if (!ec) {
-            std::string msg(_buffer);
+            std::string msg(_receiver);
             try {
+                std::cout << "[SERVER EASYSTREAM]: trying to reand ((" << msg << "))" << std::endl;
                 json tmp = json::parse(msg);
                 _messages.push_back(tmp);
                 std::cout << "[SERVER EASYSTREAM]: message received: " << tmp << std::endl;
             } catch (const nlohmann::detail::parse_error &e){
                 std::cout << "[SERVER EASYSTREAM]: bad message: " << e.what() << std::endl;
                 std::cout << "[SERVER EASYSTREAM]: closing socket" << std::endl;
+                _socket.close();
                 _connected = false;
                 return;
             }
         } else if (ec == boost::asio::error::eof) {
             std::cout << "[SERVER EASYSTREAM]: Socket has been disconnected" << std::endl;
             _connected = false;
+            _socket.close();
         }
         else {
             std::cout << "[SERVER EASYSTREAM]: ERROR READING MESSAGE: " << ec.message() << std::endl;
-            _connected = false;
+            // _connected = false;
             return;
         }
         readMessage(); });
@@ -56,12 +59,12 @@ namespace es::server
 
     void AsioTcpConnection::writeMessage(const std::string &msg)
     {
-        char buffer[MSGMAX];
+        // char buffer[MSGMAX];
 
-        std::cout << "0" << std::endl;
-        std::memset(buffer, 0, MSGMAX);
-        std::memcpy(buffer, msg.data(), msg.size());
-        boost::asio::async_write(_socket, boost::asio::buffer(buffer, MSGMAX), [this](boost::system::error_code ec, std::size_t length)
+        // std::cout << "sen" << std::endl;
+        std::memset(_buffer, 0, MSGMAX);
+        std::memcpy(_buffer, msg.data(), msg.size());
+        boost::asio::async_write(_socket, boost::asio::buffer(_buffer, msg.size()), [this](boost::system::error_code ec, std::size_t length)
                                  {
         (void)length;
         if (!ec)

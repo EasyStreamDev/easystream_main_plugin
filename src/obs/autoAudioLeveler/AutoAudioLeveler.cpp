@@ -112,3 +112,15 @@ bool es::obs::AutoAudioLeveler::IsActive() const
 {
 	return _isActive;
 }
+
+const float &es::obs::AutoAudioLeveler::getDesiredLevel() const
+{
+	return (_desiredAudioLevel);
+}
+
+void es::obs::AutoAudioLeveler::setDesiredLevel(const float &v)
+{
+	std::cout << "_desiredAudioLevel before " << _desiredAudioLevel << std::endl;
+	_desiredAudioLevel = v;
+	std::cout << "_desiredAudioLevel after " << _desiredAudioLevel << std::endl;
+}

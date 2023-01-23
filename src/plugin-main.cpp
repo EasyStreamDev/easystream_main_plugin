@@ -85,7 +85,7 @@ void startAREASystem(std::shared_ptr<void>)
 
 void startServer(std::shared_ptr<void>)
 {
-    thread_sleep_ms(2000);
+    // thread_sleep_ms(2000);
 
     blog(LOG_INFO, "###  - Creating server...");
     std::shared_ptr<es::server::AsioTcpServer> server(
@@ -98,13 +98,17 @@ void startServer(std::shared_ptr<void>)
 
     blog(LOG_INFO, "###  - Starting server...");
     server->start();
-
+    std::chrono::duration<float> mSeconds;
+    std::chrono::steady_clock::time_point checkPoint = std::chrono::steady_clock::now();
     blog(LOG_INFO, "###  - Server started. Now running !");
     while (1)
     {
-        server->update();
-        thread_sleep_ms(5);
-    }
+        mSeconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - checkPoint);
+        if (mSeconds.count() > 1) { 
+            server->update();
+            checkPoint = std::chrono::steady_clock::now();
+        }
+    };
 }
 
 void sceneSwitcherIA(std::shared_ptr<void>)
