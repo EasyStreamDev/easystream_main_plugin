@@ -408,10 +408,6 @@ namespace es::server
 
         toSend["statusCode"] = 200;
         toSend["message"] = msg.empty() ? std::string("OK") : msg;
-        // if (!data.empty())
-        // {
-        //     toSend += data;
-        // }
 
         con->writeMessage(toSend.dump() + "\r\n");
     }

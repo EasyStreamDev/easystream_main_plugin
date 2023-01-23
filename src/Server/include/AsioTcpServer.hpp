@@ -87,8 +87,7 @@ namespace es::server
         void removeActReact(const json &, Shared<AsioTcpConnection> &);
 
         // --- RESPONSES
-
-        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = "");
+        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = {});
         void badCommand(Shared<AsioTcpConnection> &);
         void badRequest(Shared<AsioTcpConnection> &, const std::string & = "");
         void notFound(Shared<AsioTcpConnection> &, const std::string & = "");
