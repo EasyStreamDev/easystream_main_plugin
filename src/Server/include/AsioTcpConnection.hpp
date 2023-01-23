@@ -29,6 +29,7 @@ namespace es {
             private:
                 bool _connected;
                 char _buffer[MSGMAX];
+                char _receiver[MSGMAX];
                 boost::asio::ip::tcp::socket _socket;
                 std::vector<nlohmann::json> _messages;
         };

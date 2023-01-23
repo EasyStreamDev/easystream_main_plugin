@@ -74,7 +74,7 @@ namespace es::server
                     tmpJson["socketPort"] = _connections.back()->getSocket().remote_endpoint().port();
                     tmpJson["Message"] = std::string("succesfully connected");
                     tmpJson["statusCode"] = 200;
-                    _connections.back()->writeMessage(tmpJson.dump());
+                    _connections.back()->writeMessage(tmpJson.dump() + "\r\n");
                 }
                 else // New connection error
                 {
@@ -155,7 +155,7 @@ namespace es::server
         toSend["length"] = mics.size();
         toSend["mics"] = mics;
 
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     void AsioTcpServer::getActReactCouples(const json &j, Shared<AsioTcpConnection> &con)
@@ -190,7 +190,7 @@ namespace es::server
         toSend["length"] = this->areas.size();
         toSend["actReacts"] = areas_vec;
 
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     /****************/
@@ -217,7 +217,7 @@ namespace es::server
         {
             // disable
         }
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
@@ -240,7 +240,7 @@ namespace es::server
             toSend["statusCode"] = 200;
             toSend["message"] = std::string("OK");
         }
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     void AsioTcpServer::setSceneSwapTrigger(const json &j, Shared<AsioTcpConnection> &con)
@@ -290,7 +290,7 @@ namespace es::server
             toSend["statusCode"] = 200;
             toSend["message"] = std::string("OK");
         }
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     /*******************/
@@ -307,7 +307,7 @@ namespace es::server
         {
             toSend["statusCode"] = 404;
             toSend["message"] = std::string("Provided ID did not match any created action/reaction couple.");
-            con->writeMessage(toSend.dump());
+            con->writeMessage(toSend.dump() + "\r\n");
             return;
         }
 
@@ -321,7 +321,7 @@ namespace es::server
         };
         this->areas.erase(to_rm.id);
 
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 
     /****************/
@@ -334,6 +334,6 @@ namespace es::server
 
         toSend["statusCode"] = 404;
         toSend["message"] = "The requested action does not exist";
-        con->writeMessage(toSend.dump());
+        con->writeMessage(toSend.dump() + "\r\n");
     }
 }

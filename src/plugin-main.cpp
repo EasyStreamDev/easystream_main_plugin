@@ -33,14 +33,13 @@ void test(std::shared_ptr<void>)
     std::this_thread::sleep_for(std::chrono::seconds(2));
     // std::vector<json> j = es::utils::obs::listHelper::GetMicsList();
     // bool hasAlreadyStarted = false;
-    obs_source_t *source = obs_get_source_by_name("Mic/Aux");
+    obs_source_t *source = obs_get_source_by_name("Desktop Audio");
     // while (!source)
     // source = obs_get_source_by_name("Mic/Aux");
     if (source)
     {
         es::obs::SpeechRecognition r(source);
-        while (1)
-            ;
+        while (1);
     }
     blog(LOG_INFO, "[Thread::ThreadPool]: Thread finish");
 }
@@ -78,9 +77,15 @@ void startServer(std::shared_ptr<void>)
 
     blog(LOG_INFO, "[EASYSTREAM STARTED TCP SERVER]");
     server->start();
+    std::chrono::duration<float> mSeconds;
+    std::chrono::steady_clock::time_point checkPoint = std::chrono::steady_clock::now();
     while (1)
     {
-        server->update();
+        mSeconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - checkPoint);
+        if (mSeconds.count() > 2) { 
+            server->update();
+            checkPoint = std::chrono::steady_clock::now();
+        }
     };
 }
 
