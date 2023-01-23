@@ -180,10 +180,10 @@ namespace es::obs
         blog(LOG_ERROR, "Unexpected exception in function '%s'.", __FUNCTION_NAME__);
     }
 
-    void SourceTracker::destroyHandler(void *ptr, calldata_t *data)
+    void es::obs::SourceTracker::destroyHandler(void *ptr, calldata_t *data)
     try
     {
-        SourceTracker *self = static_cast<SourceTracker *>(ptr);
+        es::obs::SourceTracker *self = static_cast<es::obs::SourceTracker *>(ptr);
 
         obs_source_t *target = GetCalldataPointer<obs_source_t>(data, "source");
 
@@ -219,6 +219,11 @@ namespace es::obs
         }
 
         auto tmp = self->_audioLevelers.find(name);
+
+        if (tmp != self->_audioLevelers.end())
+        {
+            tmp->second->stopCapture();
+        }
 
         auto found = self->_sources.find(std::string(name));
         if (found == self->_sources.end())

@@ -23,21 +23,22 @@ namespace es::obs
 
         float _desiredAudioLevel;
         float _minDetectLevel;
-        bool _isActive = true;
+        bool _active;
+        bool _toStop;
 
     public:
         AutoAudioLeveler(obs_source_t *input);
-        ~AutoAudioLeveler() = default;
+        ~AutoAudioLeveler();
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
 
+        void stopCapture();
         float computeLerp(float audioVolume);
         void ComputeAudioLevel(float audioLevelMul, float audioVolume);
         float CalculateAudioLevel(const struct audio_data *data, bool muted);
         const float &getDesiredLevel() const;
         void setDesiredLevel(const float &);
-
-        bool IsActive() const;
+        bool isActive() const;
         void SetActive(bool);
     };
 }

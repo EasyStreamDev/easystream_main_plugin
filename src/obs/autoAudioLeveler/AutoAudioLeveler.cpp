@@ -7,11 +7,11 @@
 
 #include "AutoAudioLeveler.hpp"
 
-es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(source), _levelToGo(0), _startTime(std::clock())
+es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(source), _levelToGo(0), _startTime(std::clock()), _active(true), _toStop(false)
 {
 	obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
 
-	_desiredAudioLevel = -40.0;
+	_desiredAudioLevel = -60.0;
 
 	_minDetectLevel = -56.0;
 
@@ -20,9 +20,22 @@ es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(sour
 	blog(LOG_INFO, "[es::Obs::autoAudioLeveler] Auto audio leveler created for input: %s", obs_source_get_name(_source));
 }
 
+es::obs::AutoAudioLeveler::~AutoAudioLeveler()
+{
+}
+
 void es::obs::AutoAudioLeveler::InputAudioCaptureCallback(void *priv_data, obs_source_t *source, const struct audio_data *data, bool muted)
 {
 	AutoAudioLeveler *autoAudioLeveler = static_cast<es::obs::AutoAudioLeveler *>(priv_data);
+
+ 	if (muted)
+        return;
+	if (autoAudioLeveler->_toStop)
+		return;
+    if (!data || !data->frames || !priv_data)
+        return;
+	if (!obs_source_active(autoAudioLeveler->_source))
+        return;
 
 	float inputAudioLevel = autoAudioLeveler->CalculateAudioLevel(data, muted);
 
@@ -31,9 +44,7 @@ void es::obs::AutoAudioLeveler::InputAudioCaptureCallback(void *priv_data, obs_s
 	autoAudioLeveler->ComputeAudioLevel(inputAudioLevel, audioVolume);
 
 	audioVolume = autoAudioLeveler->computeLerp(audioVolume);
-
-	if (autoAudioLeveler->IsActive())
-		obs_source_set_volume(source, audioVolume);
+	obs_source_set_volume(source, audioVolume);
 }
 
 float es::obs::AutoAudioLeveler::computeLerp(float audioVolume)
@@ -54,7 +65,7 @@ float es::obs::AutoAudioLeveler::computeLerp(float audioVolume)
 void es::obs::AutoAudioLeveler::ComputeAudioLevel(float audioLevelMul, float audioVolume)
 {
 	float curAudioLevel = obs_mul_to_db(audioLevelMul * audioVolume);
-	float average = std::accumulate(_levels.begin(), _levels.end(), 0.0) / _levels.size();
+	float average = (_levels.empty()) ? 60.0 : (std::accumulate(_levels.begin(), _levels.end(), 0.0) / _levels.size());
 	float levelChange = _desiredAudioLevel - average;
 
 	std::clock_t curTime = std::clock();
@@ -68,7 +79,7 @@ void es::obs::AutoAudioLeveler::ComputeAudioLevel(float audioLevelMul, float aud
 	{
 		return;
 	}
-	if (curAudioLevel > _minDetectLevel)
+	if (curAudioLevel > _minDetectLevel && !_levels.empty())
 	{
 		_levels.push_front(curAudioLevel);
 		_levels.pop_back();
@@ -81,6 +92,7 @@ float es::obs::AutoAudioLeveler::CalculateAudioLevel(const struct audio_data *da
 {
 	float audio_level = 0.0;
 
+	_active = muted;
 	if (muted)
 	{
 		return 0.0;
@@ -103,16 +115,6 @@ float es::obs::AutoAudioLeveler::CalculateAudioLevel(const struct audio_data *da
 	return audio_level;
 }
 
-void es::obs::AutoAudioLeveler::SetActive(bool active)
-{
-	_isActive = active;
-}
-
-bool es::obs::AutoAudioLeveler::IsActive() const
-{
-	return _isActive;
-}
-
 const float &es::obs::AutoAudioLeveler::getDesiredLevel() const
 {
 	return (_desiredAudioLevel);
@@ -120,7 +122,22 @@ const float &es::obs::AutoAudioLeveler::getDesiredLevel() const
 
 void es::obs::AutoAudioLeveler::setDesiredLevel(const float &v)
 {
-	std::cout << "_desiredAudioLevel before " << _desiredAudioLevel << std::endl;
+	// std::cout << "_desiredAudioLevel before " << _desiredAudioLevel << std::endl;
 	_desiredAudioLevel = v;
-	std::cout << "_desiredAudioLevel after " << _desiredAudioLevel << std::endl;
+	// std::cout << "_desiredAudioLevel after " << _desiredAudioLevel << std::endl;
+}
+
+bool es::obs::AutoAudioLeveler::isActive() const
+{
+	return (_active);
+}
+
+void es::obs::AutoAudioLeveler::stopCapture()
+{
+	_toStop = true;
+}
+
+void es::obs::AutoAudioLeveler::SetActive(bool active)
+{
+	_active = active;
 }
