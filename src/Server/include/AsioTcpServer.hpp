@@ -111,9 +111,8 @@ namespace es::server
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;
         const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_audioLeveler;
 
-        // TMP - @todo : use a shared map with mutex
+        // @todo : Unsafe usage
         es::ActionReactionMain *_ARmain_ptr = nullptr;
-        std::unordered_map<size_t, area::area_t> areas;
     };
 }
 
