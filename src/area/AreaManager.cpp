@@ -2,18 +2,18 @@
 ** EPITECH PROJECT, 2022
 ** easystream_main_plugin
 ** File description:
-** ActionReactionMain
+** AreaManager
 */
 
-#include "ActionReactionMain.hpp"
+#include "AreaManager.hpp"
 
-namespace es
+namespace es::area
 {
-    ActionReactionMain::ActionReactionMain()
+    AreaManager::AreaManager()
     {
     }
 
-    ActionReactionMain::~ActionReactionMain()
+    AreaManager::~AreaManager()
     {
         this->_actions_mutex.lock();
         for (auto it : this->_actions)
@@ -24,7 +24,7 @@ namespace es
         this->_actions_mutex.unlock();
     }
 
-    void ActionReactionMain::run()
+    void AreaManager::run()
     {
         while (1)
         {
@@ -32,7 +32,7 @@ namespace es
         }
     }
 
-    void ActionReactionMain::Update()
+    void AreaManager::Update()
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         this->_actions_mutex.lock();
@@ -50,14 +50,14 @@ namespace es
         this->_actions_mutex.unlock();
     }
 
-    void ActionReactionMain::AddAction(Action *action)
+    void AreaManager::AddAction(Action *action)
     {
         this->_actions_mutex.lock();
         this->_actions.insert(std::pair(action->GetId(), action));
         this->_actions_mutex.unlock();
     }
 
-    const bool ActionReactionMain::RemoveAction(const size_t &id)
+    const bool AreaManager::RemoveAction(const size_t &id)
     {
         this->_actions_mutex.lock();
 
@@ -77,7 +77,7 @@ namespace es
         return true;
     }
 
-    const bool ActionReactionMain::AreaExists(const size_t &id)
+    const bool AreaManager::AreaExists(const size_t &id)
     {
         if (this->_actions.find(id) == this->_actions.end())
         {
@@ -90,7 +90,7 @@ namespace es
     /* METHODS CALLED BY THE PLUGIN'S SERVER */
     /*****************************************/
 
-    const std::vector<area::area_t> ActionReactionMain::GetAreas(void)
+    const std::vector<area::area_t> AreaManager::GetAreas(void)
     {
         std::vector<area::area_t> areas_;
 
@@ -110,7 +110,7 @@ namespace es
         return areas_;
     }
 
-    const json ActionReactionMain::CreateArea(
+    const json AreaManager::CreateArea(
         const area::action_t &act_data,
         const area::reaction_t &react_data)
     {
@@ -158,7 +158,7 @@ namespace es
         return result;
     }
 
-    const json ActionReactionMain::DeleteArea(const size_t &id)
+    const json AreaManager::DeleteArea(const size_t &id)
     {
         auto it = this->_actions.find(id);
 
@@ -178,7 +178,7 @@ namespace es
         });
     }
 
-    const json ActionReactionMain::UpdateAction(const size_t &id, const area::action_t &data)
+    const json AreaManager::UpdateAction(const size_t &id, const area::action_t &data)
     {
         // Get reaction data from area with id matching argument.
         area::reaction_t react_data = this->_actions.at(id)->GetReaction()->ToStruct();
@@ -213,7 +213,7 @@ namespace es
         });
     }
 
-    const json ActionReactionMain::UpdateReaction(const size_t &id, const area::reaction_t &data)
+    const json AreaManager::UpdateReaction(const size_t &id, const area::reaction_t &data)
     {
         Reaction *new_react = nullptr;
 

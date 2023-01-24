@@ -8,9 +8,9 @@
 #ifndef REACTION_HPP_
 #define REACTION_HPP_
 
-#include "../../Common.hpp"
+#include "../Common.hpp"
 
-namespace es
+namespace es::area
 {
     class Reaction
     {

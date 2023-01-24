@@ -11,7 +11,7 @@
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
-#include "../../nlohmann/json.hpp"
+#include "../../utils/nlohmann/json.hpp"
 #define MSGMAX 2048
 
 namespace es {

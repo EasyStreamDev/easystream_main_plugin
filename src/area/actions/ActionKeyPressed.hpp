@@ -10,7 +10,7 @@
 
 #include "../Action.hpp"
 
-namespace es
+namespace es::area
 {
     class ActionKeyPressed : public Action
     {

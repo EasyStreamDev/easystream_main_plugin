@@ -12,7 +12,7 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include "../../nlohmann/json.hpp"
+#include "../../utils/nlohmann/json.hpp"
 #include "../../plugin-main.hpp"
 // #include "Error.hpp"
 

@@ -8,10 +8,10 @@
 #ifndef ACTION_HPP_
 #define ACTION_HPP_
 
-#include "../../Common.hpp"
+#include "../Common.hpp"
 #include "Reaction.hpp"
 
-namespace es
+namespace es::area
 {
     class Action
     {

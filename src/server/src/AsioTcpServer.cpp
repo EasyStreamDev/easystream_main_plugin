@@ -13,7 +13,7 @@ namespace es::server
         const std::string &host,
         int port,
         const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps,
-        es::ActionReactionMain *ARmain_ptr)
+        es::area::AreaManager *ARmain_ptr)
         : _audioLeveler(_mps),
           _ARmain_ptr(ARmain_ptr),
           /*_endPoint(boost::asio::ip::make_address(host), port),*/

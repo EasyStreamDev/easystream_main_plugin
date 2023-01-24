@@ -17,7 +17,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
 #include "plugin-main.hpp"
-#include "src/Server/include/AsioTcpServer.hpp"
+#include "src/server/include/AsioTcpServer.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 OBS_DECLARE_MODULE()
@@ -27,7 +27,7 @@ std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::Sour
 std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
 
 const int SERV_PORT = 47920;
-es::ActionReactionMain g_ARmain;
+es::area::AreaManager g_ARmain;
 
 os_cpu_usage_info_t *cpuUsageInfo;
 
@@ -66,19 +66,6 @@ void startAREASystem(std::shared_ptr<void>)
     thread_sleep_ms(2000);
 
     blog(LOG_INFO, "###  - AREA system started.");
-    // es::area::action_t act1 = {
-    //     0,
-    //     es::area::ActionType::WORD_DETECT,
-    //     {{"words", "juice"}}
-    // };
-    // es::area::reaction_t react1 = {
-    //     0,
-    //     "",
-    //     es::area::ReactionType::SCENE_SWITCH,
-    //     {{"scene", "Klondike"}}
-    // };
-    // g_ARmain.CreateArea(act1, react1);
-
     g_ARmain.run(); // Run AREA system loop
     blog(LOG_INFO, "###  - AREA system has stopped.");
 }

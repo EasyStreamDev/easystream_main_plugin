@@ -2,26 +2,26 @@
 ** EPITECH PROJECT, 2022
 ** easystream_main_plugin
 ** File description:
-** ActionReactionMain
+** AreaManager
 */
 
-#ifndef ACTIONREACTIONMAIN_HPP_
-#define ACTIONREACTIONMAIN_HPP_
+#ifndef AREAMANAGER_HPP_
+#define AREAMANAGER_HPP_
 
-#include "../../Common.hpp"
+#include "../Common.hpp"
 
 // Actions includes
-#include "Actions/ActionKeyPressed.hpp"
-#include "Actions/ActionAppLaunch.hpp"
-#include "Actions/ActionWordDetect.hpp"
+#include "actions/ActionKeyPressed.hpp"
+#include "actions/ActionAppLaunch.hpp"
+#include "actions/ActionWordDetect.hpp"
 
 // Reaction includes
-#include "Reactions/ReactionSceneSwitch.hpp"
-#include "Reactions/ReactionToggleAudioCompressor.hpp"
+#include "reactions/ReactionSceneSwitch.hpp"
+#include "reactions/ReactionToggleAudioCompressor.hpp"
 
-namespace es
+namespace es::area
 {
-    class ActionReactionMain
+    class AreaManager
     {
     public:
         const std::unordered_map<area::ActionType, std::function<Action *(Reaction *, const size_t &, const json &)>>
@@ -42,8 +42,8 @@ namespace es
         };
 
     public:
-        ActionReactionMain();
-        ~ActionReactionMain();
+        AreaManager();
+        ~AreaManager();
 
         void run();
 
@@ -74,4 +74,4 @@ namespace es
     };
 }
 
-#endif /* !ACTIONREACTIONMAIN_HPP_ */
+#endif /* !AREAMANAGER_HPP_ */

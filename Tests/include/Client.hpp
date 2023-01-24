@@ -5,7 +5,7 @@
 #include <string>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
-#include "../../src/nlohmann/json.hpp"
+#include "../../src/utils/nlohmann/json.hpp"
 
 namespace es
 {

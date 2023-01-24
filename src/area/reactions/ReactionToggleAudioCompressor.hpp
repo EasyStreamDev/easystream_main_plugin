@@ -10,7 +10,7 @@
 
 #include "../Reaction.hpp"
 
-namespace es
+namespace es::area
 {
     class ReactionToggleAudioCompressor : public Reaction
     {

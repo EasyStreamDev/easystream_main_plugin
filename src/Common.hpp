@@ -62,7 +62,7 @@
 #include "obs/Memory.hpp"
 #include "plugin-macros.generated.h"
 #include "Macros.hpp"
-#include "./nlohmann/json.hpp"
+#include "./utils/nlohmann/json.hpp"
 
 namespace es
 {

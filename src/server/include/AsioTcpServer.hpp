@@ -22,7 +22,7 @@
 #include <boost/make_shared.hpp>
 
 #include "../../plugin-main.hpp"
-#include "../../nlohmann/json.hpp"
+#include "../../utils/nlohmann/json.hpp"
 #include "AsioTcpConnection.hpp"
 #include "errorCode.hpp"
 #include "common_using.hpp"
@@ -55,7 +55,7 @@ namespace es::server
             const std::string &host,
             int port,
             const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &,
-            es::ActionReactionMain *);
+            es::area::AreaManager *);
         ~AsioTcpServer() = default;
 
         // --- Network
@@ -111,7 +111,7 @@ namespace es::server
         const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_audioLeveler;
 
         // @todo : Unsafe usage
-        es::ActionReactionMain *_ARmain_ptr = nullptr;
+        es::area::AreaManager *_ARmain_ptr = nullptr;
     };
 }
 
