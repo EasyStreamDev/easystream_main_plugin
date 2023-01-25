@@ -230,11 +230,6 @@ namespace es::server
         {
             it.second->SetActive(enable);
         }
-        // else
-        // {
-        //     // disable
-        // }
-        // con->writeMessage(toSend.dump() + "\r\n");
 
         this->sendSuccess(con);
     }

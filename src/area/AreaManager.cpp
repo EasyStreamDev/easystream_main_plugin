@@ -235,7 +235,6 @@ namespace es::area
         this->_actions.at(id)->SetReaction(new_react);
         this->_actions_mutex.unlock();
 
-        // @todo: Update action of area with id matching
         return json({
             {"return_value", 0}, // 0 = success
             {"message", "reaction successfully updated"},

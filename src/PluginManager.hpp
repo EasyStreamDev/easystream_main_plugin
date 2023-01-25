@@ -24,6 +24,7 @@ namespace es
         PluginManager();
         ~PluginManager();
 
+        void Init(void);
         void Start(void);
 
     public:
@@ -33,10 +34,10 @@ namespace es
         inline thread::ThreadPool *GetThreadPool(void) { return m_ThreadPool; }
 
     private:
-        area::AreaManager *m_AreaMain;
-        server::AsioTcpServer *m_Server;
-        obs::SourceTracker *m_SourceTracker;
-        thread::ThreadPool *m_ThreadPool;
+        area::AreaManager *m_AreaMain = nullptr;
+        server::AsioTcpServer *m_Server = nullptr;
+        obs::SourceTracker *m_SourceTracker = nullptr;
+        thread::ThreadPool *m_ThreadPool = nullptr;
     };
 } // namespace es
 
