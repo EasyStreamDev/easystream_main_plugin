@@ -340,6 +340,10 @@ namespace es::server
         // New action data
         area::reaction_t new_reaction;
 
+        if (data.contains("name"))
+        {
+            new_reaction.name = data.at("name");
+        }
         // Getting new_reaction type
         new_reaction.type = REACTION_TYPE_MAP.at(data.at("type"));
         // Getting new_reaction parameters

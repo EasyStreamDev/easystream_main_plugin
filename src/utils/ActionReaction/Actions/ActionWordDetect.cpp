@@ -33,13 +33,16 @@ void es::ActionWordDetect::Solve()
     std::string str = words[rand() % 8];
 
     if (str.find(_word) != std::string::npos)
+    {
         this->_isTrue = true;
+    }
 }
 
 es::area::action_t es::ActionWordDetect::ToStruct()
 {
+    // @todo : refer to @todo in ctor
     return {
         _id,
         es::area::ActionType::WORD_DETECT,
-        {{"words", _word}}};
+        {{"words", std::vector<std::string>({_word})}}};
 }

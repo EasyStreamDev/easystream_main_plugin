@@ -15,7 +15,7 @@ namespace es
     class ReactionSceneSwitch : public Reaction
     {
     public:
-        ReactionSceneSwitch(const size_t &area_id, const json &param);
+        ReactionSceneSwitch(const size_t &, const std::string &, const json &);
         ~ReactionSceneSwitch();
 
         virtual void Resolve() override;

@@ -15,15 +15,18 @@ namespace es
     class Reaction
     {
     public:
-        Reaction(const size_t &, const json &param);
+        Reaction(const size_t &, const std::string &, const json &param);
         ~Reaction() = default;
 
         virtual void Resolve() = 0;
 
         virtual es::area::reaction_t ToStruct() = 0;
 
+        inline const std::string &GetName(void) const { return _name; };
+
     protected:
         const size_t _id;
+        const std::string _name;
     };
 }
 

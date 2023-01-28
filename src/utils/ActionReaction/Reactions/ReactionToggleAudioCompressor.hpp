@@ -15,7 +15,7 @@ namespace es
     class ReactionToggleAudioCompressor : public Reaction
     {
     public:
-        ReactionToggleAudioCompressor(const size_t &area_id, const json &param);
+        ReactionToggleAudioCompressor(const size_t &, const std::string &, const json &);
         ~ReactionToggleAudioCompressor();
 
         virtual void Resolve() override;

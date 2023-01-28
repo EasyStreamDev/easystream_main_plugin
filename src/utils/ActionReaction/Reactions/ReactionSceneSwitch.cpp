@@ -7,8 +7,8 @@
 
 #include "ReactionSceneSwitch.hpp"
 
-es::ReactionSceneSwitch::ReactionSceneSwitch(const size_t &area_id, const json &param)
-    : Reaction(area_id, param)
+es::ReactionSceneSwitch::ReactionSceneSwitch(const size_t &area_id, const std::string &name, const json &param)
+    : Reaction(area_id, name, param)
 {
     _sceneToSwitch = param["scene"].get<std::string>();
 }
@@ -28,6 +28,5 @@ es::area::reaction_t es::ReactionSceneSwitch::ToStruct()
         _id,
         "",
         es::area::ReactionType::SCENE_SWITCH,
-        {{"scene", _sceneToSwitch}}
-    };
+        {{"scene", _sceneToSwitch}}};
 }
