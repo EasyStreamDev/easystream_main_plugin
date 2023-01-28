@@ -241,7 +241,7 @@ namespace es::server
 
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
     {
-        const std::string &mic_name = j.at("params").at("name");
+        const std::string &mic_name = j.at("params").at("micName");
 
         auto mic_iterator = _audioLeveler.find(mic_name);
         // Check if microphone exists
