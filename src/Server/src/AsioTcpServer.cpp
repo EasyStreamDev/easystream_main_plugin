@@ -165,7 +165,7 @@ namespace es::server
         {
             float tmpValue = _audioLeveler.find(m["micName"])->second->getDesiredLevel() + 60;
 
-            m["value"] = floor((tmpValue * 100) / 60);
+            m["level"] = floor((tmpValue * 100) / 60);
             m["isActive"] = _audioLeveler.find(m["micName"])->second->isActive();
         }
 
