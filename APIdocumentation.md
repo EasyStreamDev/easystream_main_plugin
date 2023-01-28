@@ -123,9 +123,9 @@ Mise à jour de la valeur d'entrée d'un microphone.
 {
     "command": "setMicLevel",
     "params": {
-        "name": "string",
+        "micName": "string",
         "level": "integer",
-        "setActive": "boolean",
+        "isActive": "boolean",
     }
 },
 ```
