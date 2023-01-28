@@ -165,7 +165,7 @@ namespace es::server
         {
             float tmpValue = _audioLeveler.find(m["micName"])->second->getDesiredLevel() + 60;
 
-            m["value"] = floor((tmpValue * 100) / 60);
+            m["level"] = floor((tmpValue * 100) / 60);
             m["isActive"] = _audioLeveler.find(m["micName"])->second->isActive();
         }
 
@@ -394,10 +394,11 @@ namespace es::server
 
     void AsioTcpServer::sendSuccess(Shared<AsioTcpConnection> &con, const std::string &msg, const json &data)
     {
-        json toSend = data;
+        json toSend;
 
         toSend["statusCode"] = 200;
         toSend["message"] = msg.empty() ? std::string("OK") : msg;
+        toSend["data"] = data;
 
         con->writeMessage(toSend.dump() + "\r\n");
     }
