@@ -25,7 +25,7 @@ Le client demande la liste de tous les micros ainsi que des données disponibles
         "length": "integer",
         "mics": [
             {
-                "name": "string",
+                "micName": "string",
                 "level": "integer",
                 "isActive": "boolean",
             },
