@@ -215,28 +215,21 @@ namespace es::server
     {
         const json &params = j.at("params");
         const bool &enable = params.at("enable");
+        const std::string &source_name = params.at("source");
 
-        { // @todo : toggle AALeveler for only one audio input
-          // auto source = this->_audioLeveler.find(params["source"]);
-          // if (source == this->_audioLeveler.end())
-          // {
-          //     toSend["statusCode"] = 404;
-          //     toSend["message"] = std::string("Not found");
-          // }
-          // else
-        }
-
-        for (auto it : this->_audioLeveler)
+        auto source_target = this->_audioLeveler.find(source_name);
+        if (source_target == this->_audioLeveler.end())
         {
-            it.second->SetActive(enable);
+            this->notFound(con, std::string("Source not found : ") + source_name);
         }
 
+        source_target->second->SetActive(enable);
         this->sendSuccess(con);
     }
 
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
     {
-        const std::string &mic_name = j.at("params").at("name");
+        const std::string &mic_name = j.at("params").at("micName");
 
         auto mic_iterator = _audioLeveler.find(mic_name);
         // Check if microphone exists
@@ -335,6 +328,10 @@ namespace es::server
         // New action data
         area::reaction_t new_reaction;
 
+        if (data.contains("name"))
+        {
+            new_reaction.name = data.at("name");
+        }
         // Getting new_reaction type
         new_reaction.type = REACTION_TYPE_MAP.at(data.at("type"));
         // Getting new_reaction parameters

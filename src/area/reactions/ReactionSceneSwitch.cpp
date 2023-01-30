@@ -9,8 +9,8 @@
 
 namespace es::area
 {
-    ReactionSceneSwitch::ReactionSceneSwitch(const size_t &area_id, const json &param)
-        : Reaction(area_id, param)
+    ReactionSceneSwitch::ReactionSceneSwitch(const size_t &area_id, const std::string &name, const json &param)
+        : Reaction(area_id, name, param)
     {
         _sceneToSwitch = param["scene"].get<std::string>();
     }

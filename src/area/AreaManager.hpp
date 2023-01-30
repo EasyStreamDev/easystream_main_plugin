@@ -33,12 +33,12 @@ namespace es::area
                 {area::ActionType::WORD_DETECT, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action *
                  { return new ActionWordDetect(reaction, area_id, param); }},
         };
-        const std::unordered_map<area::ReactionType, std::function<Reaction *(const size_t &, const json &)>>
+        const std::unordered_map<area::ReactionType, std::function<Reaction *(const size_t &, const std::string &, const json &)>>
             REACTION_TYPE_TO_CREATE_FUNC = {
-                {area::ReactionType::SCENE_SWITCH, [](const size_t &area_id, const json &param) -> Reaction *
-                 { return new ReactionSceneSwitch(area_id, param); }},
-                {area::ReactionType::TOGGLE_AUDIO_COMPRESSOR, [](const size_t &area_id, const json &param) -> Reaction *
-                 { return new ReactionToggleAudioCompressor(area_id, param); }},
+                {area::ReactionType::SCENE_SWITCH, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
+                 { return new ReactionSceneSwitch(area_id, name, param); }},
+                {area::ReactionType::TOGGLE_AUDIO_COMPRESSOR, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
+                 { return new ReactionToggleAudioCompressor(area_id, name, param); }},
         };
 
     public:

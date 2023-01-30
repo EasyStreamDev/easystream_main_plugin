@@ -9,8 +9,8 @@
 
 namespace es::area
 {
-    Reaction::Reaction(const size_t &area_id, const json &param)
-        : _id(area_id)
+    Reaction::Reaction(const size_t &area_id, const std::string &name, const json &param)
+        : _id(area_id), _name(name)
     {
     }
 }

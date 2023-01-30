@@ -23,7 +23,7 @@ namespace es::area
 
     protected:
     private:
-        std::string _word = "";
+        std::vector<std::string> _words;
     };
 }
 

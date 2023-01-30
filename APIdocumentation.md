@@ -25,7 +25,7 @@ Le client demande la liste de tous les micros ainsi que des données disponibles
         "length": "integer",
         "mics": [
             {
-                "name": "string",
+                "micName": "string",
                 "level": "integer",
                 "isActive": "boolean",
             },
@@ -123,9 +123,9 @@ Mise à jour de la valeur d'entrée d'un microphone.
 {
     "command": "setMicLevel",
     "params": {
-        "name": "string",
+        "micName": "string",
         "level": "integer",
-        "setActive": "boolean",
+        "isActive": "boolean",
     }
 },
 ```

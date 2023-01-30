@@ -85,3 +85,6 @@ Variables.h
 
 # Audio files
 *.wav
+src/server/.vscode/c_cpp_properties.json
+
+test.json

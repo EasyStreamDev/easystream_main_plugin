@@ -9,8 +9,8 @@
 
 namespace es::area
 {
-    ReactionToggleAudioCompressor::ReactionToggleAudioCompressor(const size_t &area_id, const json &param)
-        : Reaction(area_id, param)
+    ReactionToggleAudioCompressor::ReactionToggleAudioCompressor(const size_t &area_id, const std::string &name, const json &param)
+        : Reaction(area_id, name, param)
     {
         _toggle = param.at("toggle").get<bool>();
     }

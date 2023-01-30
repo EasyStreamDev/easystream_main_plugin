@@ -98,11 +98,15 @@ namespace es::area
         for (auto it : this->_actions)
         {
             area::area_t area_;
+            Action *action_ = it.second;
+            Reaction *reaction_ = it.second->GetReaction();
 
             area_.id = it.first;
             area_.is_active = true;
-            area_.action_data = it.second->ToStruct();
-            area_.reaction_data = it.second->GetReaction()->ToStruct();
+            area_.action_data = action_->ToStruct();
+            area_.reaction_data = reaction_->ToStruct();
+            area_.reaction_data.name = reaction_->GetName();
+
             areas_.push_back(std::move(area_));
         }
         this->_actions_mutex.unlock();
@@ -122,7 +126,7 @@ namespace es::area
         // Create reaction first
         if (REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type))
         {
-            react = REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type)(area_id, react_data.params);
+            react = REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type)(area_id, react_data.name, react_data.params);
         }
         else
         {
@@ -181,7 +185,9 @@ namespace es::area
     const json AreaManager::UpdateAction(const size_t &id, const area::action_t &data)
     {
         // Get reaction data from area with id matching argument.
-        area::reaction_t react_data = this->_actions.at(id)->GetReaction()->ToStruct();
+        Action *tmp_act = this->_actions.at(id);
+        area::reaction_t react_data = tmp_act->GetReaction()->ToStruct();
+        react_data.name = tmp_act->GetReaction()->GetName();
 
         // Create new area (id will be changed later)
         const json result = this->CreateArea(data, react_data);
@@ -216,11 +222,13 @@ namespace es::area
     const json AreaManager::UpdateReaction(const size_t &id, const area::reaction_t &data)
     {
         Reaction *new_react = nullptr;
+        Action *action = this->_actions.at(id);
 
         // Create reaction first
         if (REACTION_TYPE_TO_CREATE_FUNC.at(data.type))
         {
-            new_react = REACTION_TYPE_TO_CREATE_FUNC.at(data.type)(id, data.params);
+            std::string name = data.name.empty() ? action->GetReaction()->GetName() : data.name;
+            new_react = REACTION_TYPE_TO_CREATE_FUNC.at(data.type)(id, name, data.params);
         }
         else
         {

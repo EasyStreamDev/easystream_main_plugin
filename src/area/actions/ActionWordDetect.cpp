@@ -12,7 +12,7 @@ namespace es::area
     ActionWordDetect::ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param)
         : Action(reaction, area_id, param)
     {
-        _word = param["words"].get<std::string>();
+        this->_words = (std::vector<std::string>)(param.at("words"));
     }
 
     ActionWordDetect::~ActionWordDetect()
@@ -32,8 +32,14 @@ namespace es::area
             "He had a hidden stash underneath the floorboards in the back room of the house."};
         std::string str = words[rand() % 8];
 
-        if (str.find(_word) != std::string::npos)
-            this->_isTrue = true;
+        for (const std::string word : this->_words)
+        {
+            if (str.find(word) != std::string::npos)
+            {
+                this->_isTrue = true;
+                break;
+            }
+        }
     }
 
     action_t ActionWordDetect::ToStruct()
@@ -41,6 +47,6 @@ namespace es::area
         return {
             _id,
             ActionType::WORD_DETECT,
-            {{"words", _word}}};
+            {{"words", this->_words}}};
     }
 }
