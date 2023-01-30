@@ -24,17 +24,22 @@ namespace es::area
         this->_actions_mutex.unlock();
     }
 
-    void AreaManager::run()
+    void AreaManager::run(std::shared_ptr<void>)
     {
+        this->thread_sleep_ms(2000);
+        blog(LOG_INFO, "###  - Speech recognition starting...");
+
+        blog(LOG_INFO, "###  - AREA system started.");
         while (1)
         {
             this->Update();
+            this->thread_sleep_ms(100);
         }
+        blog(LOG_INFO, "###  - AREA system has stopped.");
     }
 
     void AreaManager::Update()
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
         this->_actions_mutex.lock();
         for (auto it : _actions)
         {

@@ -66,7 +66,7 @@ void startAREASystem(std::shared_ptr<void>)
     thread_sleep_ms(2000);
 
     blog(LOG_INFO, "###  - AREA system started.");
-    g_ARmain.run(); // Run AREA system loop
+    g_ARmain.run(nullptr); // Run AREA system loop
     blog(LOG_INFO, "###  - AREA system has stopped.");
 }
 

@@ -31,8 +31,9 @@ es::thread::ThreadPool::~ThreadPool()
     }
 }
 
-std::shared_ptr<es::thread::ThreadPool::Task> es::thread::ThreadPool::push(std::function<void(std::shared_ptr<void>)> c_fn,
-                                                                           std::shared_ptr<void> data)
+std::shared_ptr<es::thread::ThreadPool::Task> es::thread::ThreadPool::push(
+    std::function<void(std::shared_ptr<void>)> c_fn,
+    std::shared_ptr<void> data)
 {
     auto task = std::make_shared<es::thread::ThreadPool::Task>(c_fn, data);
 

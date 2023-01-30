@@ -22,6 +22,7 @@
 #include <boost/make_shared.hpp>
 
 #include "../../plugin-main.hpp"
+#include "../../Runnable.hpp"
 #include "../../utils/nlohmann/json.hpp"
 #include "AsioTcpConnection.hpp"
 #include "errorCode.hpp"
@@ -29,7 +30,7 @@
 
 namespace es::server
 {
-    class AsioTcpServer : public boost::enable_shared_from_this<AsioTcpServer>
+    class AsioTcpServer : public boost::enable_shared_from_this<AsioTcpServer>, Runnable
     {
         /*********************/
         /* USEFULL CONSTANTS */
@@ -57,6 +58,8 @@ namespace es::server
             const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &,
             es::area::AreaManager *);
         ~AsioTcpServer() = default;
+
+        void run(std::shared_ptr<void>) override;
 
         // --- Network
         bool start();

@@ -49,9 +49,8 @@ namespace es
 
     void PluginManager::Start(void)
     {
-        // @todo : create runnable interface and make any
-        // thread runned class inherit from it
-
         // @todo : run all runnables
+        // this->m_ThreadPool->push(std::function(m_Server->run), nullptr);
+        // this->m_ThreadPool->push(std::function(m_AreaMain->run), nullptr);
     }
 }

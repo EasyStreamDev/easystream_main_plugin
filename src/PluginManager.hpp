@@ -29,15 +29,20 @@ namespace es
 
     public:
         inline area::AreaManager *GetAreaMain(void) { return m_AreaMain; }
-        // inline server::AsioTcpServer *GetServer(void) { return m_Server; }
+        // inline server::AsioTcpServer *GetServer(void) { return m_Server; } // @note maybe not necessary
         inline obs::SourceTracker *GetSourceTracker(void) { return m_SourceTracker; }
         inline thread::ThreadPool *GetThreadPool(void) { return m_ThreadPool; }
 
     private:
-        area::AreaManager *m_AreaMain = nullptr;
-        server::AsioTcpServer *m_Server = nullptr;
-        obs::SourceTracker *m_SourceTracker = nullptr;
+        // inline static void RunServer(std::shared_ptr<void>){m_Server->run();};
+
+    private:
         thread::ThreadPool *m_ThreadPool = nullptr;
+        obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
+
+        // Runnable
+        area::AreaManager *m_AreaMain = nullptr;   // Runnable done
+        server::AsioTcpServer *m_Server = nullptr; // Runnable done
     };
 } // namespace es
 

@@ -37,6 +37,19 @@ namespace es::server
         _handler["updateReaction"] = &AsioTcpServer::updateReaction;
     }
 
+    void AsioTcpServer::run(std::shared_ptr<void>)
+    {
+        blog(LOG_INFO, "###  - Starting server...");
+        this->start();
+        blog(LOG_INFO, "###  - Server started. Now running.");
+        while (1)
+        {
+            this->update();
+            this->thread_sleep_ms(100);
+        };
+        blog(LOG_INFO, "###  - Server stopped running.");
+    }
+
     /***********/
     /* NETWORK */
     /***********/
