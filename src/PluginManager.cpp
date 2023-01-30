@@ -17,6 +17,30 @@ namespace es
 
     PluginManager::~PluginManager()
     {
+        this->Reset();
+    }
+
+    void PluginManager::Init(void)
+    {
+        this->m_SourceTracker->init();
+
+        this->m_AreaMain = new es::area::AreaManager();
+        this->m_Server = new es::server::AsioTcpServer(
+            SERVER_HOST,
+            SERVER_PORT,
+            this->m_SourceTracker->getAudioMap(),
+            this->m_AreaMain);
+    }
+
+    void PluginManager::Start(void)
+    {
+        // Start asynchrounous routines
+        m_ThreadPool->push(std::function(PluginManager::RunServer), this);
+        m_ThreadPool->push(std::function(PluginManager::RunArea), this);
+    }
+
+    void PluginManager::Reset(void)
+    {
         if (this->m_AreaMain)
         {
             delete this->m_AreaMain;
@@ -35,22 +59,17 @@ namespace es
         }
     }
 
-    void PluginManager::Init(void)
+    void PluginManager::RunServer(void *private_data)
     {
-        this->m_SourceTracker->init();
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        this->m_AreaMain = new es::area::AreaManager();
-        this->m_Server = new es::server::AsioTcpServer(
-            es::LOCALHOST,
-            es::PORT,
-            this->m_SourceTracker->getAudioMap(),
-            this->m_AreaMain);
+        pm->m_Server->run(nullptr);
     }
 
-    void PluginManager::Start(void)
+    void PluginManager::RunArea(void *private_data)
     {
-        // @todo : run all runnables
-        // this->m_ThreadPool->push(std::function(m_Server->run), nullptr);
-        // this->m_ThreadPool->push(std::function(m_AreaMain->run), nullptr);
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+
+        pm->m_AreaMain->run(nullptr);
     }
 }

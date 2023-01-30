@@ -24,7 +24,7 @@ namespace es::area
         this->_actions_mutex.unlock();
     }
 
-    void AreaManager::run(std::shared_ptr<void>)
+    void AreaManager::run(void *)
     {
         this->thread_sleep_ms(2000);
         blog(LOG_INFO, "###  - Speech recognition starting...");

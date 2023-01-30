@@ -46,7 +46,7 @@ namespace es::area
         AreaManager();
         ~AreaManager();
 
-        void run(std::shared_ptr<void>) override;
+        void run(void *) override;
 
         void Update();
         void AddAction(Action *action);

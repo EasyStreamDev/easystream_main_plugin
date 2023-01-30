@@ -8,16 +8,17 @@
 #ifndef PLUGINMANAGER_HPP_
 #define PLUGINMANAGER_HPP_
 
+#define MAX_THREAD_NUMBER 10
+#define SERVER_HOST "0.0.0.0"
+#define SERVER_PORT 47920
+
 #include "obs/SourceTracker.hpp"
 #include "area/AreaManager.hpp"
+#include "utils/Thread.hpp"
 #include "server/include/AsioTcpServer.hpp"
 
 namespace es
 {
-    const size_t MAX_THREAD_NUMBER = 10;
-    const std::string LOCALHOST = "0.0.0.0";
-    const int PORT = 47920;
-
     class PluginManager
     {
     public:
@@ -26,6 +27,7 @@ namespace es
 
         void Init(void);
         void Start(void);
+        void Reset(void);
 
     public:
         inline area::AreaManager *GetAreaMain(void) { return m_AreaMain; }
@@ -34,7 +36,9 @@ namespace es
         inline thread::ThreadPool *GetThreadPool(void) { return m_ThreadPool; }
 
     private:
-        // inline static void RunServer(std::shared_ptr<void>){m_Server->run();};
+        // Asynchrounous routines (run in separate threads)
+        static void RunServer(void *);
+        static void RunArea(void *);
 
     private:
         thread::ThreadPool *m_ThreadPool = nullptr;

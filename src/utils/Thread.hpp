@@ -22,7 +22,7 @@ namespace es
             public:
                 Task();
                 Task(const Task &t){};
-                Task(std::function<void(std::shared_ptr<void>)> callback_function, std::shared_ptr<void> data);
+                Task(std::function<void(void *)> callback_function, void *data);
 
                 void await_completion();
 
@@ -30,8 +30,8 @@ namespace es
                 std::mutex _mutex;
                 std::condition_variable _is_complete;
                 std::atomic<bool> _is_dead;
-                std::function<void(std::shared_ptr<void>)> _callback;
-                std::shared_ptr<void> _data;
+                std::function<void(void *)> _callback;
+                void *_data;
 
                 friend class es::thread::ThreadPool;
             };
@@ -40,8 +40,8 @@ namespace es
             ThreadPool(const ThreadPool &tp){};
             ~ThreadPool();
 
-            std::shared_ptr<es::thread::ThreadPool::Task> push(std::function<void(std::shared_ptr<void>)> callback_function,
-                                                               std::shared_ptr<void> data);
+            std::shared_ptr<es::thread::ThreadPool::Task> push(std::function<void(void *)> callback_function,
+                                                               void *data);
 
             void pop(std::shared_ptr<es::thread::ThreadPool::Task> work);
 

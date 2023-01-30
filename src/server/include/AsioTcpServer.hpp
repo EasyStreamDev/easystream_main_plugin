@@ -13,6 +13,18 @@
 // static const std::string slash="/";
 // #endif
 
+// Global
+#include "../../Runnable.hpp"
+#include "../../utils/Obs.hpp"
+#include "../../area/AreaManager.hpp"
+#include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
+
+// Local
+#include "AsioTcpConnection.hpp"
+#include "errorCode.hpp"
+#include "common_using.hpp"
+
+// Linked
 #include <boost/thread.hpp>
 #include <iostream>
 #include <vector>
@@ -20,13 +32,6 @@
 #include <algorithm>
 #include <string>
 #include <boost/make_shared.hpp>
-
-#include "../../plugin-main.hpp"
-#include "../../Runnable.hpp"
-#include "../../utils/nlohmann/json.hpp"
-#include "AsioTcpConnection.hpp"
-#include "errorCode.hpp"
-#include "common_using.hpp"
 
 namespace es::server
 {
@@ -59,7 +64,7 @@ namespace es::server
             es::area::AreaManager *);
         ~AsioTcpServer() = default;
 
-        void run(std::shared_ptr<void>) override;
+        void run(void *) override;
 
         // --- Network
         bool start();

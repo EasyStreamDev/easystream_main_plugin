@@ -7,11 +7,8 @@
 #define ERROR_WRONG_INFORMATION 500
 #define STATUS_OK 200
 
-
 namespace es::server
 {
 }
-
-
 
 #endif
