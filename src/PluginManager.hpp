@@ -18,9 +18,11 @@
 #include "server/include/AsioTcpServer.hpp"
 #include "utils/Thread.hpp"
 
+#include "IPluginManager.hpp"
+
 namespace es
 {
-    class PluginManager
+    class PluginManager : public IPluginManager
     {
     public:
         PluginManager();
@@ -29,6 +31,7 @@ namespace es
         void Init(void);
         void Start(void);
         void Reset(void);
+        const bool IsRunning(void) const;
 
     public:
         inline area::AreaManager *GetAreaMain(void) { return m_AreaMain; }
@@ -43,6 +46,8 @@ namespace es
         static void RunSceneSwitcherAI(void *);
 
     private:
+        bool m_Running = false;
+
         thread::ThreadPool *m_ThreadPool = nullptr;
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 

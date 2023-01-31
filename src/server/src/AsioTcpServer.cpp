@@ -12,10 +12,8 @@ namespace es::server
     AsioTcpServer::AsioTcpServer(
         const std::string &host,
         int port,
-        const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_mps,
-        es::area::AreaManager *ARmain_ptr)
-        : _audioLeveler(_mps),
-          _ARmain_ptr(ARmain_ptr),
+        es::IPluginManager *pm)
+        : m_PluginManager(pm),
           /*_endPoint(boost::asio::ip::make_address(host), port),*/
           _acceptor(_ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
     {
@@ -42,7 +40,9 @@ namespace es::server
         blog(LOG_INFO, "###  - Starting server...");
         this->start();
         blog(LOG_INFO, "###  - Server started. Now running.");
-        while (1)
+
+        // @todo : End thread execution properly
+        while (this->m_PluginManager && this->m_PluginManager->IsRunning())
         {
             this->update();
             this->thread_sleep_ms(100);
@@ -174,12 +174,16 @@ namespace es::server
         json toSend;
         std::vector<json> mics = es::utils::obs::listHelper::GetMicsList();
 
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+
         for (auto &m : mics)
         {
-            float tmpValue = _audioLeveler.find(m["micName"])->second->getDesiredLevel() + 60;
+            std::shared_ptr<es::obs::AutoAudioLeveler> micAudioLeveler_ = autoLevelerMap_.find(m["micName"])->second;
+
+            float tmpValue = micAudioLeveler_->getDesiredLevel() + 60;
 
             m["level"] = floor((tmpValue * 100) / 60);
-            m["isActive"] = _audioLeveler.find(m["micName"])->second->isActive();
+            m["isActive"] = micAudioLeveler_->isActive();
         }
 
         const json response_data = {
@@ -193,7 +197,7 @@ namespace es::server
     {
         std::vector<json> areas_vec;
 
-        for (const auto &area : this->_ARmain_ptr->GetAreas())
+        for (const auto &area : m_PluginManager->GetAreaMain()->GetAreas())
         {
             json area_data = {
                 {"id", area.id},
@@ -229,9 +233,10 @@ namespace es::server
         const json &params = j.at("params");
         const bool &enable = params.at("enable");
         const std::string &source_name = params.at("source");
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
 
-        auto source_target = this->_audioLeveler.find(source_name);
-        if (source_target == this->_audioLeveler.end())
+        auto source_target = autoLevelerMap_.find(source_name);
+        if (source_target == autoLevelerMap_.end())
         {
             this->notFound(con, std::string("Source not found : ") + source_name);
         }
@@ -243,10 +248,11 @@ namespace es::server
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
     {
         const std::string &mic_name = j.at("params").at("micName");
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+        auto it_MicAutoLeveler_ = autoLevelerMap_.find(mic_name);
 
-        auto mic_iterator = _audioLeveler.find(mic_name);
         // Check if microphone exists
-        if (mic_iterator == _audioLeveler.end())
+        if (it_MicAutoLeveler_ == autoLevelerMap_.end())
         {
             this->notFound(con, "specified microphone does not exist.");
             return;
@@ -256,7 +262,7 @@ namespace es::server
         const float desired_level = ((value * 60) / 100) - 60; // desired_level -= 60; ??
 
         // Update microphone level
-        mic_iterator->second->setDesiredLevel(desired_level);
+        it_MicAutoLeveler_->second->setDesiredLevel(desired_level);
 
         // Send success response
         this->sendSuccess(con);
@@ -278,7 +284,7 @@ namespace es::server
         reaction.params = reaction_data.at("params");
 
         // Create AREA within AREA system.
-        const json result = this->_ARmain_ptr->CreateArea(action, reaction);
+        const json result = m_PluginManager->GetAreaMain()->CreateArea(action, reaction);
 
         // Error on creation of AREA
         if (result.at("return_value") != 0)
@@ -305,7 +311,6 @@ namespace es::server
     {
         const json &data = j.at("params");
         area::action_t new_action; // New action data
-
         // Getting ID of ARea to update
         const size_t area_id = data.at("actionId");
 
@@ -315,7 +320,7 @@ namespace es::server
         new_action.params = data.at("params");
 
         // Call to updating function
-        const json result = _ARmain_ptr->UpdateAction(area_id, new_action);
+        const json result = m_PluginManager->GetAreaMain()->UpdateAction(area_id, new_action);
         const int &ret_val = result.at("return_value");
         const std::string msg = result.at("message");
 
@@ -351,7 +356,7 @@ namespace es::server
         new_reaction.params = data.at("params");
 
         // Call to updating function
-        const json result = _ARmain_ptr->UpdateReaction(area_id, new_reaction);
+        const json result = m_PluginManager->GetAreaMain()->UpdateReaction(area_id, new_reaction);
         const int &ret_val = result.at("return_value");
         const std::string msg = result.at("message");
 
@@ -379,7 +384,7 @@ namespace es::server
         const size_t id_to_rm = params.at("actReactId");
 
         // Call delete AREA function
-        const json result = this->_ARmain_ptr->DeleteArea(id_to_rm);
+        const json result = m_PluginManager->GetAreaMain()->DeleteArea(id_to_rm);
         const int &ret_val = result.at("return_value");
         const std::string msg = result.at("message");
 

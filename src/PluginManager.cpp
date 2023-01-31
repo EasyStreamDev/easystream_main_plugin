@@ -22,14 +22,12 @@ namespace es
 
     void PluginManager::Init(void)
     {
+        m_Running = true;
+
         this->m_SourceTracker->init();
 
         this->m_AreaMain = new es::area::AreaManager();
-        this->m_Server = new es::server::AsioTcpServer(
-            SERVER_HOST,
-            SERVER_PORT,
-            this->m_SourceTracker->getAudioMap(),
-            this->m_AreaMain);
+        this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
 
     void PluginManager::Start(void)
@@ -42,6 +40,12 @@ namespace es
 
     void PluginManager::Reset(void)
     {
+        m_Running = false;
+
+        if (this->m_ThreadPool)
+        {
+            delete this->m_ThreadPool;
+        }
         if (this->m_AreaMain)
         {
             delete this->m_AreaMain;
@@ -50,15 +54,21 @@ namespace es
         {
             delete this->m_Server;
         }
-        if (this->m_ThreadPool)
-        {
-            delete this->m_ThreadPool;
-        }
         if (this->m_SourceTracker)
         {
             delete this->m_SourceTracker;
         }
     }
+
+    const bool PluginManager::IsRunning(void) const
+    {
+        // @note : not protected
+        return m_Running;
+    }
+
+    /**************************/
+    /* ASYNCHROUNOUS ROUTINES */
+    /**************************/
 
     void PluginManager::RunServer(void *private_data)
     {

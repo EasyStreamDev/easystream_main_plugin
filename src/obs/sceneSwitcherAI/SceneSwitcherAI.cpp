@@ -32,7 +32,6 @@ namespace es::obs::scene_switcher_ai
                 }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            blog(LOG_INFO, "### SCENESWITCHER AI - RUNNING");
         }
     }
 }

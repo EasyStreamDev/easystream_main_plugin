@@ -23,22 +23,13 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
-es::PluginManager g_PluginManager;
-
-os_cpu_usage_info_t *cpuUsageInfo;
+es::PluginManager *g_PluginManager = nullptr;
+os_cpu_usage_info_t *g_CpuUsageInfo = nullptr;
 
 namespace _comment
 {
-    // std::shared_ptr<es::obs::SourceTracker> tracker = std::make_shared<es::obs::SourceTracker>();
-    // std::shared_ptr<es::thread::ThreadPool> threadPool = std::make_shared<es::thread::ThreadPool>(10);
-
     // const int SERV_PORT = 47920;
     // es::area::AreaManager g_ARmain;
-
-    // void thread_sleep_ms(uint ms)
-    // {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-    // }
 
     // void startSpeechRecognition(void *)
     // {
@@ -65,71 +56,6 @@ namespace _comment
     //     blog(LOG_INFO, "###  - Speech recognition has ended.");
     // }
 
-    // void startAREASystem(void *)
-    // {
-    //     thread_sleep_ms(2000);
-
-    //     blog(LOG_INFO, "###  - AREA system started.");
-    //     g_ARmain.run(nullptr); // Run AREA system loop
-    //     blog(LOG_INFO, "###  - AREA system has stopped.");
-    // }
-
-    // void startServer(void *)
-    // {
-    //     // thread_sleep_ms(2000);
-
-    //     blog(LOG_INFO, "###  - Creating server...");
-    //     std::shared_ptr<es::server::AsioTcpServer> server(
-    //         std::make_shared<es::server::AsioTcpServer>(
-    //             std::string("0.0.0.0"),
-    //             SERV_PORT,
-    //             tracker->getAudioMap(),
-    //             &g_ARmain));
-    //     blog(LOG_INFO, "###  - Server created.");
-
-    //     blog(LOG_INFO, "###  - Starting server...");
-    //     server->start();
-    //     std::chrono::duration<float> mSeconds;
-    //     std::chrono::steady_clock::time_point checkPoint = std::chrono::steady_clock::now();
-    //     blog(LOG_INFO, "###  - Server started. Now running !");
-    //     while (1)
-    //     {
-    //         mSeconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - checkPoint);
-    //         if (mSeconds.count() > 1)
-    //         {
-    //             server->update();
-    //             checkPoint = std::chrono::steady_clock::now();
-    //         }
-    //     };
-    // }
-
-    // void sceneSwitcherIA(void *)
-    // {
-    //     thread_sleep_ms(2000);
-    //     while (1)
-    //     {
-    //         std::vector<std::string> windowsList = es::utils::window::GetWindowList();
-    //         std::vector<json> scenesList = es::utils::obs::listHelper::GetSceneList();
-    //         bool switched = false;
-
-    //         for (auto &scene : scenesList)
-    //         {
-    //             for (auto &window : windowsList)
-    //             {
-    //                 if (scene["sceneName"] == window && !switched)
-    //                 {
-    //                     switched = true;
-    //                     if (obs_source_get_name(obs_frontend_get_current_scene()) == scene["sceneName"])
-    //                     {
-    //                         continue;
-    //                     }
-    //                     obs_frontend_set_current_scene(obs_scene_get_source(obs_get_scene_by_name(scene["sceneName"].get<std::string>().c_str())));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     // bool obs_module_load(void)
     // {
     //     blog(LOG_INFO, "###  - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
@@ -142,7 +68,7 @@ namespace _comment
     //     threadPool->push(std::function(startSpeechRecognition), nullptr);
     //     threadPool->push(std::function(sceneSwitcherIA), nullptr);
 
-    //     cpuUsageInfo = os_cpu_usage_info_start();
+    //     g_CpuUsageInfo = os_cpu_usage_info_start();
 
     //     blog(LOG_INFO, "### -----------------------------------------");
 
@@ -150,28 +76,32 @@ namespace _comment
     // }
 }
 
+os_cpu_usage_info_t *GetCpuUsageInfo()
+{
+    return g_CpuUsageInfo;
+}
+
 bool obs_module_load(void)
 {
     blog(LOG_INFO, "###  - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
     blog(LOG_INFO, "### -----------------------------------------");
 
-    g_PluginManager.Init();
-    g_PluginManager.Start();
+    g_PluginManager = new es::PluginManager;
+    g_PluginManager->Init();
+    g_PluginManager->Start();
+
+    g_CpuUsageInfo = os_cpu_usage_info_start();
 
     blog(LOG_INFO, "### -----------------------------------------");
-
     return true;
 }
 
 void obs_module_unload()
 {
-    g_PluginManager.Reset();
-    os_cpu_usage_info_destroy(cpuUsageInfo);
+    g_PluginManager->Reset();
+    delete g_PluginManager;
 
-    blog(LOG_INFO, "### plugin unloaded");
-}
+    os_cpu_usage_info_destroy(g_CpuUsageInfo);
 
-os_cpu_usage_info_t *GetCpuUsageInfo()
-{
-    return cpuUsageInfo;
+    blog(LOG_INFO, "### Plugin unloaded");
 }
