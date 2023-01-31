@@ -12,10 +12,11 @@
 #define SERVER_HOST "0.0.0.0"
 #define SERVER_PORT 47920
 
-#include "obs/SourceTracker.hpp"
 #include "area/AreaManager.hpp"
-#include "utils/Thread.hpp"
+#include "obs/SourceTracker.hpp"
+#include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
 #include "server/include/AsioTcpServer.hpp"
+#include "utils/Thread.hpp"
 
 namespace es
 {
@@ -39,6 +40,7 @@ namespace es
         // Asynchrounous routines (run in separate threads)
         static void RunServer(void *);
         static void RunArea(void *);
+        static void RunSceneSwitcherAI(void *);
 
     private:
         thread::ThreadPool *m_ThreadPool = nullptr;

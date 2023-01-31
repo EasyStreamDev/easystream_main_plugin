@@ -37,6 +37,7 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
+        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
     }
 
     void PluginManager::Reset(void)
@@ -71,5 +72,10 @@ namespace es
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
         pm->m_AreaMain->run(nullptr);
+    }
+
+    void PluginManager::RunSceneSwitcherAI(void *private_data)
+    {
+        es::obs::scene_switcher_ai::run(nullptr);
     }
 }
