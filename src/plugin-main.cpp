@@ -54,7 +54,7 @@ void startSpeechRecognition(std::shared_ptr<void>)
         {
             // Feed files to the transcriptor manager using \
             // the tm.transcriptFile function (callback parameter)
-            // thread_sleep_ms(5);
+            thread_sleep_ms(5);
         }
     }
     // tm.stop();
