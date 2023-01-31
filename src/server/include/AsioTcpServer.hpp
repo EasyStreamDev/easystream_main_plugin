@@ -60,7 +60,7 @@ namespace es::server
         /***********/
     public:
         AsioTcpServer(const std::string &, int, es::IPluginManager *);
-        ~AsioTcpServer() = default;
+        ~AsioTcpServer();
 
         void run(void *) override;
 

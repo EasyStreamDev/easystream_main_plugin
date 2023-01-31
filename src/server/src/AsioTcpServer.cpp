@@ -35,6 +35,10 @@ namespace es::server
         _handler["updateReaction"] = &AsioTcpServer::updateReaction;
     }
 
+    AsioTcpServer::~AsioTcpServer()
+    {
+    }
+
     void AsioTcpServer::run(void *)
     {
         blog(LOG_INFO, "###  - Starting server...");
