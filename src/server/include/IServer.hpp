@@ -8,13 +8,13 @@
 #ifndef ISERVER_HPP_
 #define ISERVER_HPP_
 
+// #include "Error.hpp"
+
+// Linked
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include "../../utils/nlohmann/json.hpp"
-#include "../../plugin-main.hpp"
-// #include "Error.hpp"
 
 namespace es::server
 {

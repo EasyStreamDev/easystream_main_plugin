@@ -31,8 +31,9 @@ es::thread::ThreadPool::~ThreadPool()
     }
 }
 
-std::shared_ptr<es::thread::ThreadPool::Task> es::thread::ThreadPool::push(std::function<void(std::shared_ptr<void>)> c_fn,
-                                                                           std::shared_ptr<void> data)
+std::shared_ptr<es::thread::ThreadPool::Task> es::thread::ThreadPool::push(
+    std::function<void(void *)> c_fn,
+    void *data)
 {
     auto task = std::make_shared<es::thread::ThreadPool::Task>(c_fn, data);
 
@@ -104,13 +105,13 @@ void es::thread::ThreadPool::work()
             {
                 blog(LOG_WARNING, "Worker %" PRIx32 " caught exception from task (%" PRIxPTR ", %" PRIxPTR ") with message: %s",
                      local_number, reinterpret_cast<ptrdiff_t>(local_work->_callback.target<void>()),
-                     reinterpret_cast<ptrdiff_t>(local_work->_data.get()), ex.what());
+                     reinterpret_cast<ptrdiff_t>(local_work->_data), ex.what());
             }
             catch (...)
             {
                 blog(LOG_WARNING, "Worker %" PRIx32 " caught exception of unknown type from task (%" PRIxPTR ", %" PRIxPTR ").",
                      local_number, reinterpret_cast<ptrdiff_t>(local_work->_callback.target<void>()),
-                     reinterpret_cast<ptrdiff_t>(local_work->_data.get()));
+                     reinterpret_cast<ptrdiff_t>(local_work->_data));
             }
             {
                 std::unique_lock<std::mutex> lock(local_work->_mutex);
@@ -128,7 +129,7 @@ void es::thread::ThreadPool::work()
 
 es::thread::ThreadPool::Task::Task() {}
 
-es::thread::ThreadPool::Task::Task(std::function<void(std::shared_ptr<void>)> fn, std::shared_ptr<void> dt)
+es::thread::ThreadPool::Task::Task(std::function<void(void *)> fn, void *dt)
     : _mutex(), _is_complete(), _is_dead(false), _callback(fn), _data(dt)
 {
 }

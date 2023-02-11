@@ -41,6 +41,8 @@
 #include <fstream>
 #include <sstream>
 #include <mutex>
+#include <iostream>
+#include <chrono>
 
 // QT includes
 #include <QStringList>
@@ -48,8 +50,8 @@
 #include <QLibrary>
 
 // Common OBS includes
-#include <obs-module.h>
 #include <obs.h>
+#include <obs-module.h>
 #include <obs-frontend-api.h>
 #include <util/platform.h>
 #include <util/config-file.h>
@@ -62,12 +64,10 @@
 #include "obs/Memory.hpp"
 #include "plugin-macros.generated.h"
 #include "Macros.hpp"
-#include "./utils/nlohmann/json.hpp"
+#include "utils/Json.hpp"
 
 namespace es
 {
-    using json = nlohmann::json;
-
     namespace area
     {
         static size_t ID_COUNTER = 1; // 0 will be used as non-existing area ID

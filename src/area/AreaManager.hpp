@@ -8,6 +8,7 @@
 #ifndef AREAMANAGER_HPP_
 #define AREAMANAGER_HPP_
 
+#include "../Runnable.hpp"
 #include "../Common.hpp"
 
 // Actions includes
@@ -21,7 +22,7 @@
 
 namespace es::area
 {
-    class AreaManager
+    class AreaManager : es::Runnable
     {
     public:
         const std::unordered_map<area::ActionType, std::function<Action *(Reaction *, const size_t &, const json &)>>
@@ -32,20 +33,20 @@ namespace es::area
                  { return new ActionAppLaunch(reaction, area_id, param); }},
                 {area::ActionType::WORD_DETECT, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action *
                  { return new ActionWordDetect(reaction, area_id, param); }},
-        };
+            };
         const std::unordered_map<area::ReactionType, std::function<Reaction *(const size_t &, const std::string &, const json &)>>
             REACTION_TYPE_TO_CREATE_FUNC = {
                 {area::ReactionType::SCENE_SWITCH, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
                  { return new ReactionSceneSwitch(area_id, name, param); }},
                 {area::ReactionType::TOGGLE_AUDIO_COMPRESSOR, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
                  { return new ReactionToggleAudioCompressor(area_id, name, param); }},
-        };
+            };
 
     public:
         AreaManager();
         ~AreaManager();
 
-        void run();
+        void run(void *) override;
 
         void Update();
         void AddAction(Action *action);

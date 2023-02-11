@@ -8,10 +8,15 @@
 #ifndef SOURCETRACKER_HPP_
 #define SOURCETRACKER_HPP_
 
+// Global
 #include "../utils/Utils.hpp"
+
+// Local
+#include "autoAudioLeveler/AutoAudioLeveler.hpp"
+
+// Linked
 #include <unordered_map>
 #include <memory>
-#include "autoAudioLeveler/AutoAudioLeveler.hpp"
 
 namespace es::obs
 {

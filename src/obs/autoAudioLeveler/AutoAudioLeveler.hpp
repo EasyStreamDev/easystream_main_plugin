@@ -8,7 +8,10 @@
 #ifndef AUTOAUDIOLEVEL_HPP_
 #define AUTOAUDIOLEVEL_HPP_
 
+// Global
 #include "../../Common.hpp"
+
+// Linked
 #include <iostream>
 
 namespace es::obs

@@ -7,11 +7,10 @@
 
 #include "../include/AsioTcpConnection.hpp"
 
-using nlohmann::json;
-
 namespace es::server
 {
-    AsioTcpConnection::AsioTcpConnection(boost::asio::ip::tcp::socket &sock) : _connected(true), _socket(std::move(sock))
+    AsioTcpConnection::AsioTcpConnection(boost::asio::ip::tcp::socket &sock)
+        : _connected(true), _socket(std::move(sock))
     {
     }
 

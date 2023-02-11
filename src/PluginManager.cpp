@@ -17,41 +17,83 @@ namespace es
 
     PluginManager::~PluginManager()
     {
-        if (this->m_AreaMain)
-        {
-            delete this->m_AreaMain;
-        }
-        if (this->m_Server)
-        {
-            delete this->m_Server;
-        }
-        if (this->m_ThreadPool)
-        {
-            delete this->m_ThreadPool;
-        }
-        if (this->m_SourceTracker)
-        {
-            delete this->m_SourceTracker;
-        }
+        this->Reset();
     }
 
     void PluginManager::Init(void)
     {
+        m_Running = true;
+
         this->m_SourceTracker->init();
 
         this->m_AreaMain = new es::area::AreaManager();
-        this->m_Server = new es::server::AsioTcpServer(
-            es::LOCALHOST,
-            es::PORT,
-            this->m_SourceTracker->getAudioMap(),
-            this->m_AreaMain);
+        this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
 
     void PluginManager::Start(void)
     {
-        // @todo : create runnable interface and make any
-        // thread runned class inherit from it
+        // Start asynchrounous routines
+        m_ThreadPool->push(std::function(PluginManager::RunServer), this);
+        m_ThreadPool->push(std::function(PluginManager::RunArea), this);
+        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+    }
 
-        // @todo : run all runnables
+    void PluginManager::Reset(void)
+    {
+        m_Running = false;
+
+        blog(LOG_INFO, "\n### --- DELETING : ThreadPool.");
+        if (this->m_ThreadPool)
+        {
+            delete this->m_ThreadPool;
+        }
+        blog(LOG_INFO, "\n### --- DELETED : ThreadPool.");
+        blog(LOG_INFO, "\n### --- DELETING : AREA Main.");
+        if (this->m_AreaMain)
+        {
+            delete this->m_AreaMain;
+        }
+        blog(LOG_INFO, "\n### --- DELETED : AREA Main.");
+        blog(LOG_INFO, "\n### --- DELETING : Server.");
+        if (this->m_Server)
+        {
+            delete this->m_Server;
+        }
+        blog(LOG_INFO, "\n### --- DELETED : Server.");
+        blog(LOG_INFO, "\n### --- DELETING : Source tracker.");
+        if (this->m_SourceTracker)
+        {
+            delete this->m_SourceTracker;
+        }
+        blog(LOG_INFO, "\n### --- DELETED : Source tracker.");
+    }
+
+    const bool PluginManager::IsRunning(void) const
+    {
+        // @note : not protected
+        return m_Running;
+    }
+
+    /**************************/
+    /* ASYNCHROUNOUS ROUTINES */
+    /**************************/
+
+    void PluginManager::RunServer(void *private_data)
+    {
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+
+        pm->m_Server->run(nullptr);
+    }
+
+    void PluginManager::RunArea(void *private_data)
+    {
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+
+        pm->m_AreaMain->run(nullptr);
+    }
+
+    void PluginManager::RunSceneSwitcherAI(void *private_data)
+    {
+        es::obs::scene_switcher_ai::run(nullptr);
     }
 }

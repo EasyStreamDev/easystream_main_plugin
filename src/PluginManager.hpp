@@ -8,17 +8,21 @@
 #ifndef PLUGINMANAGER_HPP_
 #define PLUGINMANAGER_HPP_
 
-#include "obs/SourceTracker.hpp"
+#define MAX_THREAD_NUMBER 10
+#define SERVER_HOST "0.0.0.0"
+#define SERVER_PORT 47920
+
 #include "area/AreaManager.hpp"
+#include "obs/SourceTracker.hpp"
+#include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
 #include "server/include/AsioTcpServer.hpp"
+#include "utils/Thread.hpp"
+
+#include "IPluginManager.hpp"
 
 namespace es
 {
-    const size_t MAX_THREAD_NUMBER = 10;
-    const std::string LOCALHOST = "0.0.0.0";
-    const int PORT = 47920;
-
-    class PluginManager
+    class PluginManager : public IPluginManager
     {
     public:
         PluginManager();
@@ -26,18 +30,30 @@ namespace es
 
         void Init(void);
         void Start(void);
+        void Reset(void);
+        const bool IsRunning(void) const;
 
     public:
         inline area::AreaManager *GetAreaMain(void) { return m_AreaMain; }
-        // inline server::AsioTcpServer *GetServer(void) { return m_Server; }
+        // inline server::AsioTcpServer *GetServer(void) { return m_Server; } // @note maybe not necessary
         inline obs::SourceTracker *GetSourceTracker(void) { return m_SourceTracker; }
         inline thread::ThreadPool *GetThreadPool(void) { return m_ThreadPool; }
 
     private:
-        area::AreaManager *m_AreaMain = nullptr;
-        server::AsioTcpServer *m_Server = nullptr;
-        obs::SourceTracker *m_SourceTracker = nullptr;
+        // Asynchrounous routines (run in separate threads)
+        static void RunServer(void *);
+        static void RunArea(void *);
+        static void RunSceneSwitcherAI(void *);
+
+    private:
+        bool m_Running = false;
+
         thread::ThreadPool *m_ThreadPool = nullptr;
+        obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
+
+        // Runnable
+        area::AreaManager *m_AreaMain = nullptr;   // Runnable done
+        server::AsioTcpServer *m_Server = nullptr; // Runnable done
     };
 } // namespace es
 

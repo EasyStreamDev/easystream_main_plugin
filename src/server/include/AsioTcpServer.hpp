@@ -13,23 +13,31 @@
 // static const std::string slash="/";
 // #endif
 
-#include <boost/thread.hpp>
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <algorithm>
-#include <string>
-#include <boost/make_shared.hpp>
+// Global
+#include "../../Runnable.hpp"
+#include "../../utils/Obs.hpp"
+#include "../../area/AreaManager.hpp"
+#include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
+#include "../../IPluginManager.hpp"
 
-#include "../../plugin-main.hpp"
-#include "../../utils/nlohmann/json.hpp"
+// Local
 #include "AsioTcpConnection.hpp"
 #include "errorCode.hpp"
 #include "common_using.hpp"
 
+// Linked
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+// --- Boost
+#include <boost/thread.hpp>
+#include <boost/make_shared.hpp>
+
 namespace es::server
 {
-    class AsioTcpServer : public boost::enable_shared_from_this<AsioTcpServer>
+    class AsioTcpServer : public boost::enable_shared_from_this<AsioTcpServer>, Runnable
     {
         /*********************/
         /* USEFULL CONSTANTS */
@@ -51,12 +59,10 @@ namespace es::server
         /* METHODS */
         /***********/
     public:
-        AsioTcpServer(
-            const std::string &host,
-            int port,
-            const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &,
-            es::area::AreaManager *);
-        ~AsioTcpServer() = default;
+        AsioTcpServer(const std::string &, int, es::IPluginManager *);
+        ~AsioTcpServer();
+
+        void run(void *) override;
 
         // --- Network
         bool start();
@@ -99,6 +105,8 @@ namespace es::server
         /* MEMBER VARIABLES */
         /********************/
     private:
+        // --- Plugin manager
+        es::IPluginManager *m_PluginManager;
         // --- Thread
         boost::thread _threadContext;
         // --- Network
@@ -108,10 +116,6 @@ namespace es::server
         std::vector<Shared<AsioTcpConnection>> _connections;
         // --- Request handler vars
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;
-        const std::unordered_map<std::string, std::shared_ptr<obs::AutoAudioLeveler>> &_audioLeveler;
-
-        // @todo : Unsafe usage
-        es::area::AreaManager *_ARmain_ptr = nullptr;
     };
 }
 
