@@ -9,7 +9,7 @@
 
 namespace es::server
 {
-    AsioTcpConnection::AsioTcpConnection(boost::asio::ip::tcp::socket &sock)
+    AsioTcpConnection::AsioTcpConnection(asio::ip::tcp::socket &sock)
         : _connected(true), _socket(std::move(sock))
     {
     }
@@ -27,7 +27,7 @@ namespace es::server
         }
 
         std::memset(_receiver, 0, MSGMAX);
-        _socket.async_read_some(boost::asio::buffer(_receiver, MSGMAX), [this](boost::system::error_code ec, std::size_t length)
+        _socket.async_read_some(asio::buffer(_receiver, MSGMAX), [this](asio::error_code ec, std::size_t length)
                                 {
         if (!ec) {
             std::string msg(_receiver);
@@ -43,7 +43,7 @@ namespace es::server
                 _connected = false;
                 return;
             }
-        } else if (ec == boost::asio::error::eof) {
+        } else if (ec == asio::error::eof) {
             std::cout << "[SERVER EASYSTREAM]: Socket has been disconnected" << std::endl;
             _connected = false;
             _socket.close();
@@ -63,7 +63,7 @@ namespace es::server
         // std::cout << "sen" << std::endl;
         std::memset(_buffer, 0, MSGMAX);
         std::memcpy(_buffer, msg.data(), msg.size());
-        boost::asio::async_write(_socket, boost::asio::buffer(_buffer, msg.size()), [this](boost::system::error_code ec, std::size_t length)
+        asio::async_write(_socket, asio::buffer(_buffer, msg.size()), [this](asio::error_code ec, std::size_t length)
                                  {
         (void)length;
         if (!ec)
@@ -75,7 +75,7 @@ namespace es::server
         } });
     }
 
-    const boost::asio::ip::tcp::socket &AsioTcpConnection::getSocket() const
+    const asio::ip::tcp::socket &AsioTcpConnection::getSocket() const
     {
         return (_socket);
     }

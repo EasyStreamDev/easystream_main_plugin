@@ -49,7 +49,7 @@ function main {
         exit 0
     }
     if ($Dependencies.IsPresent) {
-        installBoost $BoostFolder
+        # installBoost $BoostFolder
         installConan
     }
     if ($CloneObs.IsPresent) {

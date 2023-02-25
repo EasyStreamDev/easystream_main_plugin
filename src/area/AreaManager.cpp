@@ -15,13 +15,13 @@ namespace es::area
 
     AreaManager::~AreaManager()
     {
-        this->_actions_mutex.lock();
-        for (auto it : this->_actions)
-        {
-            delete it.second;
-        }
+        // this->_actions_mutex.lock();
+        // for (auto it : this->_actions)
+        // {
+        //     delete it.second;
+        // }
         this->_actions.clear();
-        this->_actions_mutex.unlock();
+        // this->_actions_mutex.unlock();
     }
 
     void AreaManager::run(void *)

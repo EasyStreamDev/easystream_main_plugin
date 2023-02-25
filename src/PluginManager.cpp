@@ -41,31 +41,30 @@ namespace es
     void PluginManager::Reset(void)
     {
         m_Running = false;
-
-        blog(LOG_INFO, "\n### --- DELETING : ThreadPool.");
-        if (this->m_ThreadPool)
-        {
-            delete this->m_ThreadPool;
-        }
-        blog(LOG_INFO, "\n### --- DELETED : ThreadPool.");
-        blog(LOG_INFO, "\n### --- DELETING : AREA Main.");
-        if (this->m_AreaMain)
-        {
-            delete this->m_AreaMain;
-        }
-        blog(LOG_INFO, "\n### --- DELETED : AREA Main.");
-        blog(LOG_INFO, "\n### --- DELETING : Server.");
-        if (this->m_Server)
-        {
-            delete this->m_Server;
-        }
-        blog(LOG_INFO, "\n### --- DELETED : Server.");
-        blog(LOG_INFO, "\n### --- DELETING : Source tracker.");
-        if (this->m_SourceTracker)
-        {
-            delete this->m_SourceTracker;
-        }
-        blog(LOG_INFO, "\n### --- DELETED : Source tracker.");
+        // blog(LOG_INFO, "\n### --- DELETING : AREA Main.");
+        // if (this->m_AreaMain)
+        // {
+        //     delete this->m_AreaMain;
+        // }
+        // blog(LOG_INFO, "\n### --- DELETED : AREA Main.");
+        // blog(LOG_INFO, "\n### --- DELETING : Server.");
+        // if (this->m_Server)
+        // {
+        //     delete this->m_Server;
+        // }
+        // blog(LOG_INFO, "\n### --- DELETED : Server.");
+        // blog(LOG_INFO, "\n### --- DELETING : Source tracker.");
+        // if (this->m_SourceTracker)
+        // {
+        //     delete this->m_SourceTracker;
+        // }
+        // blog(LOG_INFO, "\n### --- DELETED : Source tracker.");
+        // blog(LOG_INFO, "\n### --- DELETING : ThreadPool.");
+        // if (this->m_ThreadPool)
+        // {
+        //     delete this->m_ThreadPool;
+        // }
+        // blog(LOG_INFO, "\n### --- DELETED : ThreadPool.");
     }
 
     const bool PluginManager::IsRunning(void) const

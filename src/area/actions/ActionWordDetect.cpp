@@ -12,7 +12,7 @@ namespace es::area
     ActionWordDetect::ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param)
         : Action(reaction, area_id, param)
     {
-        this->_words = (std::vector<std::string>)(param.at("words"));
+        this->_words = param.at("words").get<std::vector<std::string>>();
     }
 
     ActionWordDetect::~ActionWordDetect()

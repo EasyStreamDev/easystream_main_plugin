@@ -26,18 +26,19 @@
 #include "common_using.hpp"
 
 // Linked
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <algorithm>
 #include <unordered_map>
+#include <thread>
 // --- Boost
-#include <boost/thread.hpp>
-#include <boost/make_shared.hpp>
+// #include <boost/thread.hpp>
+// #include <boost/make_shared.hpp>
 
 namespace es::server
 {
-    class AsioTcpServer : public boost::enable_shared_from_this<AsioTcpServer>, Runnable
+    class AsioTcpServer : public std::enable_shared_from_this<AsioTcpServer>, Runnable
     {
         /*********************/
         /* USEFULL CONSTANTS */
@@ -70,7 +71,7 @@ namespace es::server
         void update();
 
         // --- Getters
-        boost::asio::io_context &getContext();
+        asio::io_context &getContext();
 
     private:
         // --- Network
@@ -108,10 +109,10 @@ namespace es::server
         // --- Plugin manager
         es::IPluginManager *m_PluginManager;
         // --- Thread
-        boost::thread _threadContext;
+        std::thread _threadContext;
         // --- Network
-        boost::asio::io_context _ioContext;
-        boost::asio::ip::tcp::acceptor _acceptor;
+        asio::io_context _ioContext;
+        asio::ip::tcp::acceptor _acceptor;
         // boost::asio::ip::tcp::endpoint _endPoint;
         std::vector<Shared<AsioTcpConnection>> _connections;
         // --- Request handler vars

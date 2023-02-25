@@ -15,7 +15,7 @@ namespace es::server
         es::IPluginManager *pm)
         : m_PluginManager(pm),
           /*_endPoint(boost::asio::ip::make_address(host), port),*/
-          _acceptor(_ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+          _acceptor(_ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
     {
         /* Getters */
         _handler["getAllMics"] = &AsioTcpServer::getAllMics;
@@ -42,6 +42,7 @@ namespace es::server
     void AsioTcpServer::run(void *)
     {
         blog(LOG_INFO, "###  - Starting server...");
+        std::cout << "###  - Starting server..." << std::endl;
         this->start();
         blog(LOG_INFO, "###  - Server started. Now running.");
 
@@ -63,13 +64,15 @@ namespace es::server
         try
         {
             waitForClientConnection();
-            _threadContext = boost::thread([this]()
+            _threadContext = std::thread([this]()
                                            { _ioContext.run(); });
             blog(LOG_INFO, "### [SERVER EASYSTREAM] new server started on port: %d", _acceptor.local_endpoint().port());
+            std::cout << "### [SERVER EASYSTREAM] new server started on " << _acceptor.local_endpoint().address() << ":" << _acceptor.local_endpoint().port() << std::endl;
         }
         catch (std::exception &e)
         {
             blog(LOG_INFO, "### [SERVER EASYSTREAM] Exception: %s", e.what());
+            std::cout << "### [SERVER EASYSTREAM] Exception: " << e.what() << std::endl;
             return false;
         }
 
@@ -80,7 +83,7 @@ namespace es::server
     {
         this->_acceptor.async_accept(
             // Callback on new connection acceptance
-            [this](boost::system::error_code ec, boost::asio::ip::tcp::socket sock)
+            [this](asio::error_code ec, asio::ip::tcp::socket sock)
             {
                 if (!ec) // true == New connection success
                 {
@@ -164,7 +167,7 @@ namespace es::server
         }
     }
 
-    boost::asio::io_context &AsioTcpServer::getContext()
+    asio::io_context &AsioTcpServer::getContext()
     {
         return this->_ioContext;
     }

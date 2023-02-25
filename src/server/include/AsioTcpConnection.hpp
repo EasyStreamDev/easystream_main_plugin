@@ -8,30 +8,30 @@
 #ifndef ASIOTCPCONNECTION_HPP_
 #define ASIOTCPCONNECTION_HPP_
 
-#define BOOST_ASIO_DISABLE_IOCP 1
 #define MSGMAX 2048
 
 // Global
 #include "../../utils/Json.hpp"
 
 // Linked
-#include <boost/asio.hpp>
-#include <boost/enable_shared_from_this.hpp>
+// #include <boost/asio.hpp>
+// #include <boost/enable_shared_from_this.hpp>
+#include <asio.hpp>
 #include <iostream>
 
 namespace es
 {
     namespace server
     {
-        class AsioTcpConnection : public boost::enable_shared_from_this<AsioTcpConnection>
+        class AsioTcpConnection : public std::enable_shared_from_this<AsioTcpConnection>
         {
         public:
-            AsioTcpConnection(boost::asio::ip::tcp::socket &sock);
+            AsioTcpConnection(asio::ip::tcp::socket &sock);
             ~AsioTcpConnection();
 
             void readMessage();
             void writeMessage(const std::string &msg);
-            const boost::asio::ip::tcp::socket &getSocket() const;
+            const asio::ip::tcp::socket &getSocket() const;
             const std::vector<nlohmann::json> getMessage();
             bool isConnected() const;
 
@@ -39,7 +39,7 @@ namespace es
             bool _connected;
             char _buffer[MSGMAX];
             char _receiver[MSGMAX];
-            boost::asio::ip::tcp::socket _socket;
+            asio::ip::tcp::socket _socket;
             std::vector<nlohmann::json> _messages;
         };
     }
