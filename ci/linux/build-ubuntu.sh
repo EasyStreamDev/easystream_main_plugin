@@ -1,6 +1,6 @@
-#!/bin/sh
-set -ex
-
+#!/usr/bin/env bash
+cd $rootProject
+# set -ex
 rm -rf build && mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_UBUNTU=yes ..
 make -j4

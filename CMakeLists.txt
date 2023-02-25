@@ -97,18 +97,19 @@ if(WIN32 OR WIN64)
 endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package("asio")
+if(WIN32)
+    find_package("asio")
+    if(ASIO_FOUND)
+        include_directories(${ASIO_INCLUDE_DIRS})
+    else()
+        message(FATAL_ERROR "Asio not found")
+    endif()
+endif()
 find_package(cpprestsdk REQUIRED)
-
 # if(WIN32)
 include_directories(${CONAN_INCLUDE_DIRS})
 # endif()
 
-if(ASIO_FOUND)
-    include_directories(${ASIO_INCLUDE_DIRS})
-else()
-    message(FATAL_ERROR "Asio not found")
-endif()
 
 
 # if(NOT CMAKE_BUILD_TYPE)
@@ -177,7 +178,7 @@ if(WIN32)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CONAN_LIBS} LibObs OBS_FRONTEND_LIB asio::asio Qt6::Core cpprestsdk::cpprest)
 else()
     add_library(${CMAKE_PROJECT_NAME} MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Core asio::asio Qt6::Core cpprestsdk::cpprest)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Core cpprestsdk::cpprest)
 endif()
 
 # find_package(GTest REQUIRED)
@@ -327,8 +328,8 @@ endif()
 if(UNIX AND NOT APPLE)
     include(GNUInstallDirs)
 
-    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PREFIX "")
-    target_link_libraries(${CMAKE_PROJECT_NAME} obs-frontend-api)
+    # set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PREFIX "")
+    # target_link_libraries(${CMAKE_PROJECT_NAME} obs-frontend-api)
 
     file(GLOB locale_files data/locale/*.ini)
 

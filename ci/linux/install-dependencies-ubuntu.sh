@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # scriptRoot = $(dirname "$0")
 # projectRoot = "${scriptRoot}/../../"
 # cd ../../../
