@@ -13,8 +13,6 @@ namespace es::transcription
                 const utility::string_t &reason,
                 const std::error_code &error)
             {
-                // this->connected = false;
-                // this->running = false;
                 std::cout << "Closing Connection... " << std::flush;
                 client.close();
                 this->setStatus(Status::DISCONNECTED);
@@ -35,10 +33,8 @@ namespace es::transcription
                 const utility::string_t &reason,
                 const std::error_code &error)
             {
-                // this->connected = false;
-                // this->running = false;
                 std::cout << "Closing Connection... " << std::flush;
-                client.close();
+                this->client.close();
                 this->setStatus(Status::DISCONNECTED);
                 std::cout << "Connection closed." << std::endl;
             });
@@ -143,7 +139,6 @@ namespace es::transcription
     {
         this->client.connect(U(this->url)).wait();
         this->setStatus(Status::CONNECTING);
-        // this->running = true;
     }
 
     void Transcriptor::disconnect()
@@ -153,6 +148,7 @@ namespace es::transcription
         closeMsg.set_utf8_message("EOS");
         std::cout << "Sending EOS to disconnect..." << std::endl;
         this->client.send(closeMsg);
+        std::cout << "EOS sent !" << std::endl;
         this->setStatus(Status::DISCONNECTING);
     }
 

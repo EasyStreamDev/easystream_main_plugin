@@ -101,6 +101,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
+        pm->m_TranscriptorManager->start();
         pm->m_TranscriptorManager->run(nullptr);
     }
 }

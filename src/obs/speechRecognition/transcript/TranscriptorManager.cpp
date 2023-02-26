@@ -35,18 +35,46 @@ namespace es::transcription
 
     void TranscriptorManager::run(void *)
     {
+
         while (1)
         {
+            // @test
+            // @todo : repair crash on reconnecting previously connected socket.
+            blog(LOG_INFO, "--------- Transcriptor manager running : Submitted file.");
+            String prefix = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
+            this->thread_sleep_ms(5000);
+            this->filesToTranscript.push(
+                Pair<
+                    String,
+                    Transcriptor::ResponseCallback>(
+                    prefix + "league.wav",
+                    [](const json &data)
+                    {
+                        std::string buf;
+
+                        if (data["type"] != "final")
+                        {
+                            return;
+                        }
+                        auto &elems = data["elements"];
+                        for (auto &elem : elems)
+                        {
+                            buf += elem["value"];
+                        }
+                        buf += "\n";
+                        blog(LOG_INFO, "----------- Result : %s", buf.c_str());
+                    }));
+            // @endtest
             while (!this->filesToTranscript.empty())
             {
-                Pair<String, Transcriptor::ResponseCallback> &data_ = this->filesToTranscript.front();
+                auto &data_ = this->filesToTranscript.front();
 
                 this->transcriptFile(data_.first, data_.second);
 
                 this->filesToTranscript.pop();
             }
             blog(LOG_INFO, "--------- Transcriptor manager running : Nothing left to transcript.");
-            this->thread_sleep_ms(500); // Not to run fullspeed.
+            this->thread_sleep_ms(10000); // Not to run fullspeed.
         }
     }
 
