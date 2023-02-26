@@ -19,11 +19,17 @@ sudo apt-get install -y \
 	cmake \
 	obs-studio \
 	qt6-base-dev \
-	libboost-all-dev \
-	libasio-dev \
+	# libboost-all-dev \
+	# libasio-dev \
 	libxss-dev \
 	libxtst-dev	\
-	libcpprest-dev
+	# libcpprest-dev \
+	python-is-python3	\
+	python3-pip
+
+sudo pip install "conan==1.59.0"
+export PATH="$HOME/.local/bin:$PATH"
+	# pip install conan
 	# libboost-all-dev \
 	# libpipewire-0.3-dev
 

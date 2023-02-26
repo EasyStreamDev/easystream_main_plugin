@@ -1,0 +1,8 @@
+[requires]
+qt/6.4.2
+asio/1.24.0
+cpprestsdk/2.10.18
+
+[generators]
+cmake
+cmake_find_package
