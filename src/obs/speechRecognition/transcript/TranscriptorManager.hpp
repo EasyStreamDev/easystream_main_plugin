@@ -1,31 +1,30 @@
-// #ifndef TRANSCRIPTOR_MANAGER_HPP
-// #define TRANSCRIPTOR_MANAGER_HPP
+#ifndef TRANSCRIPTOR_MANAGER_HPP
+#define TRANSCRIPTOR_MANAGER_HPP
 
-// #include "Transcriptor.hpp"
+#include "Transcriptor.hpp"
+#include "../../../Runnable.hpp"
 
-// namespace es::transcription
-// {
-//     class TranscriptorManager
-//     {
-//     public:
-//         TranscriptorManager();
-//         ~TranscriptorManager();
+namespace es::transcription
+{
+    class TranscriptorManager : public es::Runnable
+    {
+    public:
+        TranscriptorManager();
+        ~TranscriptorManager();
 
-//         void start(void);
-//         void stop(void);
+        void start(void);
+        void run(void *) override;
+        void stop(void);
 
-//         void transcriptFile(const std::string &, Transcriptor::ResponseCallback);
-//         inline const bool &isRunning() { return this->running; }
+    private:
+        void transcriptFile(const std::string &, Transcriptor::ResponseCallback);
+        Transcriptor &getFreeTranscriptor();
 
-//     private:
-//         Transcriptor &getFreeTranscriptor();
+    private:
+        std::string accessToken;
+        std::array<Transcriptor, 4> transcriptors;
+        Queue<Pair<String, Transcriptor::ResponseCallback>> filesToTranscript;
+    };
+}
 
-//     private:
-//         std::string accessToken;
-//         std::array<Transcriptor, 4> transcriptors;
-//         std::vector<std::string> filesToTranscript;
-//         bool running = false;
-//     };
-// }
-
-// #endif // TRANSCRIPTOR_MANAGER_HPP
+#endif // TRANSCRIPTOR_MANAGER_HPP

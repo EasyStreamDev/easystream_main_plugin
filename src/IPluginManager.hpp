@@ -8,6 +8,8 @@
 #ifndef IPLUGINMANAGER_HPP_
 #define IPLUGINMANAGER_HPP_
 
+#include <atomic>
+
 namespace es
 {
     namespace area
@@ -31,7 +33,7 @@ namespace es
         virtual void Init(void) = 0;
         virtual void Start(void) = 0;
         virtual void Reset(void) = 0;
-        virtual const bool IsRunning(void) const = 0;
+        virtual const std::atomic<bool> &IsRunning(void) const = 0;
 
     public:
         inline virtual area::AreaManager *GetAreaMain(void) = 0;

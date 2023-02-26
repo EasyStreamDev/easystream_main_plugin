@@ -26,6 +26,7 @@ namespace es
 
         this->m_SourceTracker->init();
 
+        this->m_TranscriptorManager = new es::transcription::TranscriptorManager;
         this->m_AreaMain = new es::area::AreaManager();
         this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
@@ -36,6 +37,7 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
     }
 
     void PluginManager::Reset(void)
@@ -67,9 +69,8 @@ namespace es
         // blog(LOG_INFO, "\n### --- DELETED : ThreadPool.");
     }
 
-    const bool PluginManager::IsRunning(void) const
+    const std::atomic<bool> &PluginManager::IsRunning(void) const
     {
-        // @note : not protected
         return m_Running;
     }
 
@@ -94,5 +95,12 @@ namespace es
     void PluginManager::RunSceneSwitcherAI(void *private_data)
     {
         es::obs::scene_switcher_ai::run(nullptr);
+    }
+
+    void PluginManager::RunTranscriptor(void *private_data)
+    {
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+
+        pm->m_TranscriptorManager->run(nullptr);
     }
 }

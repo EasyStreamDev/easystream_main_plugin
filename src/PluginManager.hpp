@@ -17,6 +17,7 @@
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
 #include "server/include/AsioTcpServer.hpp"
 #include "utils/Thread.hpp"
+#include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
 
 #include "IPluginManager.hpp"
 
@@ -31,7 +32,7 @@ namespace es
         void Init(void);
         void Start(void);
         void Reset(void);
-        const bool IsRunning(void) const;
+        const std::atomic<bool> &IsRunning(void) const;
 
     public:
         inline area::AreaManager *GetAreaMain(void) { return m_AreaMain; }
@@ -44,9 +45,12 @@ namespace es
         static void RunServer(void *);
         static void RunArea(void *);
         static void RunSceneSwitcherAI(void *);
+        static void RunTranscriptor(void *);
 
     private:
-        bool m_Running = false;
+        std::atomic<bool> m_Running = false;
+
+        transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
 
         thread::ThreadPool *m_ThreadPool = nullptr;
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
