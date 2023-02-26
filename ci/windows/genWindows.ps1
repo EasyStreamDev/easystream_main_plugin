@@ -38,7 +38,7 @@ function buildEasyStream {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
     }
     Set-Location "build"
-    conan.exe install ../ --profile ../utils/easystream --build=missing
+    conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
     cmake <#-G "Visual Studio 17 2022"#> ..
     cmake --build ./
 }
