@@ -26,7 +26,7 @@ namespace es
 
         this->m_SourceTracker->init();
 
-        this->m_TranscriptorManager = new es::transcription::TranscriptorManager;
+        // this->m_TranscriptorManager = new es::transcription::TranscriptorManager;
         this->m_AreaMain = new es::area::AreaManager();
         this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
@@ -34,10 +34,10 @@ namespace es
     void PluginManager::Start(void)
     {
         // Start asynchrounous routines
-        m_ThreadPool->push(std::function(PluginManager::RunServer), this);
-        m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
-        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunServer), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunArea), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
     }
 
     void PluginManager::Reset(void)
@@ -101,7 +101,6 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_TranscriptorManager->start();
-        pm->m_TranscriptorManager->run(nullptr);
+        // pm->m_TranscriptorManager->run(nullptr);
     }
 }

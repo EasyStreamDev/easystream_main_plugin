@@ -56,7 +56,7 @@ namespace es
         // Runnable
         area::AreaManager *m_AreaMain = nullptr;   // Runnable done
         server::AsioTcpServer *m_Server = nullptr; // Runnable done
-        transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
+        // transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
     };
 } // namespace es
 
