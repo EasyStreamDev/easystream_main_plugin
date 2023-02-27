@@ -22,20 +22,20 @@ jobs:
       - name: OBS deps
         run: ./ci/linux/install-dependencies-ubuntu.sh
       - name: Compile
-        run: ./ci/linux/build-ubuntu.sh
-      - name: Package
-        if: ${{ github.event_name == 'push' }}
-        id: package
-        run: |
-          ./ci/linux/package-ubuntu.sh
-          source "./ci/ci_includes.generated.sh"
-          echo "::set-output name=plugin-version::$PLUGIN_VERSION"
-      - name: Release
-        if: ${{ github.event_name == 'push' }}
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.package.outputs.plugin-version }}
-          files: ./package/*.deb
+        run: ./ci/linux/build-ubuntu.sh 
+      # - name: Package
+      #   if: ${{ github.event_name == 'push' }}
+      #   id: package
+      #   run: |
+      #     ./ci/linux/package-ubuntu.sh
+      #     source "./ci/ci_includes.generated.sh"
+      #     echo "::set-output name=plugin-version::$PLUGIN_VERSION"
+      # - name: Release
+      #   if: ${{ github.event_name == 'push' }}
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: ${{ steps.package.outputs.plugin-version }}
+      #     files: ./package/*.deb
 
   win64Build:
     name: "win64Build"

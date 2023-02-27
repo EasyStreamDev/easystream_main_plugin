@@ -28,7 +28,6 @@ sudo apt-get install -y \
 	python3-pip
 
 sudo pip install "conan==1.59.0"
-export PATH="$HOME/.local/bin:$PATH"
 	# pip install conan
 	# libboost-all-dev \
 	# libpipewire-0.3-dev

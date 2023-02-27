@@ -4,13 +4,13 @@ skip=false
 buildType="Debug"
 rebuild=true
 
-while getopts "p:s:b:r" flag
+while getopts psr:b flag;
 do
     case "$flag" in
+        b) rebuild=false;;
         p) package=true;;
         s) skip=true;;
-        b) buildType="$OPTARG";;
-        r) rebuild=false
+        r) buildType="$OPTARG";;
     esac
 done
 
@@ -26,6 +26,7 @@ if [[ $skip == false ]]; then
     source "${rootProject}/ci/linux/build-obs.sh"
 fi
 
+export PATH="$HOME/.local/bin:$PATH"
 source "${rootProject}/ci/linux/build-ubuntu.sh" $buildType $rebuild
 
 if [[ $package == true ]]; then
