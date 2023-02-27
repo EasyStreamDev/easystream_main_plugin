@@ -376,7 +376,7 @@ Si la requête est invalide, l'action reste inchangée.
 **Start/Stop recording**
 ```json
 {
-    "type": ["START_REC", "STOP_REC"],
+    "type": "START_REC" | "STOP_REC",
     "params": {
         "delay": "int" // In seconds
     }
@@ -386,7 +386,7 @@ Si la requête est invalide, l'action reste inchangée.
 **Start/Stop streaming**
 ```json
 {
-    "type": ["START_STREAM", "STOP_STREAM"],
+    "type": "START_STREAM" | "STOP_STREAM",
     "params": {
         "delay": "int" // In seconds
     }
