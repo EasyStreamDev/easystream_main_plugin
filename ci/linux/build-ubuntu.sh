@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 cd $rootProject
+
+if [$# -eq 0]; then
+    echo "No arguments given"
+    exit -1
+fi
 # set -ex
-rm -rf build && mkdir build && cd build
-conan install "$rootProject/utils/ubuntu/" --build=missing --profile "$rootProject/utils/ubuntu/ubuntuDebug"
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_UBUNTU=yes ..
-make -j4
+if [[$2 == true]]; then
+    rm -rf build && mkdir build && cd build
+    if ["$1" = "Debug"]; then
+        conan install "$rootProject/utils/ubuntu/" --build=missing --profile "$rootProject/utils/ubuntu/ubuntuDebug"
+    else
+        conan install "$rootProject/utils/ubuntu/" --build=missing --profile "$rootProject/utils/ubuntu/ubuntuRelease"
+    fi
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_UBUNTU=yes ..
+else
+    cd build
+fi
+cmake --build . --config "$1"
