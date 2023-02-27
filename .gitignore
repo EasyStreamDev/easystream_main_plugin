@@ -88,3 +88,5 @@ Variables.h
 src/server/.vscode/c_cpp_properties.json
 
 test.json
+
+release

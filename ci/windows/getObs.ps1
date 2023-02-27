@@ -5,7 +5,10 @@ function getObs {
 
         [Parameter(Mandatory)]
         [validateSet('x86', 'x64')]
-        [string]$Arch
+        [string]$Arch,
+
+        [Parameter(Mandatory)]
+        [string]$buildMode
     )
 
     if (Test-Path -Path "obs-studio") {
@@ -16,5 +19,5 @@ function getObs {
         git clone --recursive https://github.com/obsproject/obs-studio.git
         Set-Location "obs-studio"
     }
-    ./CI/build-windows.ps1 -BuildArch $Arch
+    ./CI/build-windows.ps1 -BuildArch $Arch -BuildConfiguration $buildMode
 }
