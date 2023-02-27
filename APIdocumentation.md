@@ -367,8 +367,28 @@ Si la requête est invalide, l'action reste inchangée.
 {
     "type": "TOGGLE_AUDIO_COMPRESSOR",
     "params": {
-        "audio-source": "audio_source_identifier"
+        "audio-source": "audio_source_identifier",
         "toggle": "bool"
+    }
+}
+```
+
+**Start/Stop recording**
+```json
+{
+    "type": ["START_REC", "STOP_REC"],
+    "params": {
+        "delay": "int" // In seconds
+    }
+}
+```
+
+**Start/Stop streaming**
+```json
+{
+    "type": ["START_STREAM", "STOP_STREAM"],
+    "params": {
+        "delay": "int" // In seconds
     }
 }
 ```
