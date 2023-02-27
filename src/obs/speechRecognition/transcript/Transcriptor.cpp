@@ -104,7 +104,8 @@ namespace es::transcription
             // buffer.open_istream is asynchronous (returns a task). Using .get() on it
             // will wait for the task to be fully executed and return the result which here is
             // an input file stream (type: Concurrency::streams::istream)
-            auto file_input_stream = buffer.open_istream(file_path, std::ios::binary).get();
+            
+            auto file_input_stream = buffer.open_istream(utility::conversions::to_string_t(file_path), std::ios::binary).get();
 
             msg.set_binary_message(file_input_stream);
             // this->request_completions.insert(std::pair(std::string(file_path), request_status_t{}));
@@ -120,7 +121,7 @@ namespace es::transcription
 
     void Transcriptor::connect()
     {
-        this->client.connect(U(this->url)).wait();
+        this->client.connect(utility::conversions::to_string_t(this->url)).wait();
         this->setStatus(Status::CONNECTING);
     }
 

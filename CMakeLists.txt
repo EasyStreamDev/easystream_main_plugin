@@ -29,8 +29,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
 endif()
+
+# message(${CMAKE_BUILD_TYPE})
 
 if(UNIX OR APPLE)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -87,13 +89,13 @@ endif()
 
 if(WIN32 OR WIN64)
     add_library(LibObs SHARED IMPORTED)
-    set_property(TARGET LibObs PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/RelWithDebInfo/obs.dll")
-    set_property(TARGET LibObs PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/RelWithDebInfo/obs.lib")
+    set_property(TARGET LibObs PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/${CMAKE_BUILD_TYPE}/obs.dll")
+    set_property(TARGET LibObs PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/${CMAKE_BUILD_TYPE}/obs.lib")
 
     # obs-frontend
     add_library(OBS_FRONTEND_LIB SHARED IMPORTED)
-    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/RelWithDebInfo/obs-frontend-api.dll")
-    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/RelWithDebInfo/obs-frontend-api.lib")
+    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/${CMAKE_BUILD_TYPE}/obs-frontend-api.dll")
+    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/${CMAKE_BUILD_TYPE}/obs-frontend-api.lib")
 endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core)

@@ -6,7 +6,7 @@ function installConan {
         $pyEx
     }
     py -m ensurepip --upgrade
-    pip install conan
+    pip install conan==1.59.0
     # Set-Location "../"
     # $currDir = Get-Location
     # Write-Host $PSScriptRoot

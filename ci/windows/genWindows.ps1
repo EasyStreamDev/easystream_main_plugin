@@ -8,11 +8,18 @@ param(
     [Parameter()]
     [switch]$CloneObs,
 
+    [Parameter(Mandatory)]
+    [ValidateSet("Release", "RelWithDebInfo", "MinSizeRel", "Debug")]
+    [string]$BuildTypeObs,
+
+    [Parameter(Mandatory)]
+    [ValidateSet("Release", "Debug")]
+    [string]$BuildType,
+
     [Parameter()]
     [validateSet('x86', 'x64')]
     [string]$BuildArch
 )
-
 
 $rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
 $BoostFolder = "${rootDir}/compileResource/boostFolder/"
@@ -28,6 +35,7 @@ function printUsage {
         "-Help          :   Print Usage",
         "-Dependencies  :   Download dependencies of easystream",
         "-Clone         :   Clone and build obs-studio"
+        "-Release       :   Make a release instead"
     )
     $Usage | Write-Host
 }
@@ -38,9 +46,14 @@ function buildEasyStream {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
     }
     Set-Location "build"
-    conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
-    cmake <#-G "Visual Studio 17 2022"#> ..
-    cmake --build ./
+    # if ($BuildType == )
+    if ($BuildType -eq "Release") {
+        conan.exe install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing
+    } else {
+        conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
+    }
+    cmake -G "Visual Studio 17 2022" .. -DCMAKE_BUILD_TYPE="$BuildTypeObs"
+    cmake --build ./ --config $BuildType
 }
 
 function main {
@@ -54,10 +67,10 @@ function main {
     }
     if ($CloneObs.IsPresent) {
         if ($PSBoundParameters.ContainsKey('BuildArch')) {
-            getObs -obsFolder $obsFolder -Arch $BuildArch
+            getObs -obsFolder $obsFolder -Arch $BuildTypeObs
         } else {
             $arch = ('x86', 'x64')[[System.Environment]::Is64BitOperatingSystem]
-            getObs -obsFolder $obsFolder -Arch $arch
+            getObs -obsFolder $obsFolder -Arch $arch $BuildTypeObs
         }
     }
     buildEasyStream
