@@ -6,6 +6,7 @@
 */
 
 #include "../include/AsioTcpServer.hpp"
+#include "../../obs/speechRecognition/transcript/TranscriptorManager.hpp"
 
 namespace es::server
 {
@@ -44,13 +45,20 @@ namespace es::server
         blog(LOG_INFO, "###  - Starting server...");
         std::cout << "###  - Starting server..." << std::endl;
         this->start();
-        blog(LOG_INFO, "###  - Server started. Now running.");
 
+        this->thread_sleep_ms(3000);
+        blog(LOG_INFO, "###  - Server started. Now running.");
         // @todo : End thread execution properly
-        while (this->m_PluginManager && this->m_PluginManager->IsRunning())
+        while (m_PluginManager && m_PluginManager->IsRunning())
         {
             this->update();
-            this->thread_sleep_ms(100);
+
+            {
+                std::string file_path = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/sweden.wav";
+                m_PluginManager->GetTranscriptorManager()->submit(file_path);
+            }
+            // this->thread_sleep_ms(100);
+            this->thread_sleep_ms(20000);
         };
         blog(LOG_INFO, "###  - Server stopped running.");
     }
@@ -65,7 +73,7 @@ namespace es::server
         {
             waitForClientConnection();
             _threadContext = std::thread([this]()
-                                           { _ioContext.run(); });
+                                         { _ioContext.run(); });
             blog(LOG_INFO, "### [SERVER EASYSTREAM] new server started on port: %d", _acceptor.local_endpoint().port());
             std::cout << "### [SERVER EASYSTREAM] new server started on " << _acceptor.local_endpoint().address() << ":" << _acceptor.local_endpoint().port() << std::endl;
         }

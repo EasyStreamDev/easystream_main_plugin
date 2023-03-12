@@ -4,6 +4,11 @@ namespace es::transcription
 {
     TranscriptorManager::TranscriptorManager()
     {
+        for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
+        {
+            m_Transcriptors[idx] = Transcriptor(this);
+        }
+
         // @dev YerimB : To get from env ?
         // const std::string rev_ai_token = std::getenv("REVAI_TOKEN");
 
@@ -13,7 +18,7 @@ namespace es::transcription
         // }
 
         // this->accessToken = rev_ai_token;
-        this->accessToken = "02dsbSDq9R5nb9iHJrpgeNlplkRAJkvvWZh59WJfnVULUZqU9ovP-EIFUj1sbRtV0bJXFlbyfwd0Kg99Psap5x4gzLLaE"; // Get access token and store it
+        this->accessToken = "02Pp5jWvtnGyLEOpiFYkFUXHzXGFh_Uc-FGTLWsSg94VZwzTXdBlOtgsaAa-KqXA7_DeycShbVpQM2cdroLBrxrOKRG78"; // Get access token and store it
     }
 
     TranscriptorManager::~TranscriptorManager()
@@ -27,96 +32,129 @@ namespace es::transcription
 
     void TranscriptorManager::run(void *)
     {
-        while (1)
+        while (1) // @todo : setup a boolean thread killer
         {
-            { // @test: Add file to transcription queue.
-                blog(LOG_INFO, "--------- Transcriptor manager running : Submitted file.");
-                String prefix = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
-                this->thread_sleep_ms(5000);
-                this->filesToTranscript.push(
-                    Pair<
-                        String,
-                        Transcriptor::ResponseCallback>(
-                        prefix + "league.wav",
-                        [](const json &data)
-                        {
-                            std::string buf;
-                            auto &elems = data["elements"];
-
-                            for (auto &elem : elems)
-                            {
-                                buf += elem["value"];
-                                if (data["type"] != "final")
-                                {
-                                    buf += " ";
-                                }
-                            }
-                            blog(LOG_INFO, "----------- Result : %s", buf.c_str());
-                        }));
-                // @endtest
-            }
-            while (!this->filesToTranscript.empty())
+            m_FilesQueueMutex.lock();
+            while (!m_FilesQueue.empty())
             {
+                blog(LOG_INFO, "---------- TranscriptorManager : treating file...");
                 // Get next file to transcript
-                auto &data_ = this->filesToTranscript.front();
+                auto &data_ = m_FilesQueue.front();
 
-                // Submit file to transcriptor
-                this->transcriptFile(data_.first, data_.second);
-
-                // Remove file from queue
-                this->filesToTranscript.pop();
+                // Submit file to transcriptor, returns true if success.
+                if (this->transcriptFile(data_.first, data_.second))
+                {
+                    blog(LOG_INFO, "---------- TranscriptorManager : Success - file was submitted for transcription.");
+                    // Remove file from queue if succesfully submitted.
+                    m_FilesQueue.pop();
+                }
+                else // If file could not be submitted (i.e. no transcriptor is available).
+                {
+                    break;
+                }
             }
-            blog(LOG_INFO, "--------- Transcriptor manager running : No file left in queue.");
-            this->thread_sleep_ms(10000); // Not to run fullspeed.
+            m_FilesQueueMutex.unlock();
+            this->thread_sleep_ms(1000); // Not to run fullspeed.
+            blog(LOG_INFO, "---------- TranscriptorManager : Still running...");
         }
+    }
+
+    const uint TranscriptorManager::submit(const std::string &file_path)
+    {
+        // Get a unique transcription ID (@todo @maybe : instead of using uint type, use a real UUID)
+        const uint transcription_id = this->getNewTranscriptionId();
+
+        // Thread protected add of file to transcript in the queue.
+        m_FilesQueueMutex.lock();
+        m_FilesQueue.push(Pair<uint, String>(transcription_id, file_path));
+        m_FilesQueueMutex.unlock();
+
+        blog(LOG_INFO, "---------- TranscriptorManager : File submitted.");
+        return transcription_id;
     }
 
     void TranscriptorManager::stop(void)
     {
-        for (auto &t : this->transcriptors)
+        // Tell transcriptors to disconnect and stop their work.
+        for (auto &t : m_Transcriptors)
         {
             t.stop();
         }
-        for (auto &t : this->transcriptors)
+        // Check for disconnection.
+        for (auto &t : m_Transcriptors)
         {
             while (t.getStatus() != Transcriptor::Status::DISCONNECTED)
-                ;
+            {
+                // Prevent running at processor fullspeed.
+                this->thread_sleep_ms(1);
+            }
         }
+    }
+
+    void TranscriptorManager::storeTranscription(const ts_result_t &result_)
+    {
+        m_ResultsMutex.lock();
+        m_Results[result_.id] = result_;
+        m_ResultsMutex.unlock();
     }
 
     /***********/
     /* PRIVATE */
     /***********/
 
-    void TranscriptorManager::transcriptFile(
-        const std::string &path,
-        Transcriptor::ResponseCallback cb_)
+    const bool TranscriptorManager::transcriptFile(
+        const uint &id,
+        const std::string &path)
     {
-        Transcriptor &t = this->getFreeTranscriptor();
+        // Try getting free transcriptor
+        Transcriptor *t = this->getFreeTranscriptor();
 
-        t.init(this->accessToken, cb_);
-        t.start();
-        // Wait for connection to WS remote endpoint.
-        while (t.getStatus() != Transcriptor::Status::CONNECTED)
+        // Check if any transcriptor was available.
+        if (!t)
         {
+            // Returns false if no transcriptor are available
+            return false;
+        }
+
+        blog(LOG_INFO, "---------- TranscriptorManager : Free Transcriptor found.");
+
+        // Initialize transcriptor with access token.
+        t->init(this->accessToken);
+        // Initiate connection to WS remote endpoint.
+        blog(LOG_INFO, "---------- TranscriptorManager : Connecting to remote endpoint...");
+        t->start();
+        blog(LOG_INFO, "---------- TranscriptorManager : Connection established.");
+        // Wait for connection completion.
+        while (t->getStatus() != Transcriptor::Status::CONNECTED)
+        {
+            // Prevent running at processor fullspeed.
             this->thread_sleep_ms(5);
         }
-        // Send audio file to transcript.
-        t.sendAudio(path);
+        // Transcriptor connected : sending audio file to transcript.
+        t->sendAudio(id, path);
+
+        // Returns true if file was succesfully submitted to transcriptor.
+        return true;
     }
 
-    Transcriptor &TranscriptorManager::getFreeTranscriptor()
+    Transcriptor *TranscriptorManager::getFreeTranscriptor()
     {
-        while (1)
+        for (auto &t : m_Transcriptors)
         {
-            for (auto &t : this->transcriptors)
+            if (t.getStatus() == Transcriptor::Status::DISCONNECTED)
             {
-                if (t.getStatus() == Transcriptor::Status::DISCONNECTED)
-                {
-                    return t;
-                }
+                return &t;
             }
-            this->thread_sleep_ms(5);
         }
+
+        // No transcriptor available
+        return nullptr;
+    }
+
+    const uint TranscriptorManager::getNewTranscriptionId(void) const
+    {
+        static uint TRANSCRIPTION_ID = 0;
+
+        return ++TRANSCRIPTION_ID;
     }
 }

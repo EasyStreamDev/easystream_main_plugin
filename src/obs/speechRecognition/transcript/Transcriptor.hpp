@@ -2,6 +2,7 @@
 #define TRANSCRIPTOR_HPP
 
 #include "../../../Common.hpp"
+#include "./ITranscriptorManager.hpp"
 
 #include <cpprest/ws_client.h>
 #include <cpprest/streams.h>
@@ -20,6 +21,12 @@ namespace es::transcription
     template <typename T>
     using Queue = std::queue<T>;
 
+    template <typename T>
+    using Vector = std::vector<T>;
+
+    template <typename T1, typename T2>
+    using Map = std::map<T1, T2>;
+
     template <typename T1, typename T2>
     using Pair = std::pair<T1, T2>;
 
@@ -27,7 +34,7 @@ namespace es::transcription
     {
         /* USEFUL DEFINITIONS */
     public:
-        using ResponseCallback = void (*)(const json &);
+        // using ResponseCallback = void (*)(const json &);
         enum Status
         {
             CONNECTING,
@@ -40,22 +47,22 @@ namespace es::transcription
     public:
         /* CTOR & DTOR */
         Transcriptor() = default;
+        Transcriptor(ITranscriptorManager *);
         ~Transcriptor();
 
         /* PUBLIC METHODS */
-        void init(const std::string &, ResponseCallback);
+        void init(const std::string &);
         void start();
         void stop();
-        void sendAudio(const std::string &);
+        void sendAudio(const uint &, const std::string &);
 
         /* SETTERS */
-        void setResponseCallback(ResponseCallback);
         void setAccessToken(const std::string &);
         inline void setStatus(const Status &s_) { this->status = s_; }
 
         /* GETTERS */
         inline const Status &getStatus(void) { return this->status; }
-        inline const ResponseCallback &getResponseCallback(void) { return this->transcription_callback; }
+        inline ITranscriptorManager *getTranscriptorManager(void) { return m_TSManager; }
 
         /* OPERATORS */
     public:
@@ -68,14 +75,20 @@ namespace es::transcription
 
         /* MEMBER VARIABLES */
     private:
+        // Pointer to manager (for transcription saving)
+        ITranscriptorManager *m_TSManager = nullptr;
+
+        // Current transcripting file data
+        ts_result_t m_FileData = {};
+
+        // WebSocket
         WS_CallbackClient client;
         std::string accessToken;
+        Transcriptor::Status status = Status::DISCONNECTED;
         const std::string websocketEndpoint = "wss://api.rev.ai/speechtotext/v1/stream";
         const std::string contentTypeWAV = "&content_type=audio/x-wav";
         const std::string _tmp_f = "./tmp/tmp_stream_file";
         std::string url;
-        ResponseCallback transcription_callback = nullptr;
-        Transcriptor::Status status = Status::DISCONNECTED;
     };
 }
 

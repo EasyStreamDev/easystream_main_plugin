@@ -74,6 +74,31 @@ namespace es
         return m_Running;
     }
 
+    area::AreaManager *PluginManager::GetAreaMain(void)
+    {
+        return m_AreaMain;
+    }
+
+    server::AsioTcpServer *PluginManager::GetServer(void)
+    {
+        return m_Server;
+    }
+
+    obs::SourceTracker *PluginManager::GetSourceTracker(void)
+    {
+        return m_SourceTracker;
+    }
+
+    thread::ThreadPool *PluginManager::GetThreadPool(void)
+    {
+        return m_ThreadPool;
+    }
+
+    transcription::TranscriptorManager *PluginManager::GetTranscriptorManager(void)
+    {
+        return m_TranscriptorManager;
+    }
+
     /**************************/
     /* ASYNCHROUNOUS ROUTINES */
     /**************************/

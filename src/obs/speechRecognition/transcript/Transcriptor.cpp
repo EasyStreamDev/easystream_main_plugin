@@ -2,18 +2,62 @@
 
 namespace es::transcription
 {
+    Transcriptor::Transcriptor(ITranscriptorManager *tsManager_)
+        : m_TSManager(tsManager_)
+    {
+    }
+
     Transcriptor::~Transcriptor()
     {
         this->stop();
     }
 
-    void Transcriptor::init(const std::string &aToken_, ResponseCallback cb_)
+    void Transcriptor::init(const std::string &aToken_)
     {
-        this->client = WS_CallbackClient();
-
         this->setAccessToken(aToken_);
-        // Message received callback
-        this->setResponseCallback(cb_);
+
+        // Setup WS client
+        this->client = WS_CallbackClient();
+        // Message received from remote WS endpoint callback
+        this->client.set_message_handler(
+            [this](ws_socket::websocket_incoming_message msg)
+            {
+                try
+                {
+                    json data = json::parse(msg.extract_string().get());
+                    auto response_type = std::string(data["type"]);
+
+                    if (response_type == "connected")
+                    {
+                        std::cout << "WebSocket Connected" << std::endl;
+                        this->setStatus(Status::CONNECTED);
+                    }
+                    else // if (response_type == "final" || response_type == "partial")
+                    {
+                        ITranscriptorManager *tm = this->getTranscriptorManager();
+
+                        if (tm)
+                        {
+                            this->m_FileData.transcription = (std::vector<std::string>)data.at("elements");
+                            tm->storeTranscription(this->m_FileData);
+                        }
+                        else
+                        {
+                            std::cerr << "[Transcriptor] - Transcriptor manager not found." << std::endl;
+                        }
+
+                        // When final response received, send disconnect message.
+                        if (response_type == "final")
+                        {
+                            this->stop();
+                        }
+                    }
+                }
+                catch (std::exception e)
+                {
+                    std::cerr << e.what() << std::endl;
+                }
+            });
         // Set disconnect confirmation callback.
         this->client.set_close_handler(
             [&](
@@ -22,7 +66,8 @@ namespace es::transcription
                 const std::error_code &error)
             {
                 std::cout << "Closing Connection... " << std::flush;
-                client.close();
+                client.close();        // Close connection to remote WS.
+                this->m_FileData = {}; // Reset current file data.
                 this->setStatus(Status::DISCONNECTED);
                 std::cout << "Connection closed." << std::endl;
             });
@@ -32,12 +77,10 @@ namespace es::transcription
     {
         // Connect to the WS endpoint.
         this->connect();
-        std::cout << "Started." << std::endl;
     }
 
     void Transcriptor::stop()
     {
-        // if (this->connected)
         if (this->status != Status::DISCONNECTING &&
             this->status != Status::DISCONNECTED)
         {
@@ -52,59 +95,20 @@ namespace es::transcription
                     this->accessToken + this->contentTypeWAV;
     }
 
-    void Transcriptor::setResponseCallback(ResponseCallback cb_)
+    void Transcriptor::sendAudio(const uint &id, const std::string &file_path)
     {
-        this->transcription_callback = cb_;
-        this->client.set_message_handler(
-            [&](ws_socket::websocket_incoming_message msg)
-            {
-                try
-                {
-                    json data = json::parse(msg.extract_string().get());
-                    auto response_type = std::string(data["type"]);
+        // Store file transcription data
+        m_FileData.id = id;
+        m_FileData.file_path = file_path;
 
-                    if (response_type == "connected")
-                    {
-                        std::cout << "WebSocket Connected" << std::endl;
-                        // this->connected = true;
-                        this->setStatus(Status::CONNECTED);
-                    }
-                    else // if (response_type == "final" || response_type == "partial")
-                    {
-                        ResponseCallback callback = this->getResponseCallback();
-
-                        if (callback)
-                        {
-                            callback(data);
-                        }
-                        else
-                        {
-                            std::cout << "[Transcriptor] - Response callback undefined." << std::endl;
-                        }
-                    }
-                    // When final response received, send disconnect message.
-                    if (response_type == "final")
-                    {
-                        this->stop();
-                    }
-                }
-                catch (std::exception e)
-                {
-                    std::cerr << e.what() << std::endl;
-                }
-            });
-    }
-
-    void Transcriptor::sendAudio(const std::string &file_path)
-    {
         try
         {
             WS_OutMessage msg;
             concurrency::streams::file_stream<uint8_t> buffer;
+
             // buffer.open_istream is asynchronous (returns a task). Using .get() on it
             // will wait for the task to be fully executed and return the result which here is
             // an input file stream (type: Concurrency::streams::istream)
-            
             auto file_input_stream = buffer.open_istream(utility::conversions::to_string_t(file_path), std::ios::binary).get();
 
             msg.set_binary_message(file_input_stream);
