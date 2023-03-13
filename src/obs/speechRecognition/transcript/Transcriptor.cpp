@@ -24,41 +24,45 @@ namespace es::transcription
             {
                 try
                 {
-                    blog(LOG_INFO, "--------- WSCallback : response received.");
                     json data = json::parse(msg.extract_string().get());
-                    auto response_type = std::string(data["type"]);
+                    const auto &response_type = std::string(data["type"]);
 
-                    blog(LOG_INFO, "--------- WSCallback : response_type = %s", response_type.c_str());
+                    if (response_type == "connected")
+                    {
+                        // blog(LOG_INFO, "--------- WSCallback : WebSocket Connected.");
+                        this->setStatus(Status::CONNECTED);
+                    }
+                    else // if (response_type == "final" || response_type == "partial")
+                    {
+                        ITranscriptorManager *tm = this->getManager();
 
-                    // if (response_type == "connected")
-                    // {
-                    //     blog(LOG_INFO, "--------- WSCallback : WebSocket Connected.");
-                    //     this->setStatus(Status::CONNECTED);
-                    // }
-                    // else // if (response_type == "final" || response_type == "partial")
-                    // {
-                    //     ITranscriptorManager *tm = this->getTranscriptorManager();
+                        if (tm != nullptr)
+                        {
+                            const Vector<json> &elements = data.at("elements");
+                            Vector<String> transcript;
 
-                    //     if (tm)
-                    //     {
-                    //         this->m_FileData.transcription = (std::vector<std::string>)data.at("elements");
-                    //         tm->storeTranscription(this->m_FileData);
-                    //     }
-                    //     else
-                    //     {
-                    //         std::cerr << "[Transcriptor] - Transcriptor manager not found." << std::endl;
-                    //     }
+                            for (const json &elem : elements)
+                            {
+                                transcript.push_back(elem.at("value"));
+                            }
+                            this->m_FileData.transcription = transcript;
+                            tm->storeTranscription(this->m_FileData);
+                        }
+                        else
+                        {
+                            std::cerr << "[Transcriptor] - Transcriptor manager not found." << std::endl;
+                        }
 
-                    //     // When final response received, send disconnect message.
-                    //     if (response_type == "final")
-                    //     {
-                    //         this->stop();
-                    //     }
-                    // }
+                        // When final response received, send disconnect message.
+                        if (response_type == "final")
+                        {
+                            this->stop();
+                        }
+                    }
                 }
                 catch (std::exception e)
                 {
-                    std::cerr << e.what() << std::endl;
+                    std::cerr << "[Transcriptor] - Callback raised an exception: " << e.what() << std::endl;
                 }
             });
         // Set disconnect confirmation callback.
@@ -68,11 +72,11 @@ namespace es::transcription
                 const utility::string_t &reason,
                 const std::error_code &error)
             {
-                std::cout << "Closing Connection... " << std::flush;
+                // std::cout << "Closing Connection... " << std::flush;
                 client.close();        // Close connection to remote WS.
                 this->m_FileData = {}; // Reset current file data.
                 this->setStatus(Status::DISCONNECTED);
-                std::cout << "Connection closed." << std::endl;
+                // std::cout << "Connection closed." << std::endl;
             });
     }
 
@@ -154,6 +158,7 @@ namespace es::transcription
         this->accessToken = other.accessToken;
         this->client = other.client;
         this->url = other.url;
+        this->m_TSManager = other.m_TSManager;
 
         return *this;
     }

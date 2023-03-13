@@ -11,14 +11,12 @@ namespace es::transcription
 
         // @dev YerimB : To get from env ?
         // const std::string rev_ai_token = std::getenv("REVAI_TOKEN");
-
         // if (rev_ai_token.empty())
         // {
         //     throw "Rev.ai token not set.";
         // }
-
         // this->accessToken = rev_ai_token;
-        this->accessToken = "02Pp5jWvtnGyLEOpiFYkFUXHzXGFh_Uc-FGTLWsSg94VZwzTXdBlOtgsaAa-KqXA7_DeycShbVpQM2cdroLBrxrOKRG78"; // Get access token and store it
+        this->accessToken = "02q8AVv7gLkEEjHHhkxPGPnIIDFx7NGbDly30IFEgNRtHKpz5yro4V-47-DeCNLt_9dipgA2fj4r-6TQXU_Jhy-zEAg5U"; // Get access token and store it
     }
 
     TranscriptorManager::~TranscriptorManager()
@@ -37,14 +35,12 @@ namespace es::transcription
             m_FilesQueueMutex.lock();
             while (!m_FilesQueue.empty())
             {
-                blog(LOG_INFO, "---------- TranscriptorManager : treating file...");
                 // Get next file to transcript
                 auto &data_ = m_FilesQueue.front();
 
                 // Submit file to transcriptor, returns true if success.
                 if (this->transcriptFile(data_.first, data_.second))
                 {
-                    blog(LOG_INFO, "---------- TranscriptorManager : Success - file was submitted for transcription.");
                     // Remove file from queue if succesfully submitted.
                     m_FilesQueue.pop();
                 }
@@ -54,8 +50,7 @@ namespace es::transcription
                 }
             }
             m_FilesQueueMutex.unlock();
-            this->thread_sleep_ms(1000); // Not to run fullspeed.
-            blog(LOG_INFO, "---------- TranscriptorManager : Still running...");
+            this->thread_sleep_ms(50); // Not to run fullspeed.
         }
     }
 
@@ -64,13 +59,11 @@ namespace es::transcription
         // Get a unique transcription ID (@todo @maybe : instead of using uint type, use a real UUID)
         const uint transcription_id = this->getNewTranscriptionId();
 
-        blog(LOG_INFO, "---------- TranscriptorManager : Waiting for lock to free...");
         // Thread protected add of file to transcript in the queue.
         m_FilesQueueMutex.lock();
         m_FilesQueue.push(Pair<uint, String>(transcription_id, file_path));
         m_FilesQueueMutex.unlock();
 
-        blog(LOG_INFO, "---------- TranscriptorManager : File submitted.");
         return transcription_id;
     }
 
@@ -97,6 +90,16 @@ namespace es::transcription
         m_ResultsMutex.lock();
         m_Results[result_.id] = result_;
         m_ResultsMutex.unlock();
+
+        {
+            std::string tmp;
+
+            for (const auto &elem : result_.transcription)
+            {
+                tmp += elem + " ";
+            }
+            blog(LOG_INFO, "Transcription [%d] update : %s", result_.id, tmp.c_str());
+        }
     }
 
     /***********/
@@ -117,12 +120,9 @@ namespace es::transcription
             return false;
         }
 
-        blog(LOG_INFO, "---------- TranscriptorManager : Free Transcriptor found.");
-
         // Initialize transcriptor with access token.
         t->init(this->accessToken);
         // Initiate connection to WS remote endpoint.
-        blog(LOG_INFO, "---------- TranscriptorManager : Connecting to remote endpoint...");
         t->start();
         // Wait for connection completion.
         while (t->getStatus() != Transcriptor::Status::CONNECTED)
@@ -130,7 +130,6 @@ namespace es::transcription
             // Prevent running at processor fullspeed.
             this->thread_sleep_ms(5);
         }
-        blog(LOG_INFO, "---------- TranscriptorManager : Connection established.");
         // Transcriptor connected : sending audio file to transcript.
         t->sendAudio(id, path);
 

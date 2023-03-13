@@ -62,7 +62,7 @@ namespace es::transcription
 
         /* GETTERS */
         inline const Status &getStatus(void) { return this->status; }
-        inline ITranscriptorManager *getTranscriptorManager(void) { return m_TSManager; }
+        inline ITranscriptorManager *getManager(void) { return m_TSManager; }
 
         /* OPERATORS */
     public:

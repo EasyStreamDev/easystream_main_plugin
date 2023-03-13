@@ -43,23 +43,14 @@ namespace es::server
     void AsioTcpServer::run(void *)
     {
         blog(LOG_INFO, "###  - Starting server...");
-        std::cout << "###  - Starting server..." << std::endl;
         this->start();
 
-        this->thread_sleep_ms(3000);
         blog(LOG_INFO, "###  - Server started. Now running.");
         // @todo : End thread execution properly
         while (m_PluginManager && m_PluginManager->IsRunning())
         {
             this->update();
-
-            {
-                std::string file_path = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/sweden.wav";
-                m_PluginManager->GetTranscriptorManager()->submit(file_path);
-            }
-            // this->thread_sleep_ms(100);
-            this->thread_sleep_ms(5000);
-            blog(LOG_INFO, "###  - Server : end-of-loop.");
+            this->thread_sleep_ms(50);
         };
         blog(LOG_INFO, "###  - Server stopped running.");
     }
