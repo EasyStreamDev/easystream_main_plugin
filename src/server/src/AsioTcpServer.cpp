@@ -58,7 +58,8 @@ namespace es::server
                 m_PluginManager->GetTranscriptorManager()->submit(file_path);
             }
             // this->thread_sleep_ms(100);
-            this->thread_sleep_ms(20000);
+            this->thread_sleep_ms(5000);
+            blog(LOG_INFO, "###  - Server : end-of-loop.");
         };
         blog(LOG_INFO, "###  - Server stopped running.");
     }

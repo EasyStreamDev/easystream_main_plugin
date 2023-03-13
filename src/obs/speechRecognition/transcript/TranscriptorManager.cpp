@@ -64,6 +64,7 @@ namespace es::transcription
         // Get a unique transcription ID (@todo @maybe : instead of using uint type, use a real UUID)
         const uint transcription_id = this->getNewTranscriptionId();
 
+        blog(LOG_INFO, "---------- TranscriptorManager : Waiting for lock to free...");
         // Thread protected add of file to transcript in the queue.
         m_FilesQueueMutex.lock();
         m_FilesQueue.push(Pair<uint, String>(transcription_id, file_path));
@@ -123,13 +124,13 @@ namespace es::transcription
         // Initiate connection to WS remote endpoint.
         blog(LOG_INFO, "---------- TranscriptorManager : Connecting to remote endpoint...");
         t->start();
-        blog(LOG_INFO, "---------- TranscriptorManager : Connection established.");
         // Wait for connection completion.
         while (t->getStatus() != Transcriptor::Status::CONNECTED)
         {
             // Prevent running at processor fullspeed.
             this->thread_sleep_ms(5);
         }
+        blog(LOG_INFO, "---------- TranscriptorManager : Connection established.");
         // Transcriptor connected : sending audio file to transcript.
         t->sendAudio(id, path);
 

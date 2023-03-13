@@ -20,38 +20,41 @@ namespace es::transcription
         this->client = WS_CallbackClient();
         // Message received from remote WS endpoint callback
         this->client.set_message_handler(
-            [this](ws_socket::websocket_incoming_message msg)
+            [&](ws_socket::websocket_incoming_message msg)
             {
                 try
                 {
+                    blog(LOG_INFO, "--------- WSCallback : response received.");
                     json data = json::parse(msg.extract_string().get());
                     auto response_type = std::string(data["type"]);
 
-                    if (response_type == "connected")
-                    {
-                        std::cout << "WebSocket Connected" << std::endl;
-                        this->setStatus(Status::CONNECTED);
-                    }
-                    else // if (response_type == "final" || response_type == "partial")
-                    {
-                        ITranscriptorManager *tm = this->getTranscriptorManager();
+                    blog(LOG_INFO, "--------- WSCallback : response_type = %s", response_type.c_str());
 
-                        if (tm)
-                        {
-                            this->m_FileData.transcription = (std::vector<std::string>)data.at("elements");
-                            tm->storeTranscription(this->m_FileData);
-                        }
-                        else
-                        {
-                            std::cerr << "[Transcriptor] - Transcriptor manager not found." << std::endl;
-                        }
+                    // if (response_type == "connected")
+                    // {
+                    //     blog(LOG_INFO, "--------- WSCallback : WebSocket Connected.");
+                    //     this->setStatus(Status::CONNECTED);
+                    // }
+                    // else // if (response_type == "final" || response_type == "partial")
+                    // {
+                    //     ITranscriptorManager *tm = this->getTranscriptorManager();
 
-                        // When final response received, send disconnect message.
-                        if (response_type == "final")
-                        {
-                            this->stop();
-                        }
-                    }
+                    //     if (tm)
+                    //     {
+                    //         this->m_FileData.transcription = (std::vector<std::string>)data.at("elements");
+                    //         tm->storeTranscription(this->m_FileData);
+                    //     }
+                    //     else
+                    //     {
+                    //         std::cerr << "[Transcriptor] - Transcriptor manager not found." << std::endl;
+                    //     }
+
+                    //     // When final response received, send disconnect message.
+                    //     if (response_type == "final")
+                    //     {
+                    //         this->stop();
+                    //     }
+                    // }
                 }
                 catch (std::exception e)
                 {
