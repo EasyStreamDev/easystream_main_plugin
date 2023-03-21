@@ -102,6 +102,35 @@ namespace es::transcription
         }
     }
 
+    const Optional<ts_result_t> TranscriptorManager::getTranscription(const int &id)
+    {
+        m_ResultsMutex.lock();
+        // Get and return asked element.
+        auto find_res = m_Results.find(id);
+        if (find_res != m_Results.end())
+        {
+            m_ResultsMutex.unlock();
+            return find_res->second;
+        }
+
+        // Get and return last element of the unordered map.
+        if (id == -1)
+        {
+            for (auto it = m_Results.begin(); it != m_Results.end(); it++)
+            {
+                if (std::next(it) == m_Results.end())
+                {
+                    m_ResultsMutex.unlock();
+                    return it->second;
+                }
+            }
+        }
+
+        m_ResultsMutex.unlock();
+        // Element asked not found.
+        return std::nullopt;
+    }
+
     /***********/
     /* PRIVATE */
     /***********/

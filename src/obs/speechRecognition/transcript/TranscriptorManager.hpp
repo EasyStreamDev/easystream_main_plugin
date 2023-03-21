@@ -18,6 +18,7 @@ namespace es::transcription
         const uint submit(const std::string &);
         void stop(void);
         void storeTranscription(const ts_result_t &);
+        const Optional<ts_result_t> getTranscription(const int & = -1);
 
     private:
         const bool transcriptFile(const uint &, const std::string &);
@@ -31,7 +32,7 @@ namespace es::transcription
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;
         // Transcription results (transcripted)
-        Map<uint, ts_result_t> m_Results;
+        Umap<uint, ts_result_t> m_Results;
         std::mutex m_ResultsMutex;
     };
 

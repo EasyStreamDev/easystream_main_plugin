@@ -14,7 +14,7 @@ namespace es::transcription
         std::vector<std::string> transcription;
     } ts_result_t;
 
-    class ITranscriptorManager : public std::enable_shared_from_this<ITranscriptorManager>
+    class ITranscriptorManager
     {
     public:
         virtual void storeTranscription(const ts_result_t &) = 0;

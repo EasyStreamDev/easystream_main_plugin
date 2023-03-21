@@ -19,6 +19,9 @@ namespace es::transcription
     using String = std::string;
 
     template <typename T>
+    using Optional = std::optional<T>;
+
+    template <typename T>
     using Queue = std::queue<T>;
 
     template <typename T>
@@ -26,6 +29,9 @@ namespace es::transcription
 
     template <typename T1, typename T2>
     using Map = std::map<T1, T2>;
+
+    template <typename T1, typename T2>
+    using Umap = std::unordered_map<T1, T2>;
 
     template <typename T1, typename T2>
     using Pair = std::pair<T1, T2>;

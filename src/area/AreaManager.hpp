@@ -19,6 +19,8 @@
 // Reaction includes
 #include "reactions/ReactionSceneSwitch.hpp"
 #include "reactions/ReactionToggleAudioCompressor.hpp"
+#include "reactions/ReactionRecordingStart.hpp"
+#include "reactions/ReactionRecordingStop.hpp"
 
 namespace es::area
 {
@@ -40,6 +42,10 @@ namespace es::area
                  { return new ReactionSceneSwitch(area_id, name, param); }},
                 {area::ReactionType::TOGGLE_AUDIO_COMPRESSOR, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
                  { return new ReactionToggleAudioCompressor(area_id, name, param); }},
+                {area::ReactionType::START_RECORDING, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
+                 { return new ReactionRecordingStart(area_id, name, param); }},
+                {area::ReactionType::STOP_RECORDING, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
+                 { return new ReactionRecordingStop(area_id, name, param); }},
             };
 
     public:
