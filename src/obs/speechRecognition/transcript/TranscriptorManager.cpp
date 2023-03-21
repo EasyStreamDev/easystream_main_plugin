@@ -87,11 +87,14 @@ namespace es::transcription
 
     void TranscriptorManager::storeTranscription(const ts_result_t &result_)
     {
-        m_ResultsMutex.lock();
-        m_Results[result_.id] = result_;
-        m_ResultsMutex.unlock();
+        { // Voluntary scope
+            // Locks mutex for this scope only.
+            std::lock_guard<std::mutex> lg(m_ResultsMutex);
+            // Update result.
+            m_Results[result_.id] = result_;
+        }
 
-        {
+        { // Debug : to rm later
             std::string tmp;
 
             for (const auto &elem : result_.transcription)
@@ -104,12 +107,13 @@ namespace es::transcription
 
     const Optional<ts_result_t> TranscriptorManager::getTranscription(const int &id)
     {
-        m_ResultsMutex.lock();
+        // Locks the mutex for the function scope.
+        std::lock_guard<std::mutex> lg(m_ResultsMutex);
+
         // Get and return asked element.
         auto find_res = m_Results.find(id);
         if (find_res != m_Results.end())
         {
-            m_ResultsMutex.unlock();
             return find_res->second;
         }
 
@@ -120,13 +124,11 @@ namespace es::transcription
             {
                 if (std::next(it) == m_Results.end())
                 {
-                    m_ResultsMutex.unlock();
                     return it->second;
                 }
             }
         }
 
-        m_ResultsMutex.unlock();
         // Element asked not found.
         return std::nullopt;
     }
