@@ -101,6 +101,8 @@ namespace es
             TOGGLE_AUDIO_COMPRESSOR,
             START_RECORDING,
             STOP_RECORDING,
+            START_STREAMING,
+            STOP_STREAMING,
         };
 
         static const std::string ReactionTypeToString(const ReactionType &t_)
@@ -115,6 +117,10 @@ namespace es
                 return "START_RECORDING";
             case ReactionType::STOP_RECORDING:
                 return "START_RECORDING";
+            case ReactionType::START_STREAMING:
+                return "START_STREAMING";
+            case ReactionType::STOP_STREAMING:
+                return "START_STREAMING";
             default:
                 break;
             }
