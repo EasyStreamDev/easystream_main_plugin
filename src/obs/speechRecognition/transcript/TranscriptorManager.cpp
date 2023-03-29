@@ -120,18 +120,22 @@ namespace es::transcription
         // Get and return last element of the unordered map.
         if (id == -1)
         {
-            // blog(LOG_INFO, "\n-------------------- ALLOOOO\n");
-            // for (auto _t = m_Results.begin(); _t != m_Results.end(); _t++)
-            // {
-            //     blog(LOG_INFO, "-------------- ID: %d", _t->first);
-            //     if (std::next(_t, 1) == m_Results.end())
-            //     {
-            //         return _t->second;
-            //     }
-            // }
-            // blog(LOG_INFO, "\n-------------------- ALLOOOO2: last = %d\n", (m_Results.end()--)->first);
-            // blog(LOG_INFO, "\n-------------------- ALLOOOO2: last = %d\n", std::next(m_Results.end(), -1)->first);
-            return m_Results.begin()->second; // Last element inserted.
+            std::cerr << "{" << std::endl;
+            // @todo : remove for loop - only for test and show purpose
+            for (auto _t = m_Results.begin(); _t != m_Results.end(); _t++)
+            {
+                std::string tmp;
+
+                for (auto _w : _t->second.transcription)
+                {
+                    tmp += _w;
+                }
+                std::cerr << "[TRANSCRIPTION] ID: " << _t->first << "\n\t------ File: " << _t->second.file_path << "\n\t------ Transcript: " << tmp << std::endl;
+            }
+            std::cerr << "}" << std::endl;
+
+            // Begin is the last element inserted in the umap.
+            return m_Results.begin()->second;
         }
 
         // Element asked not found.

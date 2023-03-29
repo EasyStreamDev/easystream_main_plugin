@@ -26,8 +26,20 @@ namespace es::area
 
     void AreaManager::run(void *)
     {
+        {
+            action_t a_ = {
+                87429875,
+                ActionType::APP_LAUNCH,
+                {"params", {"app_name", "Klondike"}}};
+            reaction_t r_ = {
+                87429875,
+                "test_area_stream",
+                ReactionType::START_STREAMING,
+                {"params", {}}};
+
+            this->CreateArea(a_, r_);
+        }
         this->thread_sleep_ms(2000);
-        blog(LOG_INFO, "###  - Speech recognition starting...");
 
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
