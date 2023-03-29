@@ -32,6 +32,7 @@ namespace es::transcription
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;
         // Transcription results (transcripted)
+        // @todo (yem): make vector of pair instead.
         Umap<uint, ts_result_t> m_Results;
         std::mutex m_ResultsMutex;
     };

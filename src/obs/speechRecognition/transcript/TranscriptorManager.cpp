@@ -95,13 +95,13 @@ namespace es::transcription
         }
 
         { // Debug : to rm later
-            std::string tmp;
+          // std::string tmp;
 
-            for (const auto &elem : result_.transcription)
-            {
-                tmp += elem + " ";
-            }
-            blog(LOG_INFO, "Transcription [%d] update : %s", result_.id, tmp.c_str());
+            // for (const auto &elem : result_.transcription)
+            // {
+            //     tmp += elem + " ";
+            // }
+            // blog(LOG_INFO, "Transcription [%d] update : %s", result_.id, tmp.c_str());
         }
     }
 
@@ -120,13 +120,18 @@ namespace es::transcription
         // Get and return last element of the unordered map.
         if (id == -1)
         {
-            for (auto it = m_Results.begin(); it != m_Results.end(); it++)
-            {
-                if (std::next(it) == m_Results.end())
-                {
-                    return it->second;
-                }
-            }
+            // blog(LOG_INFO, "\n-------------------- ALLOOOO\n");
+            // for (auto _t = m_Results.begin(); _t != m_Results.end(); _t++)
+            // {
+            //     blog(LOG_INFO, "-------------- ID: %d", _t->first);
+            //     if (std::next(_t, 1) == m_Results.end())
+            //     {
+            //         return _t->second;
+            //     }
+            // }
+            // blog(LOG_INFO, "\n-------------------- ALLOOOO2: last = %d\n", (m_Results.end()--)->first);
+            // blog(LOG_INFO, "\n-------------------- ALLOOOO2: last = %d\n", std::next(m_Results.end(), -1)->first);
+            return m_Results.begin()->second; // Last element inserted.
         }
 
         // Element asked not found.

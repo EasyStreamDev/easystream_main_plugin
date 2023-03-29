@@ -9,9 +9,11 @@
 
 namespace es
 {
-    void test_transcription_func(void *private_data)
+    void test_transcription_submit(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
+        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
+
         const std::string full_path_base = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
         const std::vector<std::string> paths = {
             full_path_base + "league.wav",
@@ -20,8 +22,42 @@ namespace es
 
         while (1)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-            pm->GetTranscriptorManager()->submit(paths[rand() % paths.size()]);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
+            std::string file_path = paths[rand() % paths.size()];
+
+            tm->submit(paths[rand() % paths.size()]);
+            blog(LOG_INFO, "[TEST SUBMIT TRANSCRIPT] - Submitted file: %s\n", file_path.c_str());
+        }
+    }
+
+    void test_transcription_results(void *private_data)
+    {
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(3 * 1000));
+        while (1)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
+            auto container = tm->getTranscription();
+
+            if (!container.has_value())
+            {
+                continue;
+            }
+
+            transcription::ts_result_t res = container.value();
+            std::string tmp;
+            for (const auto &word : res.transcription)
+            {
+                tmp += word;
+            }
+            blog(
+                LOG_INFO,
+                "[TEST RESULT TRANSCRIPT]\n\tT_ID: %d\n\tPATH: %s\n\tresult: %s\n",
+                res.id,
+                res.file_path.c_str(),
+                tmp.c_str());
         }
     }
 }
@@ -57,7 +93,8 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
-        m_ThreadPool->push(std::function(test_transcription_func), this);
+        m_ThreadPool->push(std::function(test_transcription_submit), this);
+        m_ThreadPool->push(std::function(test_transcription_results), this);
     }
 
     void PluginManager::Reset(void)
