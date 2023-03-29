@@ -56,6 +56,7 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        m_ThreadPool->push(std::function(PluginManager::RunSubTitles), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         m_ThreadPool->push(std::function(test_transcription_func), this);
     }
@@ -142,6 +143,11 @@ namespace es
     void PluginManager::RunSceneSwitcherAI(void *private_data)
     {
         es::obs::scene_switcher_ai::run(nullptr);
+    }
+
+    void PluginManager::RunSubTitles(void *private_data)
+    {
+        es::obs::sub_titles::run(nullptr);
     }
 
     void PluginManager::RunTranscriptor(void *private_data)

@@ -15,6 +15,7 @@
 #include "area/AreaManager.hpp"
 #include "obs/SourceTracker.hpp"
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
+#include "obs/SubTitles/SubTitles.hpp"
 #include "server/include/AsioTcpServer.hpp"
 #include "utils/Thread.hpp"
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
@@ -46,6 +47,7 @@ namespace es
         static void RunServer(void *);
         static void RunArea(void *);
         static void RunSceneSwitcherAI(void *);
+        static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
 
     private:
