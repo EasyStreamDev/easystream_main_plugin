@@ -7,7 +7,7 @@
 
 #include "PluginManager.hpp"
 
-namespace es
+namespace es::testing
 {
     void test_transcription_submit(void *private_data)
     {
@@ -27,10 +27,6 @@ namespace es
 
             tm->submit(file_path);
             std::cerr << "[TEST SUBMIT TRANSCRIPT]\n--- Submitted: " << file_path.substr(71, file_path.length()) << std::endl;
-            // blog(
-            //     LOG_INFO,
-            //     "[TEST SUBMIT TRANSCRIPT]\n--- Submitted: %s\n",
-            //     file_path.substr(71, file_path.length()).c_str());
         }
     }
 
@@ -79,8 +75,11 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
-        m_ThreadPool->push(std::function(test_transcription_submit), this);
-        m_ThreadPool->push(std::function(test_transcription_results), this);
+
+        { // Testing functions
+          // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
+          // m_ThreadPool->push(std::function(testing::test_transcription_results), this);
+        }
     }
 
     void PluginManager::Reset(void)

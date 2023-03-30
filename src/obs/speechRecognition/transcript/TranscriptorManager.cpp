@@ -118,7 +118,7 @@ namespace es::transcription
         }
 
         // Get and return last element of the unordered map.
-        if (id == -1)
+        if (id == -1 && m_Results.size() != 0)
         {
             std::cerr << "{" << std::endl;
             // @todo : remove for loop - only for test and show purpose
