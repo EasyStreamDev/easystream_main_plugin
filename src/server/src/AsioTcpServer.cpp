@@ -207,7 +207,7 @@ namespace es::server
         for (const auto &area : m_PluginManager->GetAreaMain()->GetAreas())
         {
             json area_data = {
-                {"id", area.id},
+                {"actReactId", area.id},
                 {"isActive", area.is_active},
                 {"action", {
                                //  {"actionId", area.action_data.id},
