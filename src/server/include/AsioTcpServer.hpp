@@ -34,9 +34,6 @@
 #include <unordered_map>
 #include <algorithm>
 #include <thread>
-// --- Boost
-// #include <boost/thread.hpp>
-// #include <boost/make_shared.hpp>
 
 namespace es::server
 {
@@ -102,12 +99,6 @@ namespace es::server
         static const json badCommand(void);
         static const json badRequest(const std::string & = "");
         static const json notFound(const std::string & = "");
-
-        // --- THREAD SAFE QUEUE FUNCTIONS
-        // void inRequestQueuePush(Shared<AsioTcpConnection>, const json &);
-        // void inRequestQueuePush(Shared<AsioTcpConnection>, const std::vector<json> &);
-        // void outRequestQueuePush(Shared<AsioTcpConnection>, const json &);
-        // void outRequestQueuePush(Shared<AsioTcpConnection>, const std::vector<json> &);
 
         // --- MISCELLANEOUS
         void generateMobileInformation(){};

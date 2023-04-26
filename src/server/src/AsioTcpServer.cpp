@@ -517,42 +517,4 @@ namespace es::server
 
         return toSend;
     }
-
-    /**************************/
-    /* THREAD SAFE QUEUE FUNC */
-    /**************************/
-
-    // void AsioTcpServer::inRequestQueuePush(Shared<AsioTcpConnection> socket, const json &request)
-    // {
-    //     std::scoped_lock<std::mutex> sc_l(m_IRQMutex);
-
-    //     m_InRequestQueue.push(std::make_pair(socket, request));
-    // }
-
-    // void AsioTcpServer::inRequestQueuePush(Shared<AsioTcpConnection> socket, const std::vector<json> &requests)
-    // {
-    //     std::scoped_lock<std::mutex> sc_l(m_IRQMutex);
-
-    //     for (const json &r : requests)
-    //     {
-    //         m_InRequestQueue.push(std::make_pair(socket, r));
-    //     }
-    // }
-
-    // void AsioTcpServer::outRequestQueuePush(Shared<AsioTcpConnection> socket, const json &request)
-    // {
-    //     std::scoped_lock<std::mutex> sc_l(m_ORQMutex);
-
-    //     m_OutRequestQueue.ts_push(std::make_pair(socket, request));
-    // }
-
-    // void AsioTcpServer::outRequestQueuePush(Shared<AsioTcpConnection> socket, const std::vector<json> &requests)
-    // {
-    //     std::scoped_lock<std::mutex> sc_l(m_ORQMutex);
-
-    //     for (const json &r : requests)
-    //     {
-    //         m_OutRequestQueue.ts_push(std::make_pair(socket, r));
-    //     }
-    // }
 }
