@@ -24,13 +24,15 @@
 #include "AsioTcpConnection.hpp"
 #include "errorCode.hpp"
 #include "common_using.hpp"
+#include "TSRequestQueue.hpp"
 
 // Linked
 #include <iostream>
 #include <string>
+#include <queue>
 #include <vector>
-#include <algorithm>
 #include <unordered_map>
+#include <algorithm>
 #include <thread>
 // --- Boost
 // #include <boost/thread.hpp>
@@ -64,6 +66,8 @@ namespace es::server
         ~AsioTcpServer();
 
         void run(void *) override;
+        void runRequestHandler(void *);
+        void handleRequest(const json &, Shared<AsioTcpConnection>);
 
         // --- Network
         bool start();
@@ -93,11 +97,17 @@ namespace es::server
         // --- REMOVE requests
         void removeActReact(const json &, Shared<AsioTcpConnection> &);
 
-        // --- RESPONSES
-        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = {});
-        void badCommand(Shared<AsioTcpConnection> &);
-        void badRequest(Shared<AsioTcpConnection> &, const std::string & = "");
-        void notFound(Shared<AsioTcpConnection> &, const std::string & = "");
+        // --- RESPONSES GENERATORS
+        static const json responseSuccess(const std::string & = "", const json & = {});
+        static const json badCommand(void);
+        static const json badRequest(const std::string & = "");
+        static const json notFound(const std::string & = "");
+
+        // --- THREAD SAFE QUEUE FUNCTIONS
+        // void inRequestQueuePush(Shared<AsioTcpConnection>, const json &);
+        // void inRequestQueuePush(Shared<AsioTcpConnection>, const std::vector<json> &);
+        // void outRequestQueuePush(Shared<AsioTcpConnection>, const json &);
+        // void outRequestQueuePush(Shared<AsioTcpConnection>, const std::vector<json> &);
 
         // --- MISCELLANEOUS
         void generateMobileInformation(){};
@@ -110,12 +120,15 @@ namespace es::server
         es::IPluginManager *m_PluginManager;
         // --- Thread
         std::thread _threadContext;
+        std::thread m_RequestHandler;
         // --- Network
         asio::io_context _ioContext;
         asio::ip::tcp::acceptor _acceptor;
         // boost::asio::ip::tcp::endpoint _endPoint;
         std::vector<Shared<AsioTcpConnection>> _connections;
         // --- Request handler vars
+        TSRequestQueue m_InRequestQueue;
+        TSRequestQueue m_OutRequestQueue;
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;
     };
 }

@@ -43,7 +43,7 @@ namespace es::server
     void AsioTcpServer::run(void *)
     {
         blog(LOG_INFO, "###  - Starting server...");
-        this->start();
+        this->start(); // Initiate server + request handling thread.
 
         blog(LOG_INFO, "###  - Server started. Now running.");
         // @todo : End thread execution properly
@@ -55,6 +55,62 @@ namespace es::server
         blog(LOG_INFO, "###  - Server stopped running.");
     }
 
+    void AsioTcpServer::runRequestHandler(void *private_data)
+    {
+        while (1)
+        {
+            while (!this->m_InRequestQueue.empty())
+            {
+                // Get queue first element.
+                const auto &__req_pair = m_InRequestQueue.front();
+                Shared<AsioTcpConnection> socket = __req_pair.first; // Get sender socket
+                const json &request = __req_pair.second;             // Get request
+
+                if (_handler.find(request.at("command")) != _handler.end())
+                {
+                    this->handleRequest(request, socket);
+                }
+                else
+                {
+                    m_OutRequestQueue.ts_push(std::make_pair(socket, AsioTcpServer::badCommand()));
+                }
+
+                // Pop out processed element from received requests queue.
+                m_InRequestQueue.ts_pop();
+            }
+            this->thread_sleep_ms(50);
+        }
+    }
+
+    void AsioTcpServer::handleRequest(const json &request, Shared<AsioTcpConnection> socket)
+    {
+        try
+        {
+            // Call method corresponding to the sent command.
+            (this->*_handler[request["command"]])(request, socket); // @todo: start new thread ?
+        }
+        catch (const json::type_error &type_error)
+        {
+            // Method .at of json was walled on a non-object
+            if (type_error.id == 304)
+            {
+                m_OutRequestQueue.ts_push(std::make_pair(
+                    socket,
+                    AsioTcpServer::badRequest("wrongly formulated.")));
+            }
+        }
+        catch (const json::out_of_range &oor_error)
+        {
+            // Invalid key was given to the .at method of json
+            if (oor_error.id == 403)
+            {
+                m_OutRequestQueue.ts_push(std::make_pair(
+                    socket,
+                    AsioTcpServer::badRequest("incomplete - missing value")));
+            }
+        }
+    }
+
     /***********/
     /* NETWORK */
     /***********/
@@ -64,10 +120,13 @@ namespace es::server
         try
         {
             waitForClientConnection();
-            _threadContext = std::thread([this]()
-                                         { _ioContext.run(); });
+            this->_threadContext = std::thread([this]()
+                                               { _ioContext.run(); });
             blog(LOG_INFO, "### [SERVER EASYSTREAM] new server started on port: %d", _acceptor.local_endpoint().port());
-            std::cout << "### [SERVER EASYSTREAM] new server started on " << _acceptor.local_endpoint().address() << ":" << _acceptor.local_endpoint().port() << std::endl;
+            // std::cout << "### [SERVER EASYSTREAM] new server started on " << _acceptor.local_endpoint().address() << ":" << _acceptor.local_endpoint().port() << std::endl;
+            // Start request handler
+            this->m_RequestHandler = std::thread([this]()
+                                                 { this->runRequestHandler(nullptr); });
         }
         catch (std::exception &e)
         {
@@ -128,42 +187,27 @@ namespace es::server
                 }),
             this->_connections.end());
 
-        // Treat requests
-        for (auto &con : this->_connections)
+        // Push incoming requests to queue.
+        for (auto &con_ : this->_connections)
         {
-            std::vector<json> requests_ = con->getMessage();
+            // std::vector<json> requests_ = con_->getMessage();
+            m_InRequestQueue.ts_push(con_, con_->getMessage());
+        }
 
-            for (const auto &req : requests_)
+        // Send messages submitted by request handler
+
+        while (!m_OutRequestQueue.empty())
+        {
+            const auto &__req_pair = m_OutRequestQueue.front();
+            Shared<AsioTcpConnection> socket = __req_pair.first;
+            const json &request = __req_pair.second;
+
+            if (socket != nullptr)
             {
-                if (_handler.find(req["command"]) != _handler.end())
-                {
-                    try
-                    {
-                        // Call method corresponding to the sent command.
-                        (this->*_handler[req["command"]])(req, con);
-                    }
-                    catch (const json::type_error &type_error)
-                    {
-                        // Method .at of json was walled on a non-object
-                        if (type_error.id == 304)
-                        {
-                            this->badRequest(con, "wrongly formulated.");
-                        }
-                    }
-                    catch (const json::out_of_range &oor_error)
-                    {
-                        // Invalid key was given to the .at method of json
-                        if (oor_error.id == 403)
-                        {
-                            this->badRequest(con, "incomplete - missing value");
-                        }
-                    }
-                }
-                else
-                {
-                    this->badCommand(con);
-                }
+                socket->writeMessage(request.dump());
             }
+
+            m_OutRequestQueue.ts_pop();
         }
     }
 
@@ -197,7 +241,8 @@ namespace es::server
             {"length", mics.size()},
             {"mics", mics},
         };
-        this->sendSuccess(con, "OK", response_data);
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::responseSuccess("OK", response_data)));
     }
 
     void AsioTcpServer::getActReactCouples(const json &j, Shared<AsioTcpConnection> &con)
@@ -228,7 +273,8 @@ namespace es::server
             {"length", areas_vec.size()},
             {"actReacts", areas_vec},
         };
-        this->sendSuccess(con, "OK", response_data);
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::responseSuccess("OK", response_data)));
     }
 
     /****************/
@@ -245,11 +291,14 @@ namespace es::server
         auto source_target = autoLevelerMap_.find(source_name);
         if (source_target == autoLevelerMap_.end())
         {
-            this->notFound(con, std::string("Source not found : ") + source_name);
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                AsioTcpServer::notFound(std::string("Source not found : ") + source_name)));
         }
 
         source_target->second->SetActive(enable);
-        this->sendSuccess(con);
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::responseSuccess()));
     }
 
     void AsioTcpServer::setMicLevel(const json &j, Shared<AsioTcpConnection> &con)
@@ -261,7 +310,9 @@ namespace es::server
         // Check if microphone exists
         if (it_MicAutoLeveler_ == autoLevelerMap_.end())
         {
-            this->notFound(con, "specified microphone does not exist.");
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                AsioTcpServer::notFound("specified microphone does not exist.")));
             return;
         }
 
@@ -272,7 +323,7 @@ namespace es::server
         it_MicAutoLeveler_->second->setDesiredLevel(desired_level);
 
         // Send success response
-        this->sendSuccess(con);
+        m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::responseSuccess()));
     }
 
     void AsioTcpServer::setNewARea(const json &j, Shared<AsioTcpConnection> &con)
@@ -296,7 +347,7 @@ namespace es::server
         // Error on creation of AREA
         if (result.at("return_value") != 0)
         {
-            this->badRequest(con, result.at("message"));
+            m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::badRequest(result.at("message"))));
             return;
         }
 
@@ -304,10 +355,12 @@ namespace es::server
         const json response_data = {
             {"actReactId", result.at("area_id")},
         };
-        this->sendSuccess(
+
+        m_OutRequestQueue.ts_push(std::make_pair(
             con,
-            "Act/React couple succesfully created.",
-            response_data);
+            AsioTcpServer::responseSuccess(
+                "Act/React couple succesfully created.",
+                response_data)));
     }
 
     /*******************/
@@ -333,16 +386,17 @@ namespace es::server
 
         if (ret_val != 0)
         {
-            this->notFound(con, msg);
+            m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::notFound(msg)));
             return;
         }
 
-        this->sendSuccess(
+        m_OutRequestQueue.ts_push(std::make_pair(
             con,
-            msg,
-            json({
-                {"actReactId", result.at("area_id")},
-            }));
+            AsioTcpServer::responseSuccess(
+                msg,
+                json({
+                    {"actReactId", result.at("area_id")},
+                }))));
     }
 
     void AsioTcpServer::updateReaction(const json &j, Shared<AsioTcpConnection> &con)
@@ -369,16 +423,17 @@ namespace es::server
 
         if (ret_val != 0)
         {
-            this->notFound(con, msg);
+            m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::notFound(msg)));
             return;
         }
 
-        this->sendSuccess(
+        m_OutRequestQueue.ts_push(std::make_pair(
             con,
-            msg,
-            json({
-                {"actReactId", result.at("area_id")},
-            }));
+            AsioTcpServer::responseSuccess(
+                msg,
+                json({
+                    {"actReactId", result.at("area_id")},
+                }))));
     }
 
     /*******************/
@@ -398,23 +453,24 @@ namespace es::server
         // Error on AREA deletion
         if (ret_val != 0)
         {
-            this->notFound(con, msg);
+            m_OutRequestQueue.ts_push(std::make_pair(con, AsioTcpServer::notFound(msg)));
         }
 
         // Send success message
-        this->sendSuccess(
+        m_OutRequestQueue.ts_push(std::make_pair(
             con,
-            msg,
-            json({
-                {"actReactId", result.at("area_id")},
-            }));
+            AsioTcpServer::responseSuccess(
+                msg,
+                json({
+                    {"actReactId", result.at("area_id")},
+                }))));
     }
 
     /*************/
     /* RESPONSES */
     /*************/
 
-    void AsioTcpServer::sendSuccess(Shared<AsioTcpConnection> &con, const std::string &msg, const json &data)
+    const json AsioTcpServer::responseSuccess(const std::string &msg, const json &data)
     {
         json toSend;
 
@@ -422,28 +478,30 @@ namespace es::server
         toSend["message"] = msg.empty() ? std::string("OK") : msg;
         toSend["data"] = data;
 
-        con->writeMessage(toSend.dump() + "\r\n");
+        return toSend;
     }
 
-    void AsioTcpServer::badCommand(Shared<AsioTcpConnection> &con)
+    const json AsioTcpServer::badCommand(void)
     {
         json toSend;
 
         toSend["statusCode"] = 404;
         toSend["message"] = "The requested action does not exist.";
-        con->writeMessage(toSend.dump());
+
+        return toSend;
     }
 
-    void AsioTcpServer::badRequest(Shared<AsioTcpConnection> &con, const std::string &msg)
+    const json AsioTcpServer::badRequest(const std::string &msg)
     {
         json toSend;
 
         toSend["statusCode"] = 400;
         toSend["message"] = std::string("Bad request: ") + msg;
-        con->writeMessage(toSend.dump());
+
+        return toSend;
     }
 
-    void AsioTcpServer::notFound(Shared<AsioTcpConnection> &con, const std::string &msg)
+    const json AsioTcpServer::notFound(const std::string &msg)
     {
         json toSend;
 
@@ -456,6 +514,45 @@ namespace es::server
         {
             toSend["message"] = std::string("Not found.");
         }
-        con->writeMessage(toSend.dump());
+
+        return toSend;
     }
+
+    /**************************/
+    /* THREAD SAFE QUEUE FUNC */
+    /**************************/
+
+    // void AsioTcpServer::inRequestQueuePush(Shared<AsioTcpConnection> socket, const json &request)
+    // {
+    //     std::scoped_lock<std::mutex> sc_l(m_IRQMutex);
+
+    //     m_InRequestQueue.push(std::make_pair(socket, request));
+    // }
+
+    // void AsioTcpServer::inRequestQueuePush(Shared<AsioTcpConnection> socket, const std::vector<json> &requests)
+    // {
+    //     std::scoped_lock<std::mutex> sc_l(m_IRQMutex);
+
+    //     for (const json &r : requests)
+    //     {
+    //         m_InRequestQueue.push(std::make_pair(socket, r));
+    //     }
+    // }
+
+    // void AsioTcpServer::outRequestQueuePush(Shared<AsioTcpConnection> socket, const json &request)
+    // {
+    //     std::scoped_lock<std::mutex> sc_l(m_ORQMutex);
+
+    //     m_OutRequestQueue.ts_push(std::make_pair(socket, request));
+    // }
+
+    // void AsioTcpServer::outRequestQueuePush(Shared<AsioTcpConnection> socket, const std::vector<json> &requests)
+    // {
+    //     std::scoped_lock<std::mutex> sc_l(m_ORQMutex);
+
+    //     for (const json &r : requests)
+    //     {
+    //         m_OutRequestQueue.ts_push(std::make_pair(socket, r));
+    //     }
+    // }
 }
