@@ -14,6 +14,11 @@ namespace es::server
     class ResponseGenerator
     {
     public:
+        ResponseGenerator() = delete;
+        ResponseGenerator(const ResponseGenerator &) = delete;
+        ResponseGenerator(ResponseGenerator &&) = delete;
+
+    public:
         static const json Success(const std::string & = "", const json & = {});
         static const json BadCommand(void);
         static const json BadRequest(const std::string & = "");
