@@ -16,6 +16,7 @@
 // Global
 #include "../../Runnable.hpp"
 #include "../../utils/Obs.hpp"
+#include "../../utils/types/ThreadSafeQueue.hpp"
 #include "../../area/AreaManager.hpp"
 #include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
 #include "../../IPluginManager.hpp"
@@ -25,7 +26,6 @@
 #include "ResponseGenerator.hpp"
 #include "errorCode.hpp"
 #include "common_using.hpp"
-#include "TSRequestQueue.hpp"
 
 // Linked
 #include <iostream>
@@ -35,9 +35,12 @@
 #include <unordered_map>
 #include <algorithm>
 #include <thread>
+#include <future>
 
 namespace es::server
 {
+    using TSRequestQueue = ThreadSafeQueue<std::pair<Shared<AsioTcpConnection>, json>>;
+
     class AsioTcpServer : public std::enable_shared_from_this<AsioTcpServer>, Runnable
     {
         /*********************/
@@ -105,7 +108,6 @@ namespace es::server
         // --- Thread
         std::thread m_ThreadContext;
         std::thread m_RequestHandler;
-        std::vector<std::thread> m_RequestExecutors; // @todo: use std::future to check if thread is finished
         // --- Network
         asio::io_context m_IoContext;
         asio::ip::tcp::acceptor m_Acceptor;

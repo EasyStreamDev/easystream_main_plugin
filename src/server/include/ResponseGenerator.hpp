@@ -19,8 +19,8 @@ namespace es::server
         ResponseGenerator(ResponseGenerator &&) = delete;
 
     public:
-        static const json Success(const std::string & = "", const json & = {});
-        static const json BadCommand(void);
+        static const json Success(const std::string & = "OK", const json & = {});
+        static const json BadCommand(const std::string & = "The requested action does not exist.");
         static const json BadRequest(const std::string & = "");
         static const json NotFound(const std::string & = "");
     };

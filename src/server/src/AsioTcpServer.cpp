@@ -8,6 +8,8 @@
 #include "../include/AsioTcpServer.hpp"
 #include "../../obs/speechRecognition/transcript/TranscriptorManager.hpp"
 
+// using namespace std::chrono_literals;
+
 namespace es::server
 {
     AsioTcpServer::AsioTcpServer(
@@ -81,6 +83,8 @@ namespace es::server
                 // Pop out processed element from received requests queue.
                 m_InRequestQueue.ts_pop();
             }
+
+            // Sleep 50ms to not run fullspeed.
             this->thread_sleep_ms(50);
         }
     }
@@ -88,7 +92,7 @@ namespace es::server
     void AsioTcpServer::_createRequestExecutorThread(const json &request, Shared<AsioTcpConnection> socket)
     {
         // Start new thread to execute request
-        m_RequestExecutors.push_back(std::thread(
+        std::thread w(
             [this, request, socket]()
             {
                 try
@@ -116,7 +120,8 @@ namespace es::server
                             ResponseGenerator::BadRequest("incomplete - missing value")));
                     }
                 }
-            }));
+            });
+        w.detach();
     }
 
     /***********/
@@ -201,8 +206,10 @@ namespace es::server
         // Push incoming requests to queue.
         for (auto &con_ : this->m_Connections)
         {
-            // std::vector<json> requests_ = con_->getMessage();
-            m_InRequestQueue.ts_push(con_, con_->getMessage());
+            for (const json &r_ : con_->getMessage())
+            {
+                m_InRequestQueue.ts_push(std::make_pair(con_, r_));
+            }
         }
 
         // Send messages submitted by request handler

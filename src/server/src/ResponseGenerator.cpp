@@ -13,18 +13,18 @@ namespace es::server
         json toSend;
 
         toSend["statusCode"] = 200;
-        toSend["message"] = msg.empty() ? std::string("OK") : msg;
+        toSend["message"] = msg;
         toSend["data"] = data;
 
         return toSend;
     }
 
-    const json ResponseGenerator::BadCommand(void)
+    const json ResponseGenerator::BadCommand(const std::string &msg)
     {
         json toSend;
 
         toSend["statusCode"] = 404;
-        toSend["message"] = "The requested action does not exist.";
+        toSend["message"] = msg;
 
         return toSend;
     }
