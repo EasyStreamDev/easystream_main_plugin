@@ -315,6 +315,85 @@ Si la requête est invalide, l'action reste inchangée.
 <br>
 <br>
 
+# **Broadcast**
+
+## *OBS: Scene updates*
+
+**Scene Created**
+```json
+{
+    "type": "sceneCreated",
+    "data": {
+        "name": "string",
+        "uuid": "string"
+    },
+}
+```
+
+**Scene Removed**
+```json
+{
+    "type": "sceneRemoved",
+    "data": {
+        "name": "string",
+        "uuid": "string"
+    },
+}
+```
+
+**Scene Name Changed**
+```json
+{
+    "type": "sceneNameChanged",
+    "data": {
+        "name": "string",
+        "oldName": "string",
+        "uuid": "string"
+    },
+}
+```
+
+## *OBS: Audio source updates*
+
+**Audio Source Created**
+```json
+{
+    "type": "audioSourceCreated",
+    "data": {
+        "name": "string",
+        "uuid": "string",
+        "type": "string"
+    },
+}
+```
+
+**Audio Source Removed**
+```json
+{
+    "type": "audioSourceRemoved",
+    "data": {
+        "name": "string",
+        "uuid": "string",
+        "type": "string"
+    },
+}
+```
+
+**Audio Source Name Changed**
+```json
+{
+    "type": "audioSourceNameChanged",
+    "data": {
+        "name": "string",
+        "oldName": "string",
+        "uuid": "string"
+    },
+}
+```
+
+<br>
+<br>
+
 # **Actions / Reactions**
 
 ## *Actions*
