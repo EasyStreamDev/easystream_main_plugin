@@ -36,10 +36,11 @@ namespace es
         const std::atomic<bool> &IsRunning(void) const;
 
     public:
-        inline area::AreaManager *GetAreaMain(void) { return m_AreaMain; }
-        // inline server::AsioTcpServer *GetServer(void) { return m_Server; } // @note maybe not necessary
-        inline obs::SourceTracker *GetSourceTracker(void) { return m_SourceTracker; }
-        inline thread::ThreadPool *GetThreadPool(void) { return m_ThreadPool; }
+        area::AreaManager *GetAreaMain(void);
+        server::AsioTcpServer *GetServer(void);
+        obs::SourceTracker *GetSourceTracker(void);
+        thread::ThreadPool *GetThreadPool(void);
+        transcription::TranscriptorManager *GetTranscriptorManager(void);
 
     private:
         // Asynchrounous routines (run in separate threads)
@@ -52,8 +53,6 @@ namespace es
     private:
         std::atomic<bool> m_Running = false;
 
-        transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
-
         thread::ThreadPool *m_ThreadPool = nullptr;
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
@@ -61,6 +60,7 @@ namespace es
         area::AreaManager *m_AreaMain = nullptr;   // Runnable done
         server::AsioTcpServer *m_Server = nullptr; // Runnable done
         obs::SourceRecorder *_recorder = nullptr;
+        transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
     };
 } // namespace es
 

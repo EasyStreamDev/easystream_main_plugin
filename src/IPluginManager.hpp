@@ -27,6 +27,11 @@ namespace es
         class ThreadPool;
     }
 
+    namespace transcription
+    {
+        class TranscriptorManager;
+    }
+
     class IPluginManager
     {
     public:
@@ -36,9 +41,10 @@ namespace es
         virtual const std::atomic<bool> &IsRunning(void) const = 0;
 
     public:
-        inline virtual area::AreaManager *GetAreaMain(void) = 0;
-        inline virtual obs::SourceTracker *GetSourceTracker(void) = 0;
-        inline virtual thread::ThreadPool *GetThreadPool(void) = 0;
+        virtual area::AreaManager *GetAreaMain(void) = 0;
+        virtual obs::SourceTracker *GetSourceTracker(void) = 0;
+        virtual thread::ThreadPool *GetThreadPool(void) = 0;
+        virtual transcription::TranscriptorManager *GetTranscriptorManager(void) = 0;
     };
 } // namespace es
 

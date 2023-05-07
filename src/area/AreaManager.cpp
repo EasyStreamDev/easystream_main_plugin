@@ -27,7 +27,35 @@ namespace es::area
     void AreaManager::run(void *)
     {
         this->thread_sleep_ms(2000);
-        blog(LOG_INFO, "###  - Speech recognition starting...");
+
+        {
+            // Test reaction start stream
+            // action_t a_ = {
+            //     87429875,
+            //     ActionType::APP_LAUNCH,
+            //     {"app_name", "Klondike"}};
+            // reaction_t r_ = {
+            //     87429875,
+            //     "test_area_start_stream",
+            //     ReactionType::START_STREAMING,
+            //     {}};
+
+            // this->CreateArea(a_, r_);
+        }
+
+        { // Test reaction stop stream
+          // action_t a_ = {
+          //     87429876,
+          //     ActionType::APP_LAUNCH,
+          //     {{"app_name", "Mahjongg"}}};
+          // reaction_t r_ = {
+          //     87429876,
+          //     "test_area_stop_stream",
+          //     ReactionType::STOP_STREAMING,
+          //     {}};
+
+            // this->CreateArea(a_, r_);
+        }
 
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
@@ -128,36 +156,48 @@ namespace es::area
         Reaction *react = nullptr;
         Action *act = nullptr;
 
-        // Create reaction first
-        if (REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type))
+        try
         {
-            react = REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type)(area_id, react_data.name, react_data.params);
-        }
-        else
-        {
-            return {
-                {"return_value", 1}, // 1 = not found
-                {"area_id", area_id},
-                {"message", "Unknown reaction"},
-            };
-        }
+            // Create reaction first
+            if (REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type))
+            {
+                react = REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type)(area_id, react_data.name, react_data.params);
+            }
+            else
+            {
+                return {
+                    {"return_value", 1}, // 1 = not found
+                    {"area_id", area_id},
+                    {"message", "Unknown reaction"},
+                };
+            }
 
-        // Create action and link reaction second
-        if (react && ACTION_TYPE_TO_CREATE_FUNC.at(act_data.type))
-        {
-            act = ACTION_TYPE_TO_CREATE_FUNC.at(act_data.type)(react, area_id, act_data.params);
-        }
-        else
-        {
-            return {
-                {"return_value", 1}, // 1 = not found
-                {"area_id", area_id},
-                {"message", "Unknown action"},
-            };
-        }
+            // Create action and link reaction second
+            if (react && ACTION_TYPE_TO_CREATE_FUNC.at(act_data.type))
+            {
+                act = ACTION_TYPE_TO_CREATE_FUNC.at(act_data.type)(react, area_id, act_data.params);
+            }
+            else
+            {
+                return {
+                    {"return_value", 1}, // 1 = not found
+                    {"area_id", area_id},
+                    {"message", "Unknown action"},
+                };
+            }
 
-        // Add action to AREA system.
-        this->AddAction(act);
+            // Add action to AREA system.
+            this->AddAction(act);
+        }
+        catch (std::exception &e)
+        {
+            const json result = {
+                {"return_value", 3}, // 2 = Unknown exception
+                {"area_id", area_id},
+                {"message", "Unhandled issue creating area"},
+            };
+            return result;
+        }
 
         const json result = {
             {"return_value", 0}, // 0 = success

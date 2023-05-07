@@ -64,7 +64,7 @@ namespace es::server
         std::memset(_buffer, 0, MSGMAX);
         std::memcpy(_buffer, msg.data(), msg.size());
         asio::async_write(_socket, asio::buffer(_buffer, msg.size()), [this](asio::error_code ec, std::size_t length)
-                                 {
+                          {
         (void)length;
         if (!ec)
             std::cout << "[SERVER EASYSTREAM]: Message sent to " << _socket.remote_endpoint() << std::endl;

@@ -99,6 +99,10 @@ namespace es
         {
             SCENE_SWITCH,
             TOGGLE_AUDIO_COMPRESSOR,
+            START_RECORDING,
+            STOP_RECORDING,
+            START_STREAMING,
+            STOP_STREAMING,
         };
 
         static const std::string ReactionTypeToString(const ReactionType &t_)
@@ -109,6 +113,14 @@ namespace es
                 return "SCENE_SWITCH";
             case ReactionType::TOGGLE_AUDIO_COMPRESSOR:
                 return "TOGGLE_AUDIO_COMPRESSOR";
+            case ReactionType::START_RECORDING:
+                return "START_RECORDING";
+            case ReactionType::STOP_RECORDING:
+                return "START_RECORDING";
+            case ReactionType::START_STREAMING:
+                return "START_STREAMING";
+            case ReactionType::STOP_STREAMING:
+                return "START_STREAMING";
             default:
                 break;
             }
