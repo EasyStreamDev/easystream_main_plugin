@@ -38,6 +38,7 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
     }
 
     void PluginManager::Reset(void)
@@ -102,5 +103,16 @@ namespace es
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
         pm->m_TranscriptorManager->run(nullptr);
+    }
+
+    void PluginManager::RunRecorder(void *private_data)
+    {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(2s);
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+        obs_source_t *source = obs_get_source_by_name("Mic/Aux");
+        pm->_recorder = new obs::SourceRecorder(source);
+
+        pm->_recorder->run(nullptr);
     }
 }

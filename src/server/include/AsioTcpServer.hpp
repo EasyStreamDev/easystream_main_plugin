@@ -105,6 +105,10 @@ namespace es::server
         /********************/
         /* MEMBER VARIABLES */
         /********************/
+
+        // broadcastFunctions
+        void broadcast(const json &, Shared<AsioTcpConnection> &);
+        void broadcastMicsLevel(Shared<AsioTcpConnection> &);
     private:
         // --- Plugin manager
         es::IPluginManager *m_PluginManager;

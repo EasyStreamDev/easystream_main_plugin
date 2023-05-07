@@ -18,6 +18,7 @@
 #include "server/include/AsioTcpServer.hpp"
 #include "utils/Thread.hpp"
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
+#include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 #include "IPluginManager.hpp"
 
@@ -46,6 +47,7 @@ namespace es
         static void RunArea(void *);
         static void RunSceneSwitcherAI(void *);
         static void RunTranscriptor(void *);
+        static void RunRecorder(void *);
 
     private:
         std::atomic<bool> m_Running = false;
@@ -58,6 +60,7 @@ namespace es
         // Runnable
         area::AreaManager *m_AreaMain = nullptr;   // Runnable done
         server::AsioTcpServer *m_Server = nullptr; // Runnable done
+        obs::SourceRecorder *_recorder = nullptr;
     };
 } // namespace es
 

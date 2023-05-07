@@ -199,6 +199,36 @@ namespace es::server
         };
         this->sendSuccess(con, "OK", response_data);
     }
+    
+    void AsioTcpServer::broadcast(const json &data, Shared<AsioTcpConnection> &con)
+    {
+        json toSend;
+        toSend["statusCode"] = 201;
+        toSend["message"] = "BROADCAST";
+        toSend["data"] = data;
+
+        con->writeMessage(toSend.dump() + "\r\n");
+    }
+
+    void AsioTcpServer::broadcastMicsLevel(Shared<AsioTcpConnection> &con)
+    {
+        std::vector<json> mics = es::utils::obs::listHelper::GetMicsList();
+
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+
+        for (auto &m : mics)
+        {
+            std::shared_ptr<es::obs::AutoAudioLeveler> micAudioLeveler_ = autoLevelerMap_.find(m["micName"])->second;
+
+            float tmpValue = micAudioLeveler_->getDesiredLevel() + 60;
+
+            m["level"] = floor((tmpValue * 100) / 60);
+        }
+        const json response_data = {
+            {"mics", mics},
+        };
+        broadcast(response_data, con);
+    }
 
     void AsioTcpServer::getActReactCouples(const json &j, Shared<AsioTcpConnection> &con)
     {
@@ -273,6 +303,8 @@ namespace es::server
 
         // Send success response
         this->sendSuccess(con);
+        for (auto &conn: this->_connections)
+            broadcastMicsLevel(conn);
     }
 
     void AsioTcpServer::setNewARea(const json &j, Shared<AsioTcpConnection> &con)

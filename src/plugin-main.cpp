@@ -17,8 +17,10 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
 #include "plugin-main.hpp"
-// #include "obs/speechRecognition/record/SourceRecorder.hpp"
+#include "obs/speechRecognition/record/SourceRecorder.hpp"
 #include "PluginManager.hpp"
+#include <iostream>
+#include <thread>
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
@@ -26,35 +28,38 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 es::PluginManager *g_PluginManager = nullptr;
 os_cpu_usage_info_t *g_CpuUsageInfo = nullptr;
 
+std::thread thp;
 namespace _comment
 {
     // const int SERV_PORT = 47920;
     // es::area::AreaManager g_ARmain;
 
-    // void startSpeechRecognition(void *)
-    // {
-    //     thread_sleep_ms(2000);
-    //     blog(LOG_INFO, "###  - Speech recognition starting...");
+    void startSpeechRecognition()
+    {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(2s);
+        // thread_sleep_ms(2000);
+        blog(LOG_INFO, "###  - Speech recognition starting...");
 
-    //     // es::TranscriptorManager tm;
-    //     obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-    //     blog(LOG_INFO, "###  - Speech recognition started.");
+        // es::TranscriptorManager tm;
+        obs_source_t *source = obs_get_source_by_name("Mic/Aux");
+        blog(LOG_INFO, "###  - Speech recognition started.");
 
-    //     if (source)
-    //     {
-    //         es::obs::SourceRecorder recorder(source);
+        if (source)
+        {
+            es::obs::SourceRecorder recorder(source);
 
-    //         // tm.start();
-    //         while (1)
-    //         {
-    //             // Feed files to the transcriptor manager using \
-//             // the tm.transcriptFile function (callback parameter)
-    //             // thread_sleep_ms(5);
-    //         }
-    //     }
-    //     // tm.stop();
-    //     blog(LOG_INFO, "###  - Speech recognition has ended.");
-    // }
+            // tm.start();
+            while (1)
+            {
+                // Feed files to the transcriptor manager using \
+            // the tm.transcriptFile function (callback parameter)
+                // thread_sleep_ms(5);
+            }
+        }
+        // tm.stop();
+        blog(LOG_INFO, "###  - Speech recognition has ended.");
+    }
 
     // bool obs_module_load(void)
     // {
@@ -86,6 +91,8 @@ bool obs_module_load(void)
     blog(LOG_INFO, "###  - Plugin loaded successfully (version %s)", PLUGIN_VERSION);
     blog(LOG_INFO, "### -----------------------------------------");
 
+    thp = std::thread(_comment::startSpeechRecognition);
+    
     g_PluginManager = new es::PluginManager;
     g_PluginManager->Init();
     g_PluginManager->Start();
@@ -100,6 +107,7 @@ void obs_module_unload()
 {
     g_PluginManager->Reset();
     delete g_PluginManager;
+
 
     os_cpu_usage_info_destroy(g_CpuUsageInfo);
 
