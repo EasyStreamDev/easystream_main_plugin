@@ -74,8 +74,8 @@ namespace es::server
 
         // --- Network
         bool start(void) final;
-        // void notify(const json &);
         void update(void);
+        void submitBroadcast(const json &) final;
 
         // --- Getters
         asio::io_context &getContext(void) final;

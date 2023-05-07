@@ -5,7 +5,6 @@
 */
 
 #include "../include/AsioTcpServer.hpp"
-// #include "../../obs/speechRecognition/transcript/TranscriptorManager.hpp"
 
 namespace es::server
 {
@@ -224,6 +223,11 @@ namespace es::server
         }
     }
 
+    void AsioTcpServer::submitBroadcast(const json &data)
+    {
+        m_BroadcastQueue.ts_push(data);
+    }
+
     asio::io_context &AsioTcpServer::getContext()
     {
         return this->m_IoContext;
@@ -236,13 +240,15 @@ namespace es::server
             {"message", "BROADCAST"},
             {"data", data},
         };
-        const std::string toSend = toSendJson.dump() + "\r\n";
+
+        std::cout << "Broadcasting following message :" << std::endl;
+        std::cout << toSendJson << std::endl;
 
         for (auto socket : m_Connections)
         {
             if (socket != nullptr)
             {
-                socket->writeMessage(toSend);
+                socket->writeMessage(toSendJson.dump() + "\r\n");
             }
         }
     }

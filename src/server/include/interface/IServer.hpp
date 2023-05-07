@@ -20,7 +20,7 @@ namespace es::server
     {
     public:
         virtual bool start() = 0;
-        // virtual void notify(const json &) = 0;
+        virtual void submitBroadcast(const json &) = 0;
         virtual asio::io_context &getContext() = 0;
     };
 }
