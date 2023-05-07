@@ -23,12 +23,12 @@ es::thread::ThreadPool::~ThreadPool()
     _tasks_cv.notify_all();
     for (auto &thread : _workers)
     {
-        _tasks_cv.notify_all();
         if (thread.joinable())
         {
             thread.join();
         }
     }
+    _workers.clear();
 }
 
 std::shared_ptr<es::thread::ThreadPool::Task> es::thread::ThreadPool::push(

@@ -98,8 +98,7 @@ bool obs_module_load(void)
 
 void obs_module_unload()
 {
-    g_PluginManager->Reset();
-    delete g_PluginManager;
+    g_PluginManager->Stop();
 
     os_cpu_usage_info_destroy(g_CpuUsageInfo);
 

@@ -32,7 +32,7 @@ namespace es
 
         void Init(void);
         void Start(void);
-        void Reset(void);
+        void Stop(void);
         const std::atomic<bool> &IsRunning(void) const;
 
     public:
@@ -57,9 +57,9 @@ namespace es
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
         // Runnable
-        area::AreaManager *m_AreaMain = nullptr;
-        server::AsioTcpServer *m_Server = nullptr;
-        transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
+        std::atomic<area::AreaManager *> m_AreaMain = nullptr;
+        std::atomic<server::AsioTcpServer *> m_Server = nullptr;
+        std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
     };
 } // namespace es
 

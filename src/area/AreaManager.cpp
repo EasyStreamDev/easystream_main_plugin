@@ -27,8 +27,6 @@ namespace es::area
     void AreaManager::run(void *)
     {
         this->thread_sleep_ms(2000);
-        blog(LOG_INFO, "###  - Speech recognition starting...");
-
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
         {

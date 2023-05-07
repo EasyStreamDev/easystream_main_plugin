@@ -29,6 +29,9 @@ namespace es
 namespace es
 {
     PluginManager::PluginManager()
+        : m_TranscriptorManager(new es::transcription::TranscriptorManager())
+        , m_AreaMain(new es::area::AreaManager())
+        , m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
@@ -36,7 +39,7 @@ namespace es
 
     PluginManager::~PluginManager()
     {
-        this->Reset();
+        this->Stop();
     }
 
     void PluginManager::Init(void)
@@ -45,9 +48,9 @@ namespace es
 
         this->m_SourceTracker->init();
 
-        this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
-        this->m_AreaMain = new es::area::AreaManager();
-        this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
+        // this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
+        // this->m_AreaMain = new es::area::AreaManager();
+        // this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
 
     void PluginManager::Start(void)
@@ -61,7 +64,7 @@ namespace es
         m_ThreadPool->push(std::function(test_transcription_func), this);
     }
 
-    void PluginManager::Reset(void)
+    void PluginManager::Stop(void)
     {
         m_Running = false;
         { // Module deletion commented (probably crashing)
@@ -130,14 +133,14 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_Server->run(nullptr);
+        pm->m_Server.load()->run(nullptr);
     }
 
     void PluginManager::RunArea(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_AreaMain->run(nullptr);
+        pm->m_AreaMain.load()->run(nullptr);
     }
 
     void PluginManager::RunSceneSwitcherAI(void *private_data)
@@ -154,6 +157,6 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_TranscriptorManager->run(nullptr);
+        pm->m_TranscriptorManager.load()->run(nullptr);
     }
 }
