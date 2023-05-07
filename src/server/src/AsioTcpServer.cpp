@@ -182,14 +182,6 @@ namespace es::server
             });
     }
 
-    void AsioTcpServer::writeMessage(const std::string &msg)
-    {
-        if (m_Connections.size() > 0)
-        {
-            m_Connections[0]->writeMessage(msg);
-        }
-    }
-
     void AsioTcpServer::update()
     {
         // Remove disconnected sockets
