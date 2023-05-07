@@ -13,7 +13,9 @@ namespace es::area
     ActionAppLaunch::ActionAppLaunch(Reaction *reaction, const size_t &area_id, const json &param)
         : Action(reaction, area_id, param)
     {
+        std::cerr << "oooooooooooooooooooooooo getting appname" << std::endl;
         _appName = param.at("app_name").get<std::string>();
+        std::cerr << "oooooooooooooooooooooooo got appname" << std::endl;
         oldWindowsList = utils::window::GetWindowList();
     }
 

@@ -7,11 +7,13 @@
 
 #include "PluginManager.hpp"
 
-namespace es
+namespace es::testing
 {
-    void test_transcription_func(void *private_data)
+    void test_transcription_submit(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
+        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
+
         const std::string full_path_base = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
         const std::vector<std::string> paths = {
             full_path_base + "league.wav",
@@ -20,8 +22,24 @@ namespace es
 
         while (1)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-            pm->GetTranscriptorManager()->submit(paths[rand() % paths.size()]);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
+            std::string file_path = paths[rand() % paths.size()];
+
+            tm->submit(file_path);
+            std::cerr << "[TEST SUBMIT TRANSCRIPT]\n--- Submitted: " << file_path.substr(71, file_path.length()) << std::endl;
+        }
+    }
+
+    void test_transcription_results(void *private_data)
+    {
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(3 * 1000));
+        while (1)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(15 * 1000));
+            auto container = tm->getTranscription();
         }
     }
 }
@@ -61,7 +79,11 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
-        m_ThreadPool->push(std::function(test_transcription_func), this);
+
+        { // Testing functions
+          // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
+          // m_ThreadPool->push(std::function(testing::test_transcription_results), this);
+        }
     }
 
     void PluginManager::Stop(void)

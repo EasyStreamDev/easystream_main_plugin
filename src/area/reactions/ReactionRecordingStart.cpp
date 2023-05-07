@@ -20,7 +20,10 @@ void es::area::ReactionRecordingStart::Resolve()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(_delay * 1000));
 
-    obs_frontend_recording_start();
+    if (!obs_frontend_recording_active())
+    {
+        obs_frontend_recording_start();
+    }
 
     blog(LOG_INFO, "###  - RECORDING STARTED.");
 }

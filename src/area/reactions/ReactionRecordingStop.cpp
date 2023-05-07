@@ -20,7 +20,10 @@ void es::area::ReactionRecordingStop::Resolve()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(_delay * 1000));
 
-    obs_frontend_recording_stop();
+    if (obs_frontend_recording_active())
+    {
+        obs_frontend_recording_stop();
+    }
 
     blog(LOG_INFO, "###  - RECORDING STOPPED.");
 }

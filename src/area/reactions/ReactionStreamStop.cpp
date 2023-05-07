@@ -22,7 +22,10 @@ namespace es::area
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(_delay * 1000));
 
-        obs_frontend_streaming_stop();
+        if (obs_frontend_streaming_active())
+        {
+            obs_frontend_streaming_stop();
+        }
 
         blog(LOG_INFO, "###  - STREAMING STOPPED.");
     }

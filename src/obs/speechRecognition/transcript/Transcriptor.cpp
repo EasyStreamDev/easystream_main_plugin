@@ -141,9 +141,9 @@ namespace es::transcription
         WS_OutMessage closeMsg;
 
         closeMsg.set_utf8_message("EOS");
-        std::cout << "Sending EOS to disconnect..." << std::endl;
+        // std::cout << "Sending EOS to disconnect..." << std::endl;
         this->client.send(closeMsg);
-        std::cout << "EOS sent !" << std::endl;
+        // std::cout << "EOS sent !" << std::endl;
         this->setStatus(Status::DISCONNECTING);
     }
 
