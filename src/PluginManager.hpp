@@ -15,6 +15,7 @@
 #include "area/AreaManager.hpp"
 #include "obs/SourceTracker.hpp"
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
+#include "obs/SubTitles/SubTitles.hpp"
 #include "server/include/AsioTcpServer.hpp"
 #include "utils/Thread.hpp"
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
@@ -32,7 +33,7 @@ namespace es
 
         void Init(void);
         void Start(void);
-        void Reset(void);
+        void Stop(void);
         const std::atomic<bool> &IsRunning(void) const;
 
     public:
@@ -47,20 +48,22 @@ namespace es
         static void RunServer(void *);
         static void RunArea(void *);
         static void RunSceneSwitcherAI(void *);
+        static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
         static void RunRecorder(void *);
 
     private:
         std::atomic<bool> m_Running = false;
-
-        thread::ThreadPool *m_ThreadPool = nullptr;
+        
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
+        thread::ThreadPool *m_ThreadPool = nullptr;
+
         // Runnable
-        area::AreaManager *m_AreaMain = nullptr;   // Runnable done
-        server::AsioTcpServer *m_Server = nullptr; // Runnable done
+        std::atomic<area::AreaManager *> m_AreaMain = nullptr;
+        std::atomic<server::AsioTcpServer *> m_Server = nullptr;
+        std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
         obs::SourceRecorder *_recorder = nullptr;
-        transcription::TranscriptorManager *m_TranscriptorManager = nullptr;
     };
 } // namespace es
 

@@ -37,7 +37,7 @@ namespace es
     public:
         virtual void Init(void) = 0;
         virtual void Start(void) = 0;
-        virtual void Reset(void) = 0;
+        virtual void Stop(void) = 0;
         virtual const std::atomic<bool> &IsRunning(void) const = 0;
 
     public:

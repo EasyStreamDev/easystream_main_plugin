@@ -9,7 +9,7 @@ namespace es::transcription
 {
     typedef struct transcription_result_s
     {
-        uint id;
+        uint32_t id;
         std::string file_path;
         std::vector<std::string> transcription;
     } ts_result_t;

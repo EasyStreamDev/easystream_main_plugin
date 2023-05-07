@@ -25,7 +25,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_AUTOUIC ON)
 
 # In case you need C++
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -240,12 +240,12 @@ if(WIN32)
         set(ARCH_NAME "32bit")
         set(OBS_BUILDDIR_ARCH "build32")
 
-        # if(MSVC)
-        #     # Hardcoded path to w32-pthreads atm because find_library not properly finding w32-pthreads.lib
-        #     target_link_libraries(
-        #         ${CMAKE_PROJECT_NAME}
-        #         ${CMAKE_CURRENT_SOURCE_DIR}/obs-studio/build32/deps/w32-pthreads/RelWithDebInfo/w32-pthreads.lib)
-        # endif()
+        if(MSVC)
+            # Hardcoded path to w32-pthreads atm because find_library not properly finding w32-pthreads.lib
+            target_link_libraries(
+                ${CMAKE_PROJECT_NAME}
+                ${CMAKE_CURRENT_SOURCE_DIR}/obs-studio/build32/deps/w32-pthreads/RelWithDebInfo/w32-pthreads.lib)
+        endif()
     endif()
 
     include_directories(

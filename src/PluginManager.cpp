@@ -47,6 +47,9 @@ namespace es::testing
 namespace es
 {
     PluginManager::PluginManager()
+        : m_TranscriptorManager(new es::transcription::TranscriptorManager())
+        , m_AreaMain(new es::area::AreaManager())
+        , m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
@@ -54,7 +57,7 @@ namespace es
 
     PluginManager::~PluginManager()
     {
-        this->Reset();
+        this->Stop();
     }
 
     void PluginManager::Init(void)
@@ -63,9 +66,9 @@ namespace es
 
         this->m_SourceTracker->init();
 
-        this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
-        this->m_AreaMain = new es::area::AreaManager();
-        this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
+        // this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
+        // this->m_AreaMain = new es::area::AreaManager();
+        // this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
 
     void PluginManager::Start(void)
@@ -74,6 +77,7 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        m_ThreadPool->push(std::function(PluginManager::RunSubTitles), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
 
@@ -83,7 +87,7 @@ namespace es
         }
     }
 
-    void PluginManager::Reset(void)
+    void PluginManager::Stop(void)
     {
         m_Running = false;
         { // Module deletion commented (probably crashing)
@@ -152,14 +156,14 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_Server->run(nullptr);
+        pm->m_Server.load()->run(nullptr);
     }
 
     void PluginManager::RunArea(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_AreaMain->run(nullptr);
+        pm->m_AreaMain.load()->run(nullptr);
     }
 
     void PluginManager::RunSceneSwitcherAI(void *private_data)
@@ -167,11 +171,16 @@ namespace es
         es::obs::scene_switcher_ai::run(nullptr);
     }
 
+    void PluginManager::RunSubTitles(void *private_data)
+    {
+        es::obs::sub_titles::run(nullptr);
+    }
+
     void PluginManager::RunTranscriptor(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_TranscriptorManager->run(nullptr);
+        pm->m_TranscriptorManager.load()->run(nullptr);
     }
 
     void PluginManager::RunRecorder(void *private_data)
