@@ -41,6 +41,7 @@ namespace es
             char _receiver[MSGMAX];
             asio::ip::tcp::socket _socket;
             std::vector<nlohmann::json> _messages;
+            std::mutex _writeMutex;
         };
     }
 }

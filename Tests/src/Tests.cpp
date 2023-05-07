@@ -42,7 +42,7 @@ namespace es
             nlohmann::json result = _client.readMessage();
             ASSERT_EQ(result["statusCode"], 200);
             nlohmann::json toSend;
-            toSend["command"] = "getAllMics";
+            toSend["command"] = "r_GetAllMics";
             _client.sendMessage(toSend.dump());
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             toSend = _client.readMessage();

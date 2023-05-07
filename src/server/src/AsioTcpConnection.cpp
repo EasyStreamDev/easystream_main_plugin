@@ -58,6 +58,7 @@ namespace es::server
 
     void AsioTcpConnection::writeMessage(const std::string &msg)
     {
+        std::scoped_lock(this->_writeMutex);
         // char buffer[MSGMAX];
 
         // std::cout << "sen" << std::endl;

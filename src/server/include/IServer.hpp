@@ -11,23 +11,17 @@
 // #include "Error.hpp"
 
 // Linked
+#include <asio.hpp>
 #include <iostream>
-#include <string>
-#include <boost/asio.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
 namespace es::server
 {
     class IServer
     {
     public:
-        virtual ~IServer() = default;
         virtual bool start() = 0;
-        // virtual void run() = 0;
-        // virtual void stop() = 0;
-        // virtual void sendMessage(const std::string &) = 0;
-        // virtual const std::string &receiveMessage() = 0;
-        virtual boost::asio::io_context &getContext() = 0;
+        // virtual void notify(const json &) = 0;
+        virtual asio::io_context &getContext() = 0;
     };
 }
 
