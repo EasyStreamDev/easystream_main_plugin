@@ -47,9 +47,7 @@ namespace es::testing
 namespace es
 {
     PluginManager::PluginManager()
-        : m_TranscriptorManager(new es::transcription::TranscriptorManager())
-        , m_AreaMain(new es::area::AreaManager())
-        , m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
+        : m_TranscriptorManager(new es::transcription::TranscriptorManager()), m_AreaMain(new es::area::AreaManager()), m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
@@ -76,10 +74,10 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
-        m_ThreadPool->push(std::function(PluginManager::RunSubTitles), nullptr);
-        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
+        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunSubTitles), nullptr);
+        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
 
         { // Testing functions
           // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
