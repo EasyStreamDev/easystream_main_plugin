@@ -52,9 +52,10 @@ namespace es
 
     private:
         std::atomic<bool> m_Running = false;
+        
+        obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
         thread::ThreadPool *m_ThreadPool = nullptr;
-        obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
         // Runnable
         std::atomic<area::AreaManager *> m_AreaMain = nullptr;
