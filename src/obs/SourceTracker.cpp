@@ -71,20 +71,24 @@ namespace es::obs
 
                 // In the case that plugins become hotloadable, this will have to go back into `EventHandler::EventHandler()`
                 // Enumerate inputs and connect each one
-                obs_enum_sources([](void *param, obs_source_t *source)
-                                 {
-				SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
-				sourceTracker->connectSourceSignals(source);
-				return true; },
-                                 privateData);
+                obs_enum_sources(
+                    [](void *param, obs_source_t *source)
+                    {
+                        SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
+                        sourceTracker->connectSourceSignals(source);
+                        return true;
+                    },
+                    privateData);
 
                 // Enumerate scenes and connect each one
-                obs_enum_scenes([](void *param, obs_source_t *source)
-                                {
-				SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
-				sourceTracker->connectSourceSignals(source);
-				return true; },
-                                privateData);
+                obs_enum_scenes(
+                    [](void *param, obs_source_t *source)
+                    {
+                        SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
+                        sourceTracker->connectSourceSignals(source);
+                        return true;
+                    },
+                    privateData);
 
                 blog(LOG_INFO, "### [EventHandler::OnFrontendEvent] Finished.");
             }
@@ -104,20 +108,24 @@ namespace es::obs
 
             // In the case that plugins become hotloadable, this will have to go back into `EventHandler::~EventHandler()`
             // Enumerate inputs and disconnect each one
-            obs_enum_sources([](void *param, obs_source_t *source)
-                             {
-				SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
-				sourceTracker->disconnectSourceSignals(source);
-				return true; },
-                             privateData);
+            obs_enum_sources(
+                [](void *param, obs_source_t *source)
+                {
+                    SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
+                    sourceTracker->disconnectSourceSignals(source);
+                    return true;
+                },
+                privateData);
 
             // Enumerate scenes and disconnect each one
-            obs_enum_scenes([](void *param, obs_source_t *source)
-                            {
-				SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
-				sourceTracker->disconnectSourceSignals(source);
-				return true; },
-                            privateData);
+            obs_enum_scenes(
+                [](void *param, obs_source_t *source)
+                {
+                    SourceTracker *sourceTracker = static_cast<SourceTracker *>(param);
+                    sourceTracker->disconnectSourceSignals(source);
+                    return true;
+                },
+                privateData);
 
             blog(LOG_INFO, "### [SourceTracker::OnFrontendEvent] Finished.");
 
@@ -142,13 +150,11 @@ namespace es::obs
         {
             return;
         }
-
         const char *name = obs_source_get_name(target);
         if (!name)
         {
             return;
         }
-
         obs_weak_source_t *weak = obs_source_get_weak_source(target);
         if (!weak)
         {
@@ -162,12 +168,12 @@ namespace es::obs
         case OBS_SOURCE_TYPE_INPUT:
             self->handleInputCreated(target);
             break;
+        case OBS_SOURCE_TYPE_SCENE:
+            self->handleSceneCreated(target);
+            break;
         case OBS_SOURCE_TYPE_FILTER:
             break;
         case OBS_SOURCE_TYPE_TRANSITION:
-            break;
-        case OBS_SOURCE_TYPE_SCENE:
-            self->handleSceneCreated(target);
             break;
         default:
             break;
@@ -207,6 +213,7 @@ namespace es::obs
         case OBS_SOURCE_TYPE_TRANSITION:
             break;
         case OBS_SOURCE_TYPE_SCENE:
+            self->handleSceneRemoved(target);
             break;
         default:
             break;

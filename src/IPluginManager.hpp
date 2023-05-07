@@ -27,6 +27,11 @@ namespace es
         class ThreadPool;
     }
 
+    namespace server
+    {
+        class AsioTcpServer;
+    }
+
     namespace transcription
     {
         class TranscriptorManager;
@@ -44,6 +49,7 @@ namespace es
         virtual area::AreaManager *GetAreaMain(void) = 0;
         virtual obs::SourceTracker *GetSourceTracker(void) = 0;
         virtual thread::ThreadPool *GetThreadPool(void) = 0;
+        virtual server::AsioTcpServer *GetServer(void) = 0;
         virtual transcription::TranscriptorManager *GetTranscriptorManager(void) = 0;
     };
 } // namespace es

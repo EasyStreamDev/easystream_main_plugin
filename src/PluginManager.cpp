@@ -48,6 +48,7 @@ namespace es
 {
     PluginManager::PluginManager()
     {
+        // @dev @todo : issue when creating source tracker :thinking:
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
     }

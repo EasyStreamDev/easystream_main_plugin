@@ -22,6 +22,7 @@
 #include "../../IPluginManager.hpp"
 
 // Local
+#include "IServer.hpp"
 #include "AsioTcpConnection.hpp"
 #include "ResponseGenerator.hpp"
 #include "errorCode.hpp"
@@ -41,7 +42,10 @@ namespace es::server
 {
     using TSRequestQueue = ThreadSafeQueue<std::pair<Shared<AsioTcpConnection>, json>>;
 
-    class AsioTcpServer : public std::enable_shared_from_this<AsioTcpServer>, Runnable
+    class AsioTcpServer
+        : public Runnable,
+          IServer,
+          std::enable_shared_from_this<AsioTcpServer>
     {
         /*********************/
         /* USEFULL CONSTANTS */
@@ -69,16 +73,17 @@ namespace es::server
         void run(void *) override;
 
         // --- Network
-        bool start();
-        void writeMessage(const std::string &);
-        void update();
+        bool start(void) final;
+        // void notify(const json &);
+        void update(void);
 
         // --- Getters
-        asio::io_context &getContext();
+        asio::io_context &getContext(void) final;
 
     private:
         // --- Network
-        void _waitForClientConnection();
+        // void _writeMessage(const std::string &);
+        void _waitForClientConnection(void);
         void _runRequestHandler(void *);
         void _createRequestExecutorThread(const json &, Shared<AsioTcpConnection>);
 
