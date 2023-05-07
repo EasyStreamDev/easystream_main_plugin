@@ -18,13 +18,9 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "sceneCreated"},
-        {
-            "data",
-            {
-                {"name", name},
-                {"uuid", uuid},
-            },
-        }};
+        {"name", name},
+        {"uuid", uuid},
+    };
 }
 
 void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
@@ -38,10 +34,9 @@ void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "sceneRemoved"},
-        {
-            {"name", name},
-            {"uuid", uuid},
-        }};
+        {"name", name},
+        {"uuid", uuid},
+    };
 }
 
 void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::string oldName, std::string name)
@@ -53,11 +48,10 @@ void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::s
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "sceneNameChanged"},
-        {
-            {"name", name},
-            {"oldName", oldName},
-            {"uuid", uuid},
-        }};
+        {"name", name},
+        {"oldName", oldName},
+        {"uuid", uuid},
+    };
 }
 
 void es::obs::SourceTracker::handleCurrentSceneChanged()

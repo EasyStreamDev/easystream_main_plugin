@@ -22,7 +22,7 @@
 #include "../../IPluginManager.hpp"
 
 // Local
-#include "IServer.hpp"
+#include "interface/IServer.hpp"
 #include "AsioTcpConnection.hpp"
 #include "ResponseGenerator.hpp"
 #include "errorCode.hpp"
@@ -104,13 +104,13 @@ namespace es::server
         // --- MISCELLANEOUS
         void _generateMobileInformation(){};
 
+        // --- BROADCAST
+        void _broadcast(const json &);
+
         /********************/
         /* MEMBER VARIABLES */
         /********************/
 
-        // broadcastFunctions
-        void broadcast(const json &, Shared<AsioTcpConnection> &);
-        void broadcastMicsLevel(Shared<AsioTcpConnection> &);
     private:
         // --- Plugin manager
         es::IPluginManager *m_PluginManager;
@@ -125,8 +125,11 @@ namespace es::server
         // --- Request handler vars
         TSRequestQueue m_InRequestQueue;
         TSRequestQueue m_OutRequestQueue;
+        ThreadSafeQueue<json> m_BroadcastQueue;
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection>)> m_Handler;
     };
+
+    const json get_mics_data(es::obs::SourceTracker *source_tracker);
 }
 
 #endif /* !ASIOTCPSERVER_HPP_ */

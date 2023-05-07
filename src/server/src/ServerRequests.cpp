@@ -1,0 +1,269 @@
+/*
+** NetworkCommunication
+** File description:
+** ServerRequests
+*/
+
+#include "../include/AsioTcpServer.hpp"
+
+namespace es::server
+{
+    /****************/
+    /* GET REQUESTS */
+    /****************/
+
+    void AsioTcpServer::r_GetAllMics(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json response_data = get_mics_data(m_PluginManager->GetSourceTracker());
+
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+    }
+
+    void AsioTcpServer::r_GetActReactCouples(const json &j, Shared<AsioTcpConnection> con)
+    {
+        std::vector<json> areas_vec;
+
+        for (const auto &area : m_PluginManager->GetAreaMain()->GetAreas())
+        {
+            json area_data = {
+                {"actReactId", area.id},
+                {"isActive", area.is_active},
+                {"action", {
+                               //  {"actionId", area.action_data.id},
+                               {"type", area::ActionTypeToString(area.action_data.type)},
+                               {"params", area.action_data.params},
+                           }},
+                {"reaction", {
+                                 //  {"reactionId", area.reaction_data.id},
+                                 {"name", area.reaction_data.name},
+                                 {"type", area::ReactionTypeToString(area.reaction_data.type)},
+                                 {"params", area.reaction_data.params},
+                             }},
+            };
+            areas_vec.push_back(std::move(area_data));
+        }
+
+        const json response_data = {
+            {"length", areas_vec.size()},
+            {"actReacts", areas_vec},
+        };
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+    }
+
+    /****************/
+    /* SET REQUESTS */
+    /****************/
+
+    void AsioTcpServer::r_SetAutoAudioLeveler(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json &params = j.at("params");
+        const bool &enable = params.at("enable");
+        const std::string &source_name = params.at("source");
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+
+        auto source_target = autoLevelerMap_.find(source_name);
+        if (source_target == autoLevelerMap_.end())
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::NotFound(std::string("Source not found : ") + source_name)));
+        }
+
+        source_target->second->SetActive(enable);
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
+    }
+
+    void AsioTcpServer::r_SetMicLevel(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const std::string &mic_name = j.at("params").at("micName");
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+        auto it_MicAutoLeveler_ = autoLevelerMap_.find(mic_name);
+
+        // Check if microphone exists
+        if (it_MicAutoLeveler_ == autoLevelerMap_.end())
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::NotFound("specified microphone does not exist.")));
+            return;
+        }
+
+        const float &value = j.at("params").at("level");
+        const float desired_level = ((value * 60) / 100) - 60; // desired_level -= 60; ??
+
+        // Update microphone level
+        it_MicAutoLeveler_->second->setDesiredLevel(desired_level);
+
+        // Send success response to asking client.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
+        // Broadcast new mics levels to all client.
+        this->_broadcast(get_mics_data(m_PluginManager->GetSourceTracker()));
+    }
+
+    void AsioTcpServer::r_SetNewARea(const json &j, Shared<AsioTcpConnection> con)
+    {
+        area::action_t action;
+        area::reaction_t reaction;
+        const json action_data = j.at("params").at("action");
+        const json reaction_data = j.at("params").at("reaction");
+
+        // Setting up action_t struct
+        action.type = ACTION_TYPE_MAP.at(action_data.at("type"));
+        action.params = action_data.at("params");
+        // Setting up reaction_t struct
+        reaction.name = reaction_data.at("name");
+        reaction.type = REACTION_TYPE_MAP.at(reaction_data.at("type"));
+        reaction.params = reaction_data.at("params");
+
+        // Create AREA within AREA system.
+        const json result = m_PluginManager->GetAreaMain()->CreateArea(action, reaction);
+
+        // Error on creation of AREA
+        if (result.at("return_value") != 0)
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::BadRequest(result.at("message"))));
+            return;
+        }
+
+        // AREA successfully created
+        const json response_data = {
+            {"actReactId", result.at("area_id")},
+        };
+
+        m_OutRequestQueue.ts_push(std::make_pair(
+            con,
+            ResponseGenerator::Success(
+                "Act/React couple succesfully created.",
+                response_data)));
+    }
+
+    /*******************/
+    /* UPDATE REQUESTS */
+    /*******************/
+
+    void AsioTcpServer::r_UpdateAction(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json &data = j.at("params");
+        area::action_t new_action; // New action data
+        // Getting ID of ARea to update
+        const size_t area_id = data.at("actionId");
+
+        // Getting new_action type
+        new_action.type = ACTION_TYPE_MAP.at(data.at("type"));
+        // Getting new_action parameters
+        new_action.params = data.at("params");
+
+        // Call to updating function
+        const json result = m_PluginManager->GetAreaMain()->UpdateAction(area_id, new_action);
+        const int &ret_val = result.at("return_value");
+        const std::string msg = result.at("message");
+
+        if (ret_val != 0)
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::NotFound(msg)));
+            return;
+        }
+
+        m_OutRequestQueue.ts_push(std::make_pair(
+            con,
+            ResponseGenerator::Success(
+                msg,
+                json({
+                    {"actReactId", result.at("area_id")},
+                }))));
+    }
+
+    void AsioTcpServer::r_UpdateReaction(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json &data = j.at("params");
+        // Getting ID of ARea to update
+        const size_t &area_id = data.at("reactionId");
+        // New action data
+        area::reaction_t new_reaction;
+
+        if (data.contains("name"))
+        {
+            new_reaction.name = data.at("name");
+        }
+        // Getting new_reaction type
+        new_reaction.type = REACTION_TYPE_MAP.at(data.at("type"));
+        // Getting new_reaction parameters
+        new_reaction.params = data.at("params");
+
+        // Call to updating function
+        const json result = m_PluginManager->GetAreaMain()->UpdateReaction(area_id, new_reaction);
+        const int &ret_val = result.at("return_value");
+        const std::string msg = result.at("message");
+
+        if (ret_val != 0)
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::NotFound(msg)));
+            return;
+        }
+
+        m_OutRequestQueue.ts_push(std::make_pair(
+            con,
+            ResponseGenerator::Success(
+                msg,
+                json({
+                    {"actReactId", result.at("area_id")},
+                }))));
+    }
+
+    /*******************/
+    /* REMOVE REQUESTS */
+    /*******************/
+
+    void AsioTcpServer::r_RemoveActReact(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json params = j.at("params");
+        const size_t id_to_rm = params.at("actReactId");
+
+        // Call delete AREA function
+        const json result = m_PluginManager->GetAreaMain()->DeleteArea(id_to_rm);
+        const int &ret_val = result.at("return_value");
+        const std::string msg = result.at("message");
+
+        // Error on AREA deletion
+        if (ret_val != 0)
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::NotFound(msg)));
+        }
+
+        // Send success message
+        m_OutRequestQueue.ts_push(
+            std::make_pair(
+                con,
+                ResponseGenerator::Success(msg, json({{"actReactId", result.at("area_id")}}))));
+    }
+
+    /********************/
+    /* USEFUL FUNCTIONS */
+    /********************/
+
+    const json get_mics_data(es::obs::SourceTracker *source_tracker)
+    {
+        json toSend;
+        std::vector<json> mics = es::utils::obs::listHelper::GetMicsList();
+
+        auto autoLevelerMap_ = source_tracker->getAudioMap();
+
+        for (auto &m : mics)
+        {
+            std::shared_ptr<es::obs::AutoAudioLeveler> micAudioLeveler_ = autoLevelerMap_.find(m["micName"])->second;
+
+            float tmpValue = micAudioLeveler_->getDesiredLevel() + 60;
+
+            m["level"] = floor((tmpValue * 100) / 60);
+            m["isActive"] = micAudioLeveler_->isActive();
+        }
+
+        return {
+            {"length", mics.size()},
+            {"mics", mics},
+        };
+    }
+}

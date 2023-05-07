@@ -30,11 +30,10 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "audioSourceCreated"},
-        {
-            {"name", name},
-            {"uuid", uuid},
-            {"type", kind},
-        }};
+        {"name", name},
+        {"uuid", uuid},
+        {"type", kind},
+    };
 }
 
 void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
@@ -48,11 +47,10 @@ void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "audioSourceRemoved"},
-        {
-            {"name", name},
-            {"uuid", uuid},
-            {"type", kind},
-        }};
+        {"name", name},
+        {"uuid", uuid},
+        {"type", kind},
+    };
 }
 
 void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldName, std::string name)
@@ -69,11 +67,10 @@ void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::s
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "audioSourceNameChanged"},
-        {
-            {"name", name},
-            {"oldName", oldName},
-            {"uuid", uuid},
-        }};
+        {"name", name},
+        {"oldName", oldName},
+        {"uuid", uuid},
+    };
 }
 
 void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata_t *data)
