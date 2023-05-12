@@ -32,6 +32,9 @@ namespace es::server
         /* Updaters */
         m_Handler["updateAction"] = &AsioTcpServer::r_UpdateAction;
         m_Handler["updateReaction"] = &AsioTcpServer::r_UpdateReaction;
+
+        /* Subscribers */
+        m_Handler["subscribeBroadcast"] = &AsioTcpServer::r_SubscribeToBroadcast;
     }
 
     AsioTcpServer::~AsioTcpServer()
@@ -168,7 +171,7 @@ namespace es::server
                     tmpJson["socketPort"] = m_Connections.back()->getSocket().remote_endpoint().port();
                     tmpJson["Message"] = std::string("succesfully connected");
                     tmpJson["statusCode"] = 200;
-                    m_Connections.back()->writeMessage(tmpJson.dump() + "\r\n");
+                    m_Connections.back()->writeMessage(tmpJson.dump());
                 }
                 else // New connection error
                 {
@@ -246,9 +249,9 @@ namespace es::server
 
         for (auto socket : m_Connections)
         {
-            if (socket != nullptr)
+            if (socket != nullptr && socket->isSubscribedToBroadcast())
             {
-                socket->writeMessage(toSendJson.dump() + "\r\n");
+                socket->writeMessage(toSendJson.dump());
             }
         }
     }

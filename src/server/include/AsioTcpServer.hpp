@@ -100,6 +100,8 @@ namespace es::server
         void r_UpdateReaction(const json &j, Shared<AsioTcpConnection> con);
         // --- REMOVE requests
         void r_RemoveActReact(const json &, Shared<AsioTcpConnection>);
+        // --- SUBSCRIPTION requests
+        void r_SubscribeToBroadcast(const json &, Shared<AsioTcpConnection>);
 
         // --- MISCELLANEOUS
         void _generateMobileInformation(){};

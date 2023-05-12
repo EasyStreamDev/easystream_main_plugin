@@ -70,13 +70,14 @@ namespace es::server
     {
         std::scoped_lock(this->_writeMutex);
         // char buffer[MSGMAX];
+        const std::string f_msg = msg + "\r\n";
 
-        std::cout << "msg: " << msg << std::endl;
+        std::cout << "msg: " << f_msg << std::endl;
         std::memset(_buffer, 0, MSGMAX);
-        std::memcpy(_buffer, msg.data(), msg.size());
+        std::memcpy(_buffer, f_msg.data(), f_msg.size());
         asio::async_write(
             _socket,
-            asio::buffer(_buffer, msg.size()),
+            asio::buffer(_buffer, f_msg.size()),
             [this](asio::error_code ec, std::size_t length)
             {
                 (void)length;

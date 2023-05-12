@@ -240,6 +240,20 @@ namespace es::server
                 ResponseGenerator::Success(msg, json({{"actReactId", result.at("area_id")}}))));
     }
 
+    /*************************/
+    /* SUBSCRIPTION REQUESTS */
+    /*************************/
+
+    void AsioTcpServer::r_SubscribeToBroadcast(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json params = j.at("params");
+        const bool value = params.at("enable");
+
+        con->setBroadcastSubscription(value);
+
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
+    }
+
     /********************/
     /* USEFUL FUNCTIONS */
     /********************/
