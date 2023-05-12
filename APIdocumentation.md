@@ -317,6 +317,26 @@ Si la requête est invalide, l'action reste inchangée.
 
 # **Broadcast**
 
+## Subscribe to broadcast
+
+* **Request**
+```json
+{
+    "command": "subscribeBroadcast",
+    "params": {
+        "enable": "bool"
+    }
+}
+```
+
+* **Response**
+```json
+{
+    "statusCode": "integer",
+    "message": "string"
+}
+```
+
 ## *OBS: Scene updates*
 
 **Scene Created**
