@@ -322,8 +322,10 @@ Si la requête est invalide, l'action reste inchangée.
 **Scene Created**
 ```json
 {
-    "type": "sceneCreated",
+    "statusCode": 201,
+    "message": "BROADCAST",
     "data": {
+        "type": "sceneCreated",
         "name": "string",
         "uuid": "string"
     },
@@ -333,8 +335,10 @@ Si la requête est invalide, l'action reste inchangée.
 **Scene Removed**
 ```json
 {
-    "type": "sceneRemoved",
+    "statusCode": 201,
+    "message": "BROADCAST",
     "data": {
+        "type": "sceneRemoved",
         "name": "string",
         "uuid": "string"
     },
@@ -344,8 +348,10 @@ Si la requête est invalide, l'action reste inchangée.
 **Scene Name Changed**
 ```json
 {
-    "type": "sceneNameChanged",
+    "statusCode": 201,
+    "message": "BROADCAST",
     "data": {
+        "type": "sceneNameChanged",
         "name": "string",
         "oldName": "string",
         "uuid": "string"
@@ -358,8 +364,10 @@ Si la requête est invalide, l'action reste inchangée.
 **Audio Source Created**
 ```json
 {
-    "type": "audioSourceCreated",
+    "statusCode": 201,
+    "message": "BROADCAST",
     "data": {
+        "type": "audioSourceCreated",
         "name": "string",
         "uuid": "string",
         "type": "string"
@@ -370,8 +378,10 @@ Si la requête est invalide, l'action reste inchangée.
 **Audio Source Removed**
 ```json
 {
-    "type": "audioSourceRemoved",
+    "statusCode": 201,
+    "message": "BROADCAST",
     "data": {
+        "type": "audioSourceRemoved",
         "name": "string",
         "uuid": "string",
         "type": "string"
@@ -382,8 +392,10 @@ Si la requête est invalide, l'action reste inchangée.
 **Audio Source Name Changed**
 ```json
 {
-    "type": "audioSourceNameChanged",
+    "statusCode": 201,
+    "message": "BROADCAST",
     "data": {
+        "type": "audioSourceNameChanged",
         "name": "string",
         "oldName": "string",
         "uuid": "string"
