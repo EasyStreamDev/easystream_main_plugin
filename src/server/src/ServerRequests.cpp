@@ -99,8 +99,11 @@ namespace es::server
 
         // Send success response to asking client.
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
+
         // Broadcast new mics levels to all client.
-        this->submitBroadcast(get_mics_data(m_PluginManager->GetSourceTracker()));
+        json broadcast_request = get_mics_data(m_PluginManager->GetSourceTracker());
+        broadcast_request["type"] = "micLevelChanged";
+        this->submitBroadcast(broadcast_request);
     }
 
     void AsioTcpServer::r_SetNewARea(const json &j, Shared<AsioTcpConnection> con)
