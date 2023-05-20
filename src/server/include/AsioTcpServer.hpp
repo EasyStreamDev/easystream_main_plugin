@@ -92,8 +92,7 @@ namespace es::server
         void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
         // --- SET requests
-        void r_SetAutoAudioLeveler(const json &, Shared<AsioTcpConnection>);
-        void r_SetMicLevel(const json &, Shared<AsioTcpConnection>);
+        void r_SetCompressorLevel(const json &, Shared<AsioTcpConnection>);
         void r_SetNewARea(const json &, Shared<AsioTcpConnection>);
         // --- UPDATE requests
         void r_UpdateAction(const json &, Shared<AsioTcpConnection>);

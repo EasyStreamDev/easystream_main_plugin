@@ -56,46 +56,30 @@ namespace es::server
     /* SET REQUESTS */
     /****************/
 
-    void AsioTcpServer::r_SetAutoAudioLeveler(const json &j, Shared<AsioTcpConnection> con)
+    void AsioTcpServer::r_SetCompressorLevel(const json &j, Shared<AsioTcpConnection> con)
     {
         const json &params = j.at("params");
-        const bool &enable = params.at("enable");
-        const std::string &source_name = params.at("source");
-        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+        const std::string &source_name = params.at("micName");
+        const bool &enable = params.at("isActive");
 
+        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
         auto source_target = autoLevelerMap_.find(source_name);
+
+        // Check if microphone exists
         if (source_target == autoLevelerMap_.end())
         {
             m_OutRequestQueue.ts_push(std::make_pair(
                 con,
-                ResponseGenerator::NotFound(std::string("Source not found : ") + source_name)));
-        }
-
-        source_target->second->SetActive(enable);
-        // Submit response to outgoing requests queue.
-        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
-    }
-
-    void AsioTcpServer::r_SetMicLevel(const json &j, Shared<AsioTcpConnection> con)
-    {
-        const std::string &mic_name = j.at("params").at("micName");
-        auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
-        auto it_MicAutoLeveler_ = autoLevelerMap_.find(mic_name);
-
-        // Check if microphone exists
-        if (it_MicAutoLeveler_ == autoLevelerMap_.end())
-        {
-            m_OutRequestQueue.ts_push(std::make_pair(
-                con,
-                ResponseGenerator::NotFound("specified microphone does not exist.")));
+                ResponseGenerator::NotFound("Specified audio source does not exist: " + source_name)));
             return;
         }
 
-        const float &value = j.at("params").at("level");
-        const float desired_level = ((value * 60) / 100) - 60; // desired_level -= 60; ??
+        const float &inv_value = 100.0 - (float)params.at("level");
+        const float desired_level = ((inv_value * 60) / 100) - 60; // desired_level -= 60; ??
 
         // Update microphone level
-        it_MicAutoLeveler_->second->setDesiredLevel(desired_level);
+        source_target->second->setDesiredLevel(desired_level);
+        source_target->second->SetActive(enable);
 
         // Send success response to asking client.
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
@@ -274,7 +258,7 @@ namespace es::server
 
             float tmpValue = micAudioLeveler_->getDesiredLevel() + 60;
 
-            m["level"] = floor((tmpValue * 100) / 60);
+            m["level"] = 100.0 - floor((tmpValue * 100) / 60);
             m["isActive"] = micAudioLeveler_->isActive();
         }
 

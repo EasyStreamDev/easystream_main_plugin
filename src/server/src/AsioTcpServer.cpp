@@ -21,8 +21,7 @@ namespace es::server
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
 
         /* Setters */
-        m_Handler["setAutoAudioLeveler"] = &AsioTcpServer::r_SetAutoAudioLeveler;
-        m_Handler["setMicLevel"] = &AsioTcpServer::r_SetMicLevel;
+        m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;
         m_Handler["setSubtitles"] = nullptr;
         m_Handler["setActionReaction"] = &AsioTcpServer::r_SetNewARea;
 
