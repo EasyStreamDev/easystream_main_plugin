@@ -22,8 +22,8 @@ namespace es::server
 
         /* Setters */
         m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;
-        m_Handler["setSubtitles"] = nullptr;
         m_Handler["setActionReaction"] = &AsioTcpServer::r_SetNewARea;
+        m_Handler["setSubtitles"] = &AsioTcpServer::r_SetSubtitles;
 
         /* Removers */
         m_Handler["removeActReact"] = &AsioTcpServer::r_RemoveActReact;

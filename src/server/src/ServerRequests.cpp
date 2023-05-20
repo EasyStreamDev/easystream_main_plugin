@@ -127,6 +127,15 @@ namespace es::server
                 response_data)));
     }
 
+    void AsioTcpServer::r_SetSubtitles(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json params = j.at("params");
+
+        // m_OutRequestQueue.ts_push(std::make_pair(
+        //     con,
+        //     ResponseGenerator::Success("OK")));
+    }
+
     /*******************/
     /* UPDATE REQUESTS */
     /*******************/
