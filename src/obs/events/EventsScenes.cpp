@@ -21,6 +21,7 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
         {"name", name},
         {"uuid", uuid},
     };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
@@ -37,6 +38,7 @@ void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
         {"name", name},
         {"uuid", uuid},
     };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::string oldName, std::string name)
@@ -52,6 +54,7 @@ void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::s
         {"oldName", oldName},
         {"uuid", uuid},
     };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleCurrentSceneChanged()

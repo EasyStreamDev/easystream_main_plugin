@@ -228,6 +228,7 @@ namespace es::server
 
     void AsioTcpServer::submitBroadcast(const json &data)
     {
+        std::cerr << "[BROADCAST] - request submitted: " << data << std::endl;
         m_BroadcastQueue.ts_push(data);
     }
 

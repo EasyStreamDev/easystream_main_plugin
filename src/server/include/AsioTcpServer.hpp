@@ -44,7 +44,7 @@ namespace es::server
 
     class AsioTcpServer
         : public Runnable,
-          IServer,
+          public IServer,
           std::enable_shared_from_this<AsioTcpServer>
     {
         /*********************/

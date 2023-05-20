@@ -8,11 +8,12 @@
 #ifndef ISERVER_HPP_
 #define ISERVER_HPP_
 
-// #include "Error.hpp"
-
 // Linked
 #include <asio.hpp>
 #include <iostream>
+
+//
+#include "../../../utils/Json.hpp"
 
 namespace es::server
 {

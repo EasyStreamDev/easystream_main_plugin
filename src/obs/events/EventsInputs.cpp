@@ -34,6 +34,7 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
         {"uuid", uuid},
         {"type", kind},
     };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
@@ -51,6 +52,7 @@ void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
         {"uuid", uuid},
         {"type", kind},
     };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldName, std::string name)
@@ -71,6 +73,7 @@ void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::s
         {"oldName", oldName},
         {"uuid", uuid},
     };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata_t *data)

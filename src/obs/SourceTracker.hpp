@@ -10,6 +10,7 @@
 
 // Global
 #include "../IPluginManager.hpp"
+#include "../server/include/interface/IServer.hpp"
 #include "../utils/Utils.hpp"
 
 // Local
@@ -27,7 +28,7 @@ namespace es::obs
         SourceTracker();
         ~SourceTracker();
 
-        void init();
+        void init(IPluginManager *);
         static bool filterSources(std::string name, obs_source_t *source);
         static bool filterAudioSources(std::string name, obs_source_t *source);
         static bool filterVideoSources(std::string name, obs_source_t *source);
@@ -43,7 +44,6 @@ namespace es::obs
         static void renameHandler(void *ptr, calldata_t *data);
 
         typedef std::function<bool(std::string, obs_source_t *)> enumerate_cb_t;
-
         typedef std::function<bool(std::string, obs_source_t *)> filter_cb_t;
 
         void enumerate(enumerate_cb_t enumerate_cb, filter_cb_t filter_cb = nullptr);
@@ -108,8 +108,11 @@ namespace es::obs
         static void handleMediaInputPlaybackStarted(void *param, calldata_t *data);
         static void handleMediaInputPlaybackEnded(void *param, calldata_t *data);
 
+        // Server related
+        void submitToBroadcast(const json &);
+
     private:
-        es::server::AsioTcpServer *m_TcpServer = nullptr;
+        IPluginManager *m_PluginManager = nullptr;
         std::map<std::string, std::shared_ptr<obs_weak_source_t>> _sources;
         bool _obsLoaded;
         // std::vector<AutoAudioLeveler> _audioSource;

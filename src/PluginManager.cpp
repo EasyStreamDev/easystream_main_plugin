@@ -63,7 +63,7 @@ namespace es
     {
         m_Running = true;
 
-        this->m_SourceTracker->init();
+        this->m_SourceTracker->init(this);
 
         // this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
         // this->m_AreaMain = new es::area::AreaManager();
@@ -127,7 +127,7 @@ namespace es
         return m_AreaMain;
     }
 
-    server::AsioTcpServer *PluginManager::GetServer(void)
+    server::IServer *PluginManager::GetServer(void)
     {
         return m_Server;
     }

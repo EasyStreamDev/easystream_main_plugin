@@ -38,7 +38,7 @@ namespace es
 
     public:
         area::AreaManager *GetAreaMain(void);
-        server::AsioTcpServer *GetServer(void);
+        server::IServer *GetServer(void);
         obs::SourceTracker *GetSourceTracker(void);
         thread::ThreadPool *GetThreadPool(void);
         transcription::TranscriptorManager *GetTranscriptorManager(void);
@@ -54,7 +54,7 @@ namespace es
 
     private:
         std::atomic<bool> m_Running = false;
-        
+
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
         thread::ThreadPool *m_ThreadPool = nullptr;

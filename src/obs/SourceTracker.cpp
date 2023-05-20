@@ -35,10 +35,13 @@ namespace es::obs
         blog(LOG_INFO, "### [SourceTracker::~SourceTracker] Finished.");
     }
 
-    void SourceTracker::init()
+    void SourceTracker::init(IPluginManager *pm)
     {
         blog(LOG_INFO, "### SourceTracker::SourceTracker()");
         blog(LOG_INFO, "### [SourceTracker::SourceTracker] Setting up...");
+
+        // Assign pointer to plugin manager to member variable.
+        this->m_PluginManager = pm;
 
         obs_frontend_add_event_callback(onFrontendEvent, this);
 
@@ -53,7 +56,6 @@ namespace es::obs
         {
             blog(LOG_ERROR, "[SourceTracker::SourceTracker] Unable to get libobs signal handler!");
         }
-
         blog(LOG_INFO, "### [SourceTracker::SourceTracker] Finished.");
     }
 
@@ -441,5 +443,18 @@ namespace es::obs
     const std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> &SourceTracker::getAudioMap() const
     {
         return (_audioLevelers);
+    }
+
+    void SourceTracker::submitToBroadcast(const json &broad_request)
+    {
+        if (m_PluginManager)
+        {
+            server::IServer *serv = m_PluginManager->GetServer();
+
+            if (serv)
+            {
+                serv->submitBroadcast(broad_request);
+            }
+        }
     }
 }
