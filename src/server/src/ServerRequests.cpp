@@ -131,9 +131,9 @@ namespace es::server
     {
         const json params = j.at("params");
 
-        // m_OutRequestQueue.ts_push(std::make_pair(
-        //     con,
-        //     ResponseGenerator::Success("OK")));
+        m_OutRequestQueue.ts_push(std::make_pair(
+            con,
+            ResponseGenerator::Success("OK")));
     }
 
     /*******************/
