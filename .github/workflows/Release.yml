@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       PACKAGE_NAME: Easystream-1.0.0-Linux.deb
-      SOURCE_PACKAGE_NAME: Easystream-1.0.0-Source.tar.gz
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
@@ -28,7 +27,15 @@ jobs:
       - name: Compile
         run: ./ci/build-linux.sh -r "Release" -p
 
-      - name: Release
+
+      - name: check Release
+        uses: mukunku/tag-exists-action@v1.2.0
+        id: checkTag
+        with:
+          tag: ${{github.run_number}}
+      
+      - if: false == ${{ steps.checkTag.outputs.exists }}
+        name: Release
         id: EasystreamRelease
         uses: actions/create-release@v1
         env:
@@ -39,25 +46,22 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+  
+
       - name: Upload Setup
         uses: actions/upload-release-asset@v1
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
           asset_name: easyStream.deb
           asset_content_type: application/octect-stream
-
-      - name: Upload Source Zip
-        uses: actions/upload-release-asset@v1
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
-          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
-          asset_name: easyStreamSource.tar.gz
-          asset_content_type: application/gzip
 
         
 
@@ -96,7 +100,14 @@ jobs:
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
-      - name: Release
+      - name: check Release
+        uses: mukunku/tag-exists-action@v1.2.0
+        id: checkTag
+        with:
+          tag: ${{github.run_number}}
+    
+      - if: false == ${{ steps.checkTag.outputs.exists }}
+        name: Release
         id: EasystreamRelease
         uses: actions/create-release@v1
         env:
@@ -106,23 +117,20 @@ jobs:
           release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
-        
-      - name: Upload Source Zip
-        uses: actions/upload-release-asset@v1
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
-          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
-          asset_name: easyStreamSource.zip
-          asset_content_type: application/zip
+          GITHUB_TOKEN: ${{ github.token }}
+
 
       - name: Upload Setup Zip
         uses: actions/upload-release-asset@v1
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
           asset_name: easyStream64.zip
           asset_content_type: application/zip
@@ -132,7 +140,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
           asset_name: easyStream64.exe
           asset_content_type: application/octect-stream
@@ -160,21 +168,15 @@ jobs:
         working-directory: ${{github.workspace}}
         run: |
             pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup
-      - name: ReleaseSetup
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2.2.0
-        with:
-          name: easyStream64.exe
-          path: 'build/${{env.PACKAGE_NAME}}'
       
-      - name: ReleaseSetupZip
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2.2.0
+      - name: check Release
+        uses: mukunku/tag-exists-action@v1.2.0
+        id: checkTag
         with:
-          name: easyStream64.exe
-          path: './build/${{env.ZIP_PACKAGE_NAME}}'
+          tag: ${{github.run_number}}
 
-      - name: Release
+      - if: false == ${{ steps.checkTag.outputs.exists }}
+        name: Release
         id: EasystreamRelease
         uses: actions/create-release@v1
         env:
@@ -185,12 +187,18 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Upload Setup Zip
         uses: actions/upload-release-asset@v1
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
           asset_name: easyStream64.zip
           asset_content_type: application/zip
@@ -200,7 +208,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
           asset_name: easyStream64.exe
           asset_content_type: application/octect-stream
