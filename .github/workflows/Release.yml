@@ -5,7 +5,7 @@ on:
     branches: [main]
   push:
     branches:
-      - "testvcpkg"
+      # - "testvcpkg"
       - "main"
 
 jobs:
@@ -58,26 +58,48 @@ jobs:
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
-      - name: ReleaseSetup
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2.2.0
+      - name: Release
+        id: EasystreamRelease
+        uses: actions/create-release@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: easyStream64.exe
-          path: './build/${{env.PACKAGE_NAME}}'
-          
-      - name: ReleaseSetupZip
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2.2.0
+          tag_name: ${{github.run_number}}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+        
+      - name: Upload Source Zip
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: easyStream64.exe
-          path: './build/${{env.ZIP_PACKAGE_NAME}}'
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset-name: easyStreamSource.zip
+          asset_content_type: application/zip
 
-      - name: ReleaseSource
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2.2.0
+      - name: Upload Setup Zip
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: easyStream.zip
-          path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
+          asset-name: easyStream64.zip
+          asset_content_type: application/zip
+
+      - name: Upload Setup
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset-name: easyStream64.exe
+          asset_content_type: application/octect-stream
+
+          
 
   
   win32Build:
@@ -114,6 +136,46 @@ jobs:
           name: easyStream64.exe
           path: './build/${{env.ZIP_PACKAGE_NAME}}'
 
+      - name: Release
+        id: EasystreamRelease
+        uses: actions/create-release@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{github.run_number}}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+        
+      - name: Upload Source Zip
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset-name: easyStreamSource.zip
+          asset_content_type: application/zip
+
+      - name: Upload Setup Zip
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
+          asset-name: easyStream64.zip
+          asset_content_type: application/zip
+
+      - name: Upload Setup
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset-name: easyStream64.exe
+          asset_content_type: application/octect-stream
 
 
     # macosBuild:
