@@ -48,9 +48,11 @@ jobs:
 
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.3.2
+        uses: cardinalby/git-get-release-action@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{github.run_number}}
   
 
       - name: Upload Setup
@@ -120,9 +122,11 @@ jobs:
 
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.3.2
+        uses: cardinalby/git-get-release-action@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{github.run_number}}
 
 
       - name: Upload Setup Zip
@@ -189,9 +193,11 @@ jobs:
 
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.3.2
+        uses: cardinalby/git-get-release-action@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{github.run_number}}
 
       - name: Upload Setup Zip
         uses: actions/upload-release-asset@v1
