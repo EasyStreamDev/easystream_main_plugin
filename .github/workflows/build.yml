@@ -6,7 +6,7 @@ on:
   push:
     branches:
       # - "testvcpkg"
-      - "Dev"
+      - "dev"
 
 jobs:
   ubuntuBuild:
