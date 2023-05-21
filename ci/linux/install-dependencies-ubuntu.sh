@@ -19,11 +19,8 @@ sudo apt-get install -y \
 	cmake \
 	obs-studio \
 	qt6-base-dev \
-	# libboost-all-dev \
-	# libasio-dev \
 	libxss-dev \
 	libxtst-dev	\
-	# libcpprest-dev \
 	python-is-python3	\
 	python3-pip
 

@@ -32,6 +32,7 @@ $obsFolder = "${rootDir}/compileResource/"
 .${PSScriptRoot}/installBoost.ps1
 .${PSScriptRoot}/installConan.ps1
 .${PSScriptRoot}/getObs.ps1
+.${PSScriptRoot}/package.ps1
 
 function printUsage {
     $Usage = @(
@@ -48,6 +49,8 @@ function buildEasyStream {
     Set-Location $rootDir
     if (Test-Path -Path "build") {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
+    } else {
+        mkdir "build"
     }
     Set-Location "build"
     # if ($BuildType == )

@@ -62,21 +62,21 @@ jobs:
         uses: actions/upload-artifact@v2.2.0
         with:
           name: easyStream64.exe
-          path: '${{github.workspace}}/build/${{env.PACKAGE_NAME}}'
+          path: './build/${{env.PACKAGE_NAME}}'
           
       - name: ReleaseSetupZip
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
         with:
           name: easyStream64.exe
-          path: '${{github.workspace}}/build/${{env.PACKAGE_NAME}}'
+          path: './build/${{env.ZIP_PACKAGE_NAME}}'
 
       - name: ReleaseSource
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
         with:
           name: easyStream.zip
-          path: '${{github.workspace}}/build/${{env.SOURCE_PACKAGE_NAME}}'
+          path: './build/${{env.SOURCE_PACKAGE_NAME}}'
 
   
   win32Build:
@@ -87,7 +87,9 @@ jobs:
       CMAKE_SYSTEM_VERSION: "10.0.18363.657"
       WINDOWS_DEPS_VERSION: "2019"
       WINDOWS_DEPS_CACHE_VERSION: "1"
-      PACKAGE_NAME: "Easystrean-1.0.0-win64.exe"
+      PACKAGE_NAME: "Easystrean-1.0.0-win32.exe"
+      ZIP_PACKAGE_NAME: "Easystrean-1.0.0-win32.zip"
+
     steps:
       - name: "Add msbuild to PATH"
         uses: microsoft/setup-msbuild@v1.0.2
@@ -101,7 +103,14 @@ jobs:
         uses: actions/upload-artifact@v2.2.0
         with:
           name: easyStream64.exe
-          path: '${{github.workspace}}/build/${{env.PACKAGE_NAME}}'
+          path: 'build/${{env.PACKAGE_NAME}}'
+      
+      - name: ReleaseSetupZip
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: easyStream64.exe
+          path: './build/${{env.ZIP_PACKAGE_NAME}}'
 
 
 
