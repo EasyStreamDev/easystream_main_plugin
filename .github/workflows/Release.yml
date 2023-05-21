@@ -46,7 +46,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset-name: easyStream.deb
+          asset_name: easyStream.deb
           asset_content_type: application/octect-stream
 
       - name: Upload Source Zip
@@ -56,7 +56,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
-          asset-name: easyStreamSource.tar.gz
+          asset_name: easyStreamSource.tar.gz
           asset_content_type: application/gzip
 
         
@@ -114,7 +114,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
-          asset-name: easyStreamSource.zip
+          asset_name: easyStreamSource.zip
           asset_content_type: application/zip
 
       - name: Upload Setup Zip
@@ -124,7 +124,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
-          asset-name: easyStream64.zip
+          asset_name: easyStream64.zip
           asset_content_type: application/zip
 
       - name: Upload Setup
@@ -134,7 +134,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset-name: easyStream64.exe
+          asset_name: easyStream64.exe
           asset_content_type: application/octect-stream
 
           
@@ -192,7 +192,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
-          asset-name: easyStream64.zip
+          asset_name: easyStream64.zip
           asset_content_type: application/zip
 
       - name: Upload Setup
@@ -202,7 +202,7 @@ jobs:
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset-name: easyStream64.exe
+          asset_name: easyStream64.exe
           asset_content_type: application/octect-stream
 
 

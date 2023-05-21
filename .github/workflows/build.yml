@@ -5,7 +5,8 @@ on:
     branches: [main]
   push:
     branches:
-      - "testvcpkg"
+      # - "testvcpkg"
+      - "Dev"
 
 jobs:
   ubuntuBuild:
