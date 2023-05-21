@@ -68,6 +68,8 @@ function main {
         printUsage
         exit 0
     }
+    mkdir $obsFolder
+
     if ($Dependencies.IsPresent) {
         # installBoost $BoostFolder
         installConan
