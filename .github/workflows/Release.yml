@@ -155,8 +155,8 @@ jobs:
       CMAKE_SYSTEM_VERSION: "10.0.18363.657"
       WINDOWS_DEPS_VERSION: "2019"
       WINDOWS_DEPS_CACHE_VERSION: "1"
-      PACKAGE_NAME: "Easystream-1.0.0-win32.exe"
-      ZIP_PACKAGE_NAME: "Easystream-1.0.0-win32.zip"
+      PACKAGE_NAME: "Easystream-1.0.0-win64.exe"
+      ZIP_PACKAGE_NAME: "Easystream-1.0.0-win64.zip"
 
     steps:
       - name: "Add msbuild to PATH"
@@ -199,7 +199,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
-          asset_name: easyStream64.zip
+          asset_name: easyStream32.zip
           asset_content_type: application/zip
 
       - name: Upload Setup
@@ -209,7 +209,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset_name: easyStream64.exe
+          asset_name: easyStream32.exe
           asset_content_type: application/octect-stream
 
 
