@@ -50,14 +50,17 @@ function printUsage {
 
 function buildEasyStream {
     Set-Location $rootDir
-    if (Test-Path -Path "build") {
+
+    Write-Output $rootDir
+    # Write-Output $rootDir
+    if (Test-Path -Path "${rootDir}/build") {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
     } else {
-        mkdir "build"
+        mkdir "${rootDir}/build"
     }
-    Set-Location "build"
+    Set-Location "${rootDir}/build"
+    Write-Output "===================================================================Location=========================================="
     Get-Location
-    # if ($BuildType == )
     if (Test-Path -Path "${rootDir}/../utils/windows") {
         Write-Output "It exits"
     }

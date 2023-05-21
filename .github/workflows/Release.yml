@@ -52,6 +52,7 @@ jobs:
       #     path: ${{ github.workspace }}/cmbuild/QT
       #     key: ${{ runner.os }}-pr-${{ env.CACHE_NAME }}-${{ env.QT_VERSION }}
       - name: "Build OBS"
+        working-directory: ${{github.workspace}}
         run: |
             pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Source -rootDir ./
       # - name: Package
@@ -96,6 +97,7 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v2.3.3
       - name: "Build OBS"
+        working-directory: ${{github.workspace}}
         run: |
             pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup -rootDir ./
       - name: ReleaseSetup
