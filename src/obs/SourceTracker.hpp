@@ -8,10 +8,17 @@
 #ifndef SOURCETRACKER_HPP_
 #define SOURCETRACKER_HPP_
 
+// Global
+#include "../IPluginManager.hpp"
+#include "../server/include/interface/IServer.hpp"
 #include "../utils/Utils.hpp"
+
+// Local
+#include "autoAudioLeveler/AutoAudioLeveler.hpp"
+
+// Linked
 #include <unordered_map>
 #include <memory>
-#include "autoAudioLeveler/AutoAudioLeveler.hpp"
 
 namespace es::obs
 {
@@ -21,7 +28,7 @@ namespace es::obs
         SourceTracker();
         ~SourceTracker();
 
-        void init();
+        void init(IPluginManager *);
         static bool filterSources(std::string name, obs_source_t *source);
         static bool filterAudioSources(std::string name, obs_source_t *source);
         static bool filterVideoSources(std::string name, obs_source_t *source);
@@ -37,7 +44,6 @@ namespace es::obs
         static void renameHandler(void *ptr, calldata_t *data);
 
         typedef std::function<bool(std::string, obs_source_t *)> enumerate_cb_t;
-
         typedef std::function<bool(std::string, obs_source_t *)> filter_cb_t;
 
         void enumerate(enumerate_cb_t enumerate_cb, filter_cb_t filter_cb = nullptr);
@@ -60,16 +66,22 @@ namespace es::obs
         static void sourceMediaPreviousMultiHandler(void *param, calldata_t *data);
 
         // Scenes
+        /* Callback responding to: Scene creation. */
         void handleSceneCreated(obs_source_t *source);
+        /* Callback responding to: Scene removal. */
         void handleSceneRemoved(obs_source_t *source);
+        /* Callback responding to: Scene name change. */
         void handleSceneNameChanged(obs_source_t *source, std::string oldSceneName, std::string sceneName);
         void handleCurrentSceneChanged();
         void handleCurrentPreviewSceneChanged();
         void handleSceneListChanged();
 
         // Inputs
+        /* Callback responding to: Input/Output audio source creation. */
         void handleInputCreated(obs_source_t *source);
+        /* Callback responding to: Input/Output audio source removal. */
         void handleInputRemoved(obs_source_t *source);
+        /* Callback responding to: Input/Output audio source name change. */
         void handleInputNameChanged(obs_source_t *source, std::string oldInputName, std::string inputName);
         static void handleInputActiveStateChanged(void *param, calldata_t *data);
         static void handleInputShowStateChanged(void *param, calldata_t *data);
@@ -96,6 +108,11 @@ namespace es::obs
         static void handleMediaInputPlaybackStarted(void *param, calldata_t *data);
         static void handleMediaInputPlaybackEnded(void *param, calldata_t *data);
 
+        // Server related
+        void submitToBroadcast(const json &);
+
+    private:
+        IPluginManager *m_PluginManager = nullptr;
         std::map<std::string, std::shared_ptr<obs_weak_source_t>> _sources;
         bool _obsLoaded;
         // std::vector<AutoAudioLeveler> _audioSource;

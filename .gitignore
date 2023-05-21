@@ -71,7 +71,7 @@ ci/obs-studio
 # Support for Project snippet scope
 !.vscode/*.code-snippets
 
-.vscode/*
+.vscode
 
 tmp.txt
 test2
@@ -88,3 +88,5 @@ Variables.h
 src/server/.vscode/c_cpp_properties.json
 
 test.json
+
+release

@@ -10,32 +10,70 @@
 
 void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
 {
-    std::string inputKind = obs_source_get_id(source);
+    const std::string name = obs_source_get_name(source);
+    const std::string uuid = obs_source_get_uuid(source);
+    const std::string kind = obs_source_get_id(source); // depends on sound card
     OBSDataAutoRelease inputSettings = obs_source_get_settings(source);
-    OBSDataAutoRelease defaultInputSettings = obs_get_source_defaults(inputKind.c_str());
+    OBSDataAutoRelease defaultInputSettings = obs_get_source_defaults(kind.c_str());
 
     if (!filterAudioSources("audio_input", source))
     {
-        std::string tmp(obs_source_get_name(source));
-        // @dev Romain : autoAudioLevelers are created here.
-        _audioLevelers.insert(std::pair<std::string, std::shared_ptr<AutoAudioLeveler>>(tmp, std::make_shared<AutoAudioLeveler>(source)));
-        blog(LOG_INFO, "### Instancing Audio Leveler for %s", obs_source_get_name(source));
+        _audioLevelers.insert(
+            std::pair<std::string, std::shared_ptr<AutoAudioLeveler>>(
+                name,
+                std::make_shared<AutoAudioLeveler>(source)));
+        blog(LOG_INFO, "### Instancing Audio Leveler for %s", name.c_str());
     }
-    blog(LOG_INFO, "### [SourceTracker::handleInputCreated]: %s, parent: %s", inputKind.c_str(), obs_source_get_name(source));
+
+    blog(LOG_INFO, "### [SourceTracker::handleInputCreated]: %s:%s:%s", name.c_str(), kind.c_str(), uuid.c_str());
+
+    // @todo: submit to server
+    const json broadcastRequestData = {
+        {"type", "audioSourceCreated"},
+        {"name", name},
+        {"uuid", uuid},
+        {"type", kind},
+    };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
 {
-    std::string name(obs_source_get_name(source));
+    const std::string name = obs_source_get_name(source);
+    const std::string uuid = obs_source_get_uuid(source);
+    const std::string kind = obs_source_get_id(source); // depends on sound card
+
     blog(LOG_INFO, "### [SourceTracker::handleInputRemoved]: %s ", name.c_str());
+
+    // @todo: submit to server
+    const json broadcastRequestData = {
+        {"type", "audioSourceRemoved"},
+        {"name", name},
+        {"uuid", uuid},
+        {"type", kind},
+    };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
-void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldInputName, std::string inputName)
+void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldName, std::string name)
 {
-    blog(LOG_INFO, "### [SourceTracker::handleInputNameChanged]:");
-    std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
-    OBSSourceAutoRelease scene = obs_get_source_by_name(j[rand() % j.size()]["sceneName"].get<std::string>().c_str());
-    obs_frontend_set_current_scene(scene);
+    const std::string uuid = obs_source_get_uuid(source);
+
+    blog(LOG_INFO, "### [SourceTracker::handleInputNameChanged]: from %s to %s.", oldName.c_str(), name.c_str());
+    // std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
+
+    // @dev : LEO SAROCHARD ????
+    // OBSSourceAutoRelease scene = obs_get_source_by_name(j[rand() % j.size()]["sceneName"].get<std::string>().c_str());
+    // obs_frontend_set_current_scene(scene);
+
+    // @todo: submit to server
+    const json broadcastRequestData = {
+        {"type", "audioSourceNameChanged"},
+        {"name", name},
+        {"oldName", oldName},
+        {"uuid", uuid},
+    };
+    this->submitToBroadcast(broadcastRequestData);
 }
 
 void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata_t *data)

@@ -10,6 +10,8 @@
 
 #include "../../../Common.hpp"
 #include "Variables.h"
+#include <sstream>
+#define TIMER_RECORD 10
 
 namespace es::obs
 {
@@ -39,6 +41,7 @@ namespace es::obs
         ~SourceRecorder();
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
+        void run(void *);
 
     private:
         obs_source_t *_source;
@@ -46,6 +49,8 @@ namespace es::obs
         std::ofstream _outFile;
         bool _headerWav;
         wav_header_t _wavFile;
+        std::stringstream _buffer;
+        std::chrono::steady_clock::time_point _checkPoint;
     };
 }
 

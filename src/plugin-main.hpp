@@ -7,14 +7,13 @@
 
 #ifndef MAIN_HPP_
 #define MAIN_HPP_
-#include "Common.hpp"
-#include <iostream>
-#include <chrono>
 
-#include "obs/SourceTracker.hpp"
-#include "utils/Thread.hpp"
-#include "utils/ActionReaction/ActionReactionMain.hpp"
+// #include "obs/SourceTracker.hpp"
+// #include "utils/Thread.hpp"
+// #include "area/AreaManager.hpp"
 // #include "obs/speechRecognition/transcription/TranscriptorManager.hpp"
+
+#include "Common.hpp"
 
 os_cpu_usage_info_t *GetCpuUsageInfo();
 

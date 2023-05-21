@@ -1,31 +1,42 @@
-// #ifndef TRANSCRIPTOR_MANAGER_HPP
-// #define TRANSCRIPTOR_MANAGER_HPP
+#ifndef TRANSCRIPTOR_MANAGER_HPP
+#define TRANSCRIPTOR_MANAGER_HPP
 
-// #include "Transcriptor.hpp"
+#include "ITranscriptorManager.hpp"
+#include "Transcriptor.hpp"
+#include "../../../Runnable.hpp"
 
-// namespace es::transcription
-// {
-//     class TranscriptorManager
-//     {
-//     public:
-//         TranscriptorManager();
-//         ~TranscriptorManager();
+namespace es::transcription
+{
+    class TranscriptorManager : public es::Runnable, ITranscriptorManager
+    {
+    public:
+        TranscriptorManager();
+        ~TranscriptorManager();
 
-//         void start(void);
-//         void stop(void);
+        // void start(void);
+        void run(void *) override;
+        const uint submit(const std::string &);
+        void stop(void);
+        void storeTranscription(const ts_result_t &);
+        const Optional<ts_result_t> getTranscription(const int & = -1);
 
-//         void transcriptFile(const std::string &, Transcriptor::ResponseCallback);
-//         inline const bool &isRunning() { return this->running; }
+    private:
+        const bool transcriptFile(const uint &, const std::string &);
+        Transcriptor *getFreeTranscriptor();
+        const uint getNewTranscriptionId(void) const;
 
-//     private:
-//         Transcriptor &getFreeTranscriptor();
+    private:
+        std::string accessToken;
+        std::array<Transcriptor, 4> m_Transcriptors;
+        // Files queue (to be transcripted)
+        Queue<Pair<uint, String>> m_FilesQueue;
+        std::mutex m_FilesQueueMutex;
+        // Transcription results (transcripted)
+        // @todo (yem): make vector of pair instead.
+        Umap<uint, ts_result_t> m_Results;
+        std::mutex m_ResultsMutex;
+    };
 
-//     private:
-//         std::string accessToken;
-//         std::array<Transcriptor, 4> transcriptors;
-//         std::vector<std::string> filesToTranscript;
-//         bool running = false;
-//     };
-// }
+}
 
-// #endif // TRANSCRIPTOR_MANAGER_HPP
+#endif // TRANSCRIPTOR_MANAGER_HPP

@@ -8,19 +8,32 @@ param(
     [Parameter()]
     [switch]$CloneObs,
 
+    [Parameter(Mandatory)]
+    [ValidateSet("Release", "RelWithDebInfo", "MinSizeRel", "Debug")]
+    [string]$BuildTypeObs,
+
+    [Parameter(Mandatory)]
+    [ValidateSet("Release", "Debug")]
+    [string]$BuildType,
+
     [Parameter()]
     [validateSet('x86', 'x64')]
-    [string]$BuildArch
+    [string]$BuildArch,
+
+    [Parameter(Mandatory)]
+    [ValidateSet('Setup', 'Source', 'None')]
+    [string]$Setup
+
 )
 
-
 $rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
-$BoostFolder = "${rootDir}/compileResource/boostFolder/"
+$buildFolder = "${rootDir}/build"
 $obsFolder = "${rootDir}/compileResource/"
 
 .${PSScriptRoot}/installBoost.ps1
 .${PSScriptRoot}/installConan.ps1
 .${PSScriptRoot}/getObs.ps1
+.${PSScriptRoot}/package.ps1
 
 function printUsage {
     $Usage = @(
@@ -28,19 +41,36 @@ function printUsage {
         "-Help          :   Print Usage",
         "-Dependencies  :   Download dependencies of easystream",
         "-Clone         :   Clone and build obs-studio"
+        "-Release       :   Make a release instead"
     )
     $Usage | Write-Host
 }
 
 function buildEasyStream {
     Set-Location $rootDir
-    if (Test-Path -Path "build") {
+
+    Write-Output $rootDir
+    # Write-Output $rootDir
+    if (Test-Path -Path "${rootDir}/build") {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
+    } else {
+        mkdir "${rootDir}/build"
     }
-    Set-Location "build"
-    conan.exe install ../ --profile ../utils/easystream --build=missing
-    cmake <#-G "Visual Studio 17 2022"#> ..
-    cmake --build ./
+    Set-Location "${rootDir}/build"
+    Write-Output "===================================================================Location=========================================="
+    Get-Location
+    if (Test-Path -Path "${rootDir}/../utils/windows") {
+        Write-Output "It exits"
+    }
+    if ($BuildType -eq "Release") {
+        conan.exe install ../utils/windows/cpprestsdk/ --profile ../utils/windows/windowsRelease --build=missing
+        conan.exe install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing
+    } else {
+        conan.exe install ../utils/windows/cpprestsdk/ --profile ../utils/windows/windowsDebug --build=missing
+        conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
+    }
+    cmake -G "Visual Studio 17 2022" .. -DCMAKE_BUILD_TYPE="$BuildTypeObs"
+    cmake --build ./ --config $BuildType
 }
 
 function main {
@@ -48,19 +78,27 @@ function main {
         printUsage
         exit 0
     }
+    mkdir $obsFolder
+
     if ($Dependencies.IsPresent) {
-        installBoost $BoostFolder
+        # installBoost $BoostFolder
         installConan
     }
     if ($CloneObs.IsPresent) {
         if ($PSBoundParameters.ContainsKey('BuildArch')) {
-            getObs -obsFolder $obsFolder -Arch $BuildArch
+            getObs -obsFolder $obsFolder -Arch $BuildTypeObs
         } else {
             $arch = ('x86', 'x64')[[System.Environment]::Is64BitOperatingSystem]
-            getObs -obsFolder $obsFolder -Arch $arch
+            getObs -obsFolder $obsFolder -Arch $arch -buildMode $BuildTypeObs
         }
     }
     buildEasyStream
+
+    if ($Setup -eq 'Setup') {
+        generateSetup -buildPath $buildFolder
+    } elseif ($Setup -eq 'Source') {
+        generateSetup -buildPath $buildFolder -source
+    }
 }
 
 main

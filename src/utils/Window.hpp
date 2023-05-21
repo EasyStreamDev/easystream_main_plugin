@@ -8,12 +8,14 @@
 #ifndef WINDOW_HPP_
 #define WINDOW_HPP_
 
-#include "Json.hpp"
 #include "../plugin-main.hpp"
 
-namespace es {
-    namespace utils {
-        namespace window {
+namespace es
+{
+    namespace utils
+    {
+        namespace window
+        {
             std::string GetCurrentWindowTitle();
 
             std::pair<int, int> GetCursorPos();

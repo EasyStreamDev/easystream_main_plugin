@@ -41,6 +41,8 @@
 #include <fstream>
 #include <sstream>
 #include <mutex>
+#include <iostream>
+#include <chrono>
 
 // QT includes
 #include <QStringList>
@@ -48,8 +50,8 @@
 #include <QLibrary>
 
 // Common OBS includes
-#include <obs-module.h>
 #include <obs.h>
+#include <obs-module.h>
 #include <obs-frontend-api.h>
 #include <util/platform.h>
 #include <util/config-file.h>
@@ -62,12 +64,10 @@
 #include "obs/Memory.hpp"
 #include "plugin-macros.generated.h"
 #include "Macros.hpp"
-#include "./nlohmann/json.hpp"
+#include "utils/Json.hpp"
 
 namespace es
 {
-    using json = nlohmann::json;
-
     namespace area
     {
         static size_t ID_COUNTER = 1; // 0 will be used as non-existing area ID
@@ -99,6 +99,10 @@ namespace es
         {
             SCENE_SWITCH,
             TOGGLE_AUDIO_COMPRESSOR,
+            START_RECORDING,
+            STOP_RECORDING,
+            START_STREAMING,
+            STOP_STREAMING,
         };
 
         static const std::string ReactionTypeToString(const ReactionType &t_)
@@ -109,6 +113,14 @@ namespace es
                 return "SCENE_SWITCH";
             case ReactionType::TOGGLE_AUDIO_COMPRESSOR:
                 return "TOGGLE_AUDIO_COMPRESSOR";
+            case ReactionType::START_RECORDING:
+                return "START_RECORDING";
+            case ReactionType::STOP_RECORDING:
+                return "START_RECORDING";
+            case ReactionType::START_STREAMING:
+                return "START_STREAMING";
+            case ReactionType::STOP_STREAMING:
+                return "START_STREAMING";
             default:
                 break;
             }

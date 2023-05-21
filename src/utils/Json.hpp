@@ -9,7 +9,7 @@
 #define JSON_HPP_
 
 #include <obs.hpp>
-#include "../nlohmann/json.hpp"
+#include "../utils/nlohmann/json.hpp"
 
 using json = nlohmann::json;
 
