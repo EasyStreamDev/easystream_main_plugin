@@ -22,13 +22,11 @@ param(
 
     [Parameter(Mandatory)]
     [ValidateSet('Setup', 'Source', 'None')]
-    [string]$Setup,
+    [string]$Setup
 
-    [Parameter(Mandatory)]
-    [string]$rootDir
 )
 
-# $rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
+$rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
 $buildFolder = "${rootDir}/build"
 $obsFolder = "${rootDir}/compileResource/"
 

@@ -63,7 +63,7 @@ jobs:
       - name: "Build OBS"
         working-directory: ${{github.workspace}}
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None -rootDir ./
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
@@ -91,7 +91,7 @@ jobs:
       - name: "Build OBS"
         working-directory: ${{github.workspace}}
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None -rootDir ./
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd

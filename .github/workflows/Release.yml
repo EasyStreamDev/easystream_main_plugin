@@ -54,7 +54,7 @@ jobs:
       - name: "Build OBS"
         working-directory: ${{github.workspace}}
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Source -rootDir ./
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Source
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
@@ -99,7 +99,7 @@ jobs:
       - name: "Build OBS"
         working-directory: ${{github.workspace}}
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup -rootDir ./
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup
       - name: ReleaseSetup
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0
