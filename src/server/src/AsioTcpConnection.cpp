@@ -68,7 +68,7 @@ namespace es::server
 
     void AsioTcpConnection::writeMessage(const std::string &msg)
     {
-        std::scoped_lock(this->_writeMutex);
+        std::scoped_lock tmp(this->_writeMutex);
         // char buffer[MSGMAX];
         const std::string f_msg = msg + "\r\n";
 

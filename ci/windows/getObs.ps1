@@ -11,7 +11,7 @@ function getObs {
         [string]$buildMode
     )
 
-    if (Test-Path -Path "obs-studio") {
+    if (Test-Path -Path "${obsFolder}/obs-studio") {
         Set-Location "${obsFolder}/obs-studio"
         git pull
     } else {

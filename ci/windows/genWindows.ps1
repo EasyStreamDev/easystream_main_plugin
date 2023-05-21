@@ -18,11 +18,15 @@ param(
 
     [Parameter()]
     [validateSet('x86', 'x64')]
-    [string]$BuildArch
+    [string]$BuildArch,
+
+    [Parameter(Mandatory)]
+    [ValidateSet('Setup', 'Source', 'None')]
+    [string]$Setup
 )
 
 $rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
-$BoostFolder = "${rootDir}/compileResource/boostFolder/"
+$buildFolder = "${rootDir}/build"
 $obsFolder = "${rootDir}/compileResource/"
 
 .${PSScriptRoot}/installBoost.ps1
@@ -70,10 +74,16 @@ function main {
             getObs -obsFolder $obsFolder -Arch $BuildTypeObs
         } else {
             $arch = ('x86', 'x64')[[System.Environment]::Is64BitOperatingSystem]
-            getObs -obsFolder $obsFolder -Arch $arch $BuildTypeObs
+            getObs -obsFolder $obsFolder -Arch $arch -buildMode $BuildTypeObs
         }
     }
     buildEasyStream
+
+    if ($Setup -eq 'Setup') {
+        generateSetup -buildPath $buildFolder
+    } elseif ($Setup -eq 'Source') {
+        generateSetup -buildPath $buildFolder -source
+    }
 }
 
 main
