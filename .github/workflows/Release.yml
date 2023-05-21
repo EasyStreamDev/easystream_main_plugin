@@ -53,7 +53,7 @@ jobs:
       #     key: ${{ runner.os }}-pr-${{ env.CACHE_NAME }}-${{ env.QT_VERSION }}
       - name: "Build OBS"
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Source
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Source -rootDir ${{github.workspace}}
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
@@ -97,7 +97,7 @@ jobs:
         uses: actions/checkout@v2.3.3
       - name: "Build OBS"
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup -rootDir ${{github.workspace}}
       - name: ReleaseSetup
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2.2.0

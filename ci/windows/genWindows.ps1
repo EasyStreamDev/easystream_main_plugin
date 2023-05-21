@@ -22,10 +22,13 @@ param(
 
     [Parameter(Mandatory)]
     [ValidateSet('Setup', 'Source', 'None')]
-    [string]$Setup
+    [string]$Setup,
+
+    [Parameter(Mandatory)]
+    [string]$rootDir
 )
 
-$rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
+# $rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
 $buildFolder = "${rootDir}/build"
 $obsFolder = "${rootDir}/compileResource/"
 
@@ -53,6 +56,7 @@ function buildEasyStream {
         mkdir "build"
     }
     Set-Location "build"
+    Get-Location
     # if ($BuildType == )
     if ($BuildType -eq "Release") {
         conan.exe install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing

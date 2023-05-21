@@ -19,5 +19,6 @@ function getObs {
         git clone --recursive https://github.com/obsproject/obs-studio.git
         Set-Location "obs-studio"
     }
+    Get-Location
     ./CI/build-windows.ps1 -BuildArch $Arch -BuildConfiguration $buildMode
 }
