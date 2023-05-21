@@ -5,6 +5,7 @@ if [ $# -eq 0 ]; then
     echo "No arguments given"
     exit -1
 fi
+
 # set -ex
 if [[ $2 == true ]]; then
     rm -rf build && mkdir build && cd build
@@ -13,7 +14,7 @@ if [[ $2 == true ]]; then
     else
         conan install "$rootProject/utils/ubuntu/" --build=missing --profile "$rootProject/utils/ubuntu/ubuntuRelease"
     fi
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_UBUNTU=yes ..
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_UBUNTU=yes -DCMAKE_BUILD_TYPE="$1" ..
 else
     cd build
 fi

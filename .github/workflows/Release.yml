@@ -1,29 +1,67 @@
-name: CI Multiplatform Build
+name: CI Multiplatform Release
 
 on:
   pull_request:
     branches: [main]
   push:
     branches:
-      # - "testvcpkg"
+      - "testvcpkg"
       - "main"
 
 jobs:
-  # ubuntuBuild:
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Install deps
-  #       run: |
-  #         sudo apt-get update && sudo apt-get install -y \
-  #           g++-multilib \
-  #           gcc-multilib \
-  #           git \
-  #           wget \
-  #     - name: OBS deps
-  #       run: ./ci/linux/install-dependencies-ubuntu.sh
-  #     - name: Compile
-  #       run: ./ci/build-linux.sh 
+  ubuntuBuild:
+    runs-on: ubuntu-22.04
+    env:
+      PACKAGE_NAME: Easystrean-1.0.0-Linux.deb
+      SOURCE_PACKAGE_NAME: Easystrean-1.0.0-Source.tar.gz
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+            g++-multilib \
+            gcc-multilib \
+            git \
+            wget \
+      - name: OBS deps
+        run: ./ci/linux/install-dependencies-ubuntu.sh
+      - name: Compile
+        run: ./ci/build-linux.sh -r "Release" -p
+
+      - name: Release
+        id: EasystreamRelease
+        uses: actions/create-release@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{github.run_number}}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Setup
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.PACKAGE_NAME}}'
+          asset-name: easyStream.deb
+          asset_content_type: application/octect-stream
+
+      - name: Upload Source Zip
+        uses: actions/upload-release-asset@v1
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
+          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset-name: easyStreamSource.tar.gz
+          asset_content_type: application/gzip
+
+        
+
+      
 
   win64Build:
     name: "win64Build"
@@ -95,7 +133,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
-          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset_path: './build/${{env.PACKAGE_NAME}}'
           asset-name: easyStream64.exe
           asset_content_type: application/octect-stream
 
@@ -146,16 +184,6 @@ jobs:
           release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
-        
-      - name: Upload Source Zip
-        uses: actions/upload-release-asset@v1
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
-          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
-          asset-name: easyStreamSource.zip
-          asset_content_type: application/zip
 
       - name: Upload Setup Zip
         uses: actions/upload-release-asset@v1
@@ -173,7 +201,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.EasystreamRelease.outputs.upload_url }}
-          asset_path: './build/${{env.SOURCE_PACKAGE_NAME}}'
+          asset_path: './build/${{env.PACKAGE_NAME}}'
           asset-name: easyStream64.exe
           asset_content_type: application/octect-stream
 
