@@ -12,8 +12,8 @@ jobs:
   ubuntuBuild:
     runs-on: ubuntu-22.04
     env:
-      PACKAGE_NAME: Easystrean-1.0.0-Linux.deb
-      SOURCE_PACKAGE_NAME: Easystrean-1.0.0-Source.tar.gz
+      PACKAGE_NAME: Easystream-1.0.0-Linux.deb
+      SOURCE_PACKAGE_NAME: Easystream-1.0.0-Source.tar.gz
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
@@ -71,9 +71,9 @@ jobs:
       CMAKE_SYSTEM_VERSION: "10.0.18363.657"
       WINDOWS_DEPS_VERSION: "2022"
       WINDOWS_DEPS_CACHE_VERSION: "1"
-      PACKAGE_NAME: "Easystrean-1.0.0-win64.exe"
-      ZIP_PACKAGE_NAME: "Easystrean-1.0.0-win64.zip"
-      SOURCE_PACKAGE_NAME: "Easystrean-1.0.0-Source.zip"
+      PACKAGE_NAME: "Easystream-1.0.0-win64.exe"
+      ZIP_PACKAGE_NAME: "Easystream-1.0.0-win64.zip"
+      SOURCE_PACKAGE_NAME: "Easystream-1.0.0-Source.zip"
     steps:
       - name: "Add msbuild to PATH"
         uses: microsoft/setup-msbuild@v1.0.2
@@ -148,8 +148,8 @@ jobs:
       CMAKE_SYSTEM_VERSION: "10.0.18363.657"
       WINDOWS_DEPS_VERSION: "2019"
       WINDOWS_DEPS_CACHE_VERSION: "1"
-      PACKAGE_NAME: "Easystrean-1.0.0-win32.exe"
-      ZIP_PACKAGE_NAME: "Easystrean-1.0.0-win32.zip"
+      PACKAGE_NAME: "Easystream-1.0.0-win32.exe"
+      ZIP_PACKAGE_NAME: "Easystream-1.0.0-win32.zip"
 
     steps:
       - name: "Add msbuild to PATH"
