@@ -59,9 +59,9 @@ function buildEasyStream {
     Get-Location
     # if ($BuildType == )
     if ($BuildType -eq "Release") {
-        conan.exe install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing
+        conan.exe "install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing"
     } else {
-        conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
+        conan.exe "install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing"
     }
     cmake -G "Visual Studio 17 2022" .. -DCMAKE_BUILD_TYPE="$BuildTypeObs"
     cmake --build ./ --config $BuildType
