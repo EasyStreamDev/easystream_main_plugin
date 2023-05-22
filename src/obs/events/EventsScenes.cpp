@@ -13,7 +13,7 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
     std::string name(obs_source_get_name(source));
     std::string uuid(obs_source_get_uuid(source));
 
-    blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());
 
     // @todo: submit to server
     const json broadcastRequestData = {
@@ -30,7 +30,7 @@ void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
     std::string name(obs_source_get_name(source));
     std::string uuid(obs_source_get_uuid(source));
 
-    blog(LOG_INFO, "### [SourceTracker::handleSceneRemoved]: %s:%s", name.c_str(), uuid.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleSceneRemoved]: %s:%s", name.c_str(), uuid.c_str());
 
     // @todo: submit to server
     const json broadcastRequestData = {
@@ -45,7 +45,7 @@ void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::s
 {
     std::string uuid(obs_source_get_uuid(source));
 
-    blog(LOG_INFO, "### [SourceTracker::handleSceneNameChanged]: %s:%s", name.c_str(), uuid.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleSceneNameChanged]: %s:%s", name.c_str(), uuid.c_str());
 
     // @todo: submit to server
     const json broadcastRequestData = {
@@ -63,7 +63,7 @@ void es::obs::SourceTracker::handleCurrentSceneChanged()
 
     std::string name(obs_source_get_name(currentScene));
 
-    blog(LOG_INFO, "### [SourceTracker::handleCurrentSceneChanged]: %s", name.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleCurrentSceneChanged]: %s", name.c_str());
 }
 
 void es::obs::SourceTracker::handleCurrentPreviewSceneChanged()
@@ -75,10 +75,10 @@ void es::obs::SourceTracker::handleCurrentPreviewSceneChanged()
 
     std::string name(obs_source_get_name(currentPreviewScene));
 
-    blog(LOG_INFO, "### [SourceTracker::handleCurrentPreviewSceneChanged]: %s", name.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleCurrentPreviewSceneChanged]: %s", name.c_str());
 }
 
 void es::obs::SourceTracker::handleSceneListChanged()
 {
-    blog(LOG_INFO, "### [SourceTracker::handleSceneListChanged]:");
+    // blog(LOG_INFO, "### [SourceTracker::handleSceneListChanged]:");
 }
