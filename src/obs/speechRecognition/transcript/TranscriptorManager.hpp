@@ -4,6 +4,7 @@
 #include "ITranscriptorManager.hpp"
 #include "Transcriptor.hpp"
 #include "../../../Runnable.hpp"
+#include "../../../IPluginManager.hpp"
 
 namespace es::transcription
 {
@@ -14,6 +15,7 @@ namespace es::transcription
         ~TranscriptorManager();
 
         // void start(void);
+        void init(IPluginManager *);
         void run(void *) override;
         const uint submit(const std::string &);
         void stop(void);
@@ -32,10 +34,13 @@ namespace es::transcription
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;
         // Transcription results (transcripted)
-        // @todo (yem): make vector of pair instead.
+        // @todo (yem): make vector of pair instead. why ?
         Umap<uint, ts_result_t> m_Results;
         std::mutex m_ResultsMutex;
         std::function<void(std::vector<std::string>)> _pushToArea;
+
+        // Plugin manager
+        IPluginManager *m_PluginManager = nullptr;
     };
 }
 

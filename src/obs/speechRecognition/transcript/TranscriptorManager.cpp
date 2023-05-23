@@ -28,9 +28,14 @@ namespace es::transcription
     /* PUBLIC */
     /**********/
 
+    void TranscriptorManager::init(IPluginManager *pm)
+    {
+        this->m_PluginManager = pm;
+    }
+
     void TranscriptorManager::run(void *)
     {
-        while (1) // @todo : setup a boolean thread killer
+        while (m_PluginManager && m_PluginManager->IsRunning()) // @todo : setup a boolean thread killer
         {
             m_FilesQueueMutex.lock();
             while (!m_FilesQueue.empty())
