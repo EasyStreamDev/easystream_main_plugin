@@ -21,6 +21,8 @@ namespace es::area
         virtual void Solve() override;
         virtual es::area::action_t ToStruct() override;
 
+        bool IsKeyPressed(int KeyCode);
+
     protected:
     private:
         std::string _key = "";

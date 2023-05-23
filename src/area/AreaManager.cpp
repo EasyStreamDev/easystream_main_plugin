@@ -28,31 +28,30 @@ namespace es::area
     {
         this->thread_sleep_ms(2000);
 
-        {
-            // Test reaction start stream
-            // action_t a_ = {
-            //     87429875,
-            //     ActionType::APP_LAUNCH,
-            //     {"app_name", "Klondike"}};
-            // reaction_t r_ = {
-            //     87429875,
-            //     "test_area_start_stream",
-            //     ReactionType::START_STREAMING,
-            //     {}};
+        {   // Test reaction start stream
+            action_t a_ = {
+                1,
+                ActionType::KEY_PRESSED,
+                {{"key", "u"}}};
+            reaction_t r_ = {
+                1,
+                "test_area_start_recording",
+                ReactionType::START_RECORDING,
+                {}};
 
-            // this->CreateArea(a_, r_);
+            this->CreateArea(a_, r_);
         }
 
-        { // Test reaction stop stream
-          // action_t a_ = {
-          //     87429876,
-          //     ActionType::APP_LAUNCH,
-          //     {{"app_name", "Mahjongg"}}};
-          // reaction_t r_ = {
-          //     87429876,
-          //     "test_area_stop_stream",
-          //     ReactionType::STOP_STREAMING,
-          //     {}};
+        {   // Test reaction stop stream
+            // action_t a_ = {
+            //     87429876,
+            //     ActionType::APP_LAUNCH,
+            //     {{"app_name", "Mahjongg"}}};
+            // reaction_t r_ = {
+            //     87429876,
+            //     "test_area_stop_stream",
+            //     ReactionType::STOP_STREAMING,
+            //     {}};
 
             // this->CreateArea(a_, r_);
         }
@@ -193,6 +192,7 @@ namespace es::area
                     {"message", "Unknown action"},
                 };
             }
+            blog(LOG_INFO, "ACTIONNNNNNNNNNNNNNNN?????????????????????");
 
             // Add action to AREA system.
             this->AddAction(act);
