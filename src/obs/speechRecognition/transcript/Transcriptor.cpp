@@ -49,7 +49,7 @@ namespace es::transcription
                                 transcript.push_back(elem.at("value"));
                             }
                             this->m_FileData.transcription = transcript;
-                            tm->storeTranscription(this->m_FileData);
+                            tm->storeTranscription(this->m_FileData, response_type == "final");
                         }
                         else
                         {

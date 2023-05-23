@@ -78,10 +78,10 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
-        // m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
         m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        // m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
 
         { // Testing functions

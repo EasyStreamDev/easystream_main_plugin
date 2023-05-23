@@ -102,22 +102,28 @@ namespace es::transcription
         }
     }
 
-    void TranscriptorManager::storeTranscription(const ts_result_t &result_)
+    void TranscriptorManager::storeTranscription(const ts_result_t &result_, const bool &is_final)
     {
         { // Voluntary scope
             // Locks mutex for this scope only.
             std::lock_guard<std::mutex> lg(m_ResultsMutex);
+
             // Update result.
             m_Results[result_.id] = result_;
-            if (result_.transcription.size() > 0)
+            if (result_.transcription.size() > 0 && is_final)
             {
                 _pushToArea(result_.transcription);
             }
+        }
+
+        if (is_final)
+        {
+            std::cout << "[TranscriptionManager] - result[" << std::to_string(result_.id) << "] - " << std::flush;
             for (const auto &c : result_.transcription)
             {
-                // blog(LOG_INFO, "==================================== [TRANSCRIPTION EASYSTREAM] transcription sentence: [%s]==================================", c.c_str());
-                std::cout << "====================================transcription sentence: " << std::to_string(result_.id) + "[" << c << "]==================================" << std::endl;
+                std::cout << c << std::flush;
             }
+            std::cout << std::endl;
         }
 
         { // Debug : to rm later

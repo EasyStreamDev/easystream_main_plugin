@@ -22,7 +22,7 @@ namespace es::transcription
         void run(void *) override;
         const uint submit(const std::string &);
         void stop(void);
-        void storeTranscription(const ts_result_t &);
+        void storeTranscription(const ts_result_t &, const bool &);
         const Optional<ts_result_t> getTranscription(const int & = -1);
 
     private:
