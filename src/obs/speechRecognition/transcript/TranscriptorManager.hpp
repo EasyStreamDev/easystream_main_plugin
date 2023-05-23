@@ -10,7 +10,7 @@ namespace es::transcription
     class TranscriptorManager : public es::Runnable, ITranscriptorManager
     {
     public:
-        TranscriptorManager(const std::function<void (std::vector<std::string>)> &);
+        TranscriptorManager(const std::function<void(std::vector<std::string>)> &);
         ~TranscriptorManager();
 
         // void start(void);
@@ -27,7 +27,7 @@ namespace es::transcription
 
     private:
         std::string accessToken;
-        std::array<Transcriptor, 4> m_Transcriptors;
+        std::vector<Transcriptor> m_Transcriptors;
         // Files queue (to be transcripted)
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;
@@ -35,9 +35,8 @@ namespace es::transcription
         // @todo (yem): make vector of pair instead.
         Umap<uint, ts_result_t> m_Results;
         std::mutex m_ResultsMutex;
-        std::function<void (std::vector<std::string>)> _pushToArea;
+        std::function<void(std::vector<std::string>)> _pushToArea;
     };
-
 }
 
 #endif // TRANSCRIPTOR_MANAGER_HPP
