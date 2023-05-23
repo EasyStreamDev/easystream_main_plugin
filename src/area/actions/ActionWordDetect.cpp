@@ -38,7 +38,7 @@ namespace es::area
         for (const auto &w: words) {
             std::cout << "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ checking word " << w << "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]" << std::endl;
             for (const auto &tF: _words) {
-                if (w.find(tF)) {
+                if (w.find(tF) != w.npos) {
                     _isTrue = true;
                     return;
                 }
