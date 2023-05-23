@@ -47,9 +47,10 @@ namespace es::testing
 namespace es
 {
     PluginManager::PluginManager()
-        : m_AreaMain(new es::area::AreaManager()), m_TranscriptorManager(new es::transcription::TranscriptorManager([this] (std::vector<std::string> words) {
-            this->GetAreaMain()->AddWords(words);
-        })), m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
+        : m_AreaMain(new es::area::AreaManager()),
+          m_TranscriptorManager(new es::transcription::TranscriptorManager([this](std::vector<std::string> words)
+                                                                           { this->GetAreaMain()->AddWords(words); })),
+          m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
@@ -76,6 +77,8 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
+        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
         m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSubTitles), nullptr);
@@ -173,7 +176,9 @@ namespace es
 
     void PluginManager::RunSubTitles(void *private_data)
     {
-        es::obs::sub_titles::run(nullptr);
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+
+        es::obs::sub_titles::run(pm);
     }
 
     void PluginManager::RunTranscriptor(void *private_data)
@@ -189,9 +194,8 @@ namespace es
         std::this_thread::sleep_for(2s);
         PluginManager *pm = static_cast<PluginManager *>(private_data);
         obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-        pm->_recorder = new obs::SourceRecorder(source, [pm] (const std::string &fp) -> uint {
-            return pm->GetTranscriptorManager()->submit(fp);
-        });
+        pm->_recorder = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
+                                                { return pm->GetTranscriptorManager()->submit(fp); });
 
         pm->_recorder->run(nullptr);
     }

@@ -9,7 +9,7 @@
 
 namespace es::area
 {
-    ActionWordDetect::ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param, const std::function<std::vector<std::string> ()> &func)
+    ActionWordDetect::ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param, const std::function<std::vector<std::string>()> &func)
         : Action(reaction, area_id, param), _getTranscriptWords(func)
     {
         this->_words = param.at("words").get<std::vector<std::string>>();
@@ -33,10 +33,9 @@ namespace es::area
         //     "Having no hair made him look even hairier.",
         //     "He had a hidden stash underneath the floorboards in the back room of the house."};
         // std::string str = words[rand() % 8];
-        
 
         for (const auto &w: words) {
-            std::cout << "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ checking word " << w << "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]" << std::endl;
+            // std::cout << "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ checking word " << w << "]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]" << std::endl;
             for (const auto &tF: _words) {
                 if (w.find(tF) != w.npos) {
                     _isTrue = true;

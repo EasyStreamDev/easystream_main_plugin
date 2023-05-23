@@ -2,12 +2,12 @@
 
 namespace es::transcription
 {
-    TranscriptorManager::TranscriptorManager(const std::function<void (std::vector<std::string>)> &func): _pushToArea(func)
+    TranscriptorManager::TranscriptorManager(const std::function<void(std::vector<std::string>)> &func) : _pushToArea(func)
     {
-        for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
-        {
-            m_Transcriptors[idx] = Transcriptor(this);
-        }
+        // for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
+        // {
+        //     m_Transcriptors[idx] = Transcriptor(this);
+        // }
 
         // @dev YerimB : To get from env ?
         // const std::string rev_ai_token = std::getenv("REVAI_TOKEN");
@@ -94,8 +94,11 @@ namespace es::transcription
             // Update result.
             m_Results[result_.id] = result_;
             if (result_.transcription.size() > 0)
+            {
                 _pushToArea(result_.transcription);
-            for (const auto &c: result_.transcription) {
+            }
+            for (const auto &c : result_.transcription)
+            {
                 // blog(LOG_INFO, "==================================== [TRANSCRIPTION EASYSTREAM] transcription sentence: [%s]==================================", c.c_str());
                 std::cout << "====================================transcription sentence: " << std::to_string(result_.id) + "[" << c << "]==================================" << std::endl;
             }
@@ -163,12 +166,11 @@ namespace es::transcription
         // Check if any transcriptor was available.
         if (!t)
         {
-            std::cout << "c'est vraiment a cause de ca" << std::endl;
             // Returns false if no transcriptor are available
             return false;
         }
 
-        std::cout << "=========================================trouve========================================" << std::endl;
+        std::cout << "==> Available transcriptor found." << std::endl;
 
         // Initialize transcriptor with access token.
         t->init(this->accessToken);
@@ -189,13 +191,22 @@ namespace es::transcription
 
     Transcriptor *TranscriptorManager::getFreeTranscriptor()
     {
-        for (auto &t : m_Transcriptors)
-        {
-            if (t.getStatus() == Transcriptor::Status::DISCONNECTED)
+        // for (auto &t : m_Transcriptors)
+        // {
+        //     if (t.getStatus() == Transcriptor::Status::DISCONNECTED)
+        //     {
+        //         return &t;
+        //     }
+        // }
+        m_Transcriptors.erase(std::remove_if(
+            m_Transcriptors.begin(),
+            m_Transcriptors.end(),
+            [](Transcriptor &t)
             {
-                return &t;
-            }
-        }
+                return t.getStatus() == Transcriptor::Status::DISCONNECTED;
+            }));
+        m_Transcriptors.push_back(Transcriptor(this));
+        return &(m_Transcriptors.at(m_Transcriptors.size() - 1));
 
         // No transcriptor available
         return nullptr;

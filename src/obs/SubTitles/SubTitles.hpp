@@ -4,9 +4,13 @@
 #include "../../Common.hpp"
 #include "../../utils/Utils.hpp"
 
+namespace es{
+    class PluginManager;
+}
+
 namespace es::obs::sub_titles
 {
-    void run(void *);
+    void run(es::PluginManager *PluginManager);
 }
 
 #endif /* !SUBTITLES_HPP_ */
