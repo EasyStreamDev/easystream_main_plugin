@@ -11,7 +11,7 @@ namespace es::transcription
     class TranscriptorManager : public es::Runnable, ITranscriptorManager
     {
     public:
-        const static int INACTIVITY_TIMEOUT_MS = 10000;
+        const static int INACTIVITY_TIMEOUT_MS = 12500;
 
     public:
         TranscriptorManager(const std::function<void(std::vector<std::string>)> &);
@@ -32,7 +32,7 @@ namespace es::transcription
 
     private:
         std::string accessToken;
-        std::array<Transcriptor, 5> m_Transcriptors;
+        std::array<Transcriptor, 4> m_Transcriptors;
         // Files queue (to be transcripted)
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;
