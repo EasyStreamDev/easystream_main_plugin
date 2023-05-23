@@ -51,7 +51,6 @@ namespace es
             this->GetAreaMain()->AddWords(words);
         })), m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
-        // @dev @todo : issue when creating source tracker :thinking:
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
     }
