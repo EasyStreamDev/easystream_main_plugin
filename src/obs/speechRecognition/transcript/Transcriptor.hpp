@@ -43,7 +43,6 @@ namespace es::transcription
         // using ResponseCallback = void (*)(const json &);
         enum Status
         {
-            UNUSED,
             CONNECTING,
             CONNECTED,
             TRANSCRIPTING,
@@ -91,7 +90,7 @@ namespace es::transcription
         // WebSocket
         WS_CallbackClient client;
         std::string accessToken;
-        Transcriptor::Status status = Status::UNUSED;
+        Transcriptor::Status status = Status::DISCONNECTED;
         const std::string websocketEndpoint = "wss://api.rev.ai/speechtotext/v1/stream";
         const std::string contentTypeWAV = "&content_type=audio/x-wav";
         const std::string _tmp_f = "./tmp/tmp_stream_file";

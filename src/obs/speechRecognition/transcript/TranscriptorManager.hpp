@@ -27,7 +27,7 @@ namespace es::transcription
 
     private:
         std::string accessToken;
-        std::vector<Transcriptor> m_Transcriptors;
+        std::array<Transcriptor, 15> m_Transcriptors;
         // Files queue (to be transcripted)
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;

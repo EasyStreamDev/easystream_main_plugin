@@ -4,10 +4,10 @@ namespace es::transcription
 {
     TranscriptorManager::TranscriptorManager(const std::function<void(std::vector<std::string>)> &func) : _pushToArea(func)
     {
-        // for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
-        // {
-        //     m_Transcriptors[idx] = Transcriptor(this);
-        // }
+        for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
+        {
+            m_Transcriptors[idx] = Transcriptor(this);
+        }
 
         // @dev YerimB : To get from env ?
         // const std::string rev_ai_token = std::getenv("REVAI_TOKEN");
@@ -191,22 +191,13 @@ namespace es::transcription
 
     Transcriptor *TranscriptorManager::getFreeTranscriptor()
     {
-        // for (auto &t : m_Transcriptors)
-        // {
-        //     if (t.getStatus() == Transcriptor::Status::DISCONNECTED)
-        //     {
-        //         return &t;
-        //     }
-        // }
-        m_Transcriptors.erase(std::remove_if(
-            m_Transcriptors.begin(),
-            m_Transcriptors.end(),
-            [](Transcriptor &t)
+        for (auto &t : m_Transcriptors)
+        {
+            if (t.getStatus() == Transcriptor::Status::DISCONNECTED)
             {
-                return t.getStatus() == Transcriptor::Status::DISCONNECTED;
-            }));
-        m_Transcriptors.push_back(Transcriptor(this));
-        return &(m_Transcriptors.at(m_Transcriptors.size() - 1));
+                return &t;
+            }
+        }
 
         // No transcriptor available
         return nullptr;

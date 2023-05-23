@@ -58,7 +58,6 @@ namespace es::transcription
                         if (response_type == "final")
                         {
                             this->stop();
-                            std::cerr << "error 5" << std::endl;
                         }
                     }
                 }
@@ -99,6 +98,7 @@ namespace es::transcription
         if (this->status != Status::DISCONNECTING &&
             this->status != Status::DISCONNECTED)
         {
+            std::cerr << "[Transcriptor] - Disconnecting..." << std::endl;
             this->disconnect();
         }
     }
