@@ -49,7 +49,7 @@ namespace es::area
         #elif __linux__ // Linux
             // Linux implementation
             Display* display = XOpenDisplay(nullptr);
-            KeySym sym_a = XStringToKeysym(_key);
+            KeySym sym_a = XStringToKeysym(_key.c_str());
             KeyCode xKeyCode = XKeysymToKeycode(display, sym_a);
             char keys[32];
 
