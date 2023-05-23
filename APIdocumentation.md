@@ -88,40 +88,15 @@ Récupération des données de toutes les couples actions / réaction enregistr�
 
 ## **Set requests**
 
-### **Setting automatic audio leveler** - *Audio compressor*
-* **Description**  
-Activation / désactivation la gestion de volume automatique sur une entrée audio.
-
-* **Request**
-```json
-{
-    "command": "setAutoAudioLeveler",
-    "params": {
-        "enable": "boolean",
-        "source": "string", // Nom de l'entrée audio (voir la requête getAllMics)
-    }
-}
-```
-
-* **Response**
-```json
-{
-    "statusCode": "integer",
-    "message": "string",
-}
-```
-
-<br>  
-
 ---
-### **Setting microphone input level**
+### **Setting compressor strength**
 * **Description**  
-Mise à jour de la valeur d'entrée d'un microphone.  
+Mise à jour de la force d'un compresseur (lié à une entrée audio spécifique).  
 
 * **Request**  
 ```json
 {
-    "command": "setMicLevel",
+    "command": "setCompressorLevel",
     "params": {
         "micName": "string",
         "level": "integer",
@@ -317,7 +292,7 @@ Si la requête est invalide, l'action reste inchangée.
 
 # **Broadcast**
 
-## Subscribe to broadcast
+## *Subscribe to broadcast*
 
 * **Request**
 ```json
@@ -336,6 +311,73 @@ Si la requête est invalide, l'action reste inchangée.
     "message": "string"
 }
 ```
+
+## *Remote changes*
+
+**Areas Update**
+```json
+{
+    "statusCode": 201,
+    "message": "BROADCAST",
+    "data": {
+        "length": "integer",
+        "actReacts": [
+            {
+                "actReactId": "integer",
+                "isActive": "boolean",
+                "action": {
+                    "actionId": "integer",
+                    "type": "action_type",
+                    "params": {
+                        "..." // Depends on action type
+                    }
+                },
+                "reaction": {
+                    "name": "string",
+                    "reactionId": "integer",
+                    "type": "reaction_type",
+                    "params": {
+                        "..." // Depends on reaction type
+                    }
+                }
+            },
+            "..." // Next element
+        ]
+    },
+}
+```
+
+**Compressors Update**
+```json
+{
+    "statusCode": 201,
+    "message": "BROADCAST",
+    "data": {
+        "length": "integer",
+        "mics": [
+            {
+                "micName": "string",
+                "level": "integer",
+                "isActive": "boolean",
+            },
+            "..." // Next element
+        ]
+    },
+}
+```
+
+**Subtitles Update**
+```json
+{
+    "statusCode": 201,
+    "message": "BROADCAST",
+    "data": {
+        "enable": "boolean",
+        "language": "string", // IETF language tag
+    },
+}
+```
+
 
 ## *OBS: Scene updates*
 
