@@ -35,8 +35,19 @@ namespace es::transcription
 
     void TranscriptorManager::run(void *)
     {
-        while (m_PluginManager && m_PluginManager->IsRunning()) // @todo : setup a boolean thread killer
+        while (m_PluginManager && m_PluginManager->IsRunning())
         {
+            // Check for transcriptors inactivity.
+            for (Transcriptor &t : m_Transcriptors)
+            {
+                if (t.getStatus() == Transcriptor::Status::TRANSCRIPTING &&
+                    t.getMsElapsedSinceConnection() > TranscriptorManager::INACTIVITY_TIMEOUT_MS)
+                {
+                    std::cerr << "[TranscriptorManager] - Early stop of Transcriptor for inactivity." << std::endl;
+                    t.stop();
+                }
+            }
+
             m_FilesQueueMutex.lock();
             while (!m_FilesQueue.empty())
             {

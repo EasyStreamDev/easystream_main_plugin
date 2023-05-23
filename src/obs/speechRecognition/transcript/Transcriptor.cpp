@@ -28,6 +28,8 @@ namespace es::transcription
                     json data = json::parse(str_msg);
                     const auto &response_type = std::string(data["type"]);
 
+                    this->_request_start = std::chrono::steady_clock::now();
+
                     if (response_type == "connected")
                     {
                         std::cerr << "--------- WSCallback : WebSocket Connected." << std::endl;
@@ -108,6 +110,14 @@ namespace es::transcription
         this->accessToken = at_;
         this->url = this->websocketEndpoint + "?access_token=" +
                     this->accessToken + this->contentTypeWAV;
+    }
+
+    const int64_t Transcriptor::getMsElapsedSinceConnection(void) const
+    {
+        TimePoint now = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->_request_start);
+
+        return duration.count();
     }
 
     void Transcriptor::sendAudio(const uint &id, const std::string &file_path)
