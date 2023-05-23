@@ -17,7 +17,7 @@ namespace es::transcription
     class ITranscriptorManager
     {
     public:
-        virtual void storeTranscription(const ts_result_t &) = 0;
+        virtual void storeTranscription(const ts_result_t &, const bool &) = 0;
     };
 }
 

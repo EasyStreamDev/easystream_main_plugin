@@ -389,6 +389,11 @@ if(UNIX AND NOT APPLE)
 
             # LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
             LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
+
+        install(TARGETS ${CMAKE_PROJECT_NAME}
+
+            # LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
+            LIBRARY DESTINATION "/usr/lib/x86_64-linux-gnu/obs-plugins")
         install(FILES ${locale_files}
             DESTINATION "/usr/share/obs/obs-plugins/${CMAKE_PROJECT_NAME}/locale")
     else()

@@ -24,18 +24,21 @@ namespace es::transcription
             {
                 try
                 {
-                    json data = json::parse(msg.extract_string().get());
+                    std::string str_msg = msg.extract_string().get();
+                    json data = json::parse(str_msg);
                     const auto &response_type = std::string(data["type"]);
+
+                    this->_request_start = std::chrono::steady_clock::now();
 
                     if (response_type == "connected")
                     {
-                        // blog(LOG_INFO, "--------- WSCallback : WebSocket Connected.");
+                        std::cerr << "--------- WSCallback : WebSocket Connected." << std::endl;
                         this->setStatus(Status::CONNECTED);
                     }
                     else // if (response_type == "final" || response_type == "partial")
                     {
                         ITranscriptorManager *tm = this->getManager();
-
+                        // std::cerr << "error 1 " << std::endl;
                         if (tm != nullptr)
                         {
                             const Vector<json> &elements = data.at("elements");
@@ -46,7 +49,7 @@ namespace es::transcription
                                 transcript.push_back(elem.at("value"));
                             }
                             this->m_FileData.transcription = transcript;
-                            tm->storeTranscription(this->m_FileData);
+                            tm->storeTranscription(this->m_FileData, response_type == "final");
                         }
                         else
                         {
@@ -60,9 +63,15 @@ namespace es::transcription
                         }
                     }
                 }
+                catch (json::parse_error &ex)
+                {
+                    std::cerr << "[Transcriptor] - Parse error 1: " << ex.what() << std::endl;
+                    this->stop();
+                }
                 catch (std::exception e)
                 {
                     std::cerr << "[Transcriptor] - Callback raised an exception: " << e.what() << std::endl;
+                    this->stop();
                 }
             });
         // Set disconnect confirmation callback.
@@ -76,7 +85,7 @@ namespace es::transcription
                 client.close();        // Close connection to remote WS.
                 this->m_FileData = {}; // Reset current file data.
                 this->setStatus(Status::DISCONNECTED);
-                // std::cout << "Connection closed." << std::endl;
+                std::cerr << "====================== Websocket Connection closed." << std::endl;
             });
     }
 
@@ -91,6 +100,7 @@ namespace es::transcription
         if (this->status != Status::DISCONNECTING &&
             this->status != Status::DISCONNECTED)
         {
+            std::cerr << "[Transcriptor] - Disconnecting..." << std::endl;
             this->disconnect();
         }
     }
@@ -100,6 +110,14 @@ namespace es::transcription
         this->accessToken = at_;
         this->url = this->websocketEndpoint + "?access_token=" +
                     this->accessToken + this->contentTypeWAV;
+    }
+
+    const int64_t Transcriptor::getMsElapsedSinceConnection(void) const
+    {
+        TimePoint now = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->_request_start);
+
+        return duration.count();
     }
 
     void Transcriptor::sendAudio(const uint &id, const std::string &file_path)

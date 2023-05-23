@@ -11,7 +11,8 @@
 #include "../../../Common.hpp"
 #include "Variables.h"
 #include <sstream>
-#define TIMER_RECORD 10
+#define TIMER_RECORD 5
+#include <filesystem>
 
 namespace es::obs
 {
@@ -37,13 +38,14 @@ namespace es::obs
     class SourceRecorder
     {
     public:
-        SourceRecorder(obs_source_t *input);
+        SourceRecorder(obs_source_t *input, const std::function<uint (const std::string &)> &);
         ~SourceRecorder();
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
         void run(void *);
 
     private:
+        std::filesystem::path _temporaryPath;
         obs_source_t *_source;
         audio_resampler_t *_resampler = nullptr;
         std::ofstream _outFile;
@@ -51,6 +53,8 @@ namespace es::obs
         wav_header_t _wavFile;
         std::stringstream _buffer;
         std::chrono::steady_clock::time_point _checkPoint;
+        std::function<uint (const std::string &)> _submitFile;
+        int nbOutNb = 0;
     };
 }
 

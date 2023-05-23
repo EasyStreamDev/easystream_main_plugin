@@ -2,7 +2,7 @@
 
 namespace es::transcription
 {
-    TranscriptorManager::TranscriptorManager()
+    TranscriptorManager::TranscriptorManager(const std::function<void(std::vector<std::string>)> &func) : _pushToArea(func)
     {
         for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
         {
@@ -28,10 +28,26 @@ namespace es::transcription
     /* PUBLIC */
     /**********/
 
+    void TranscriptorManager::init(IPluginManager *pm)
+    {
+        this->m_PluginManager = pm;
+    }
+
     void TranscriptorManager::run(void *)
     {
-        while (1) // @todo : setup a boolean thread killer
+        while (m_PluginManager && m_PluginManager->IsRunning())
         {
+            // Check for transcriptors inactivity.
+            for (Transcriptor &t : m_Transcriptors)
+            {
+                if (t.getStatus() == Transcriptor::Status::TRANSCRIPTING &&
+                    t.getMsElapsedSinceConnection() > TranscriptorManager::INACTIVITY_TIMEOUT_MS)
+                {
+                    std::cerr << "[TranscriptorManager] - Early stop of Transcriptor for inactivity." << std::endl;
+                    t.stop();
+                }
+            }
+
             m_FilesQueueMutex.lock();
             while (!m_FilesQueue.empty())
             {
@@ -46,6 +62,7 @@ namespace es::transcription
                 }
                 else // If file could not be submitted (i.e. no transcriptor is available).
                 {
+                    // std::cout << "================= no transcriptor available" << std::endl;
                     break;
                 }
             }
@@ -85,13 +102,28 @@ namespace es::transcription
         }
     }
 
-    void TranscriptorManager::storeTranscription(const ts_result_t &result_)
+    void TranscriptorManager::storeTranscription(const ts_result_t &result_, const bool &is_final)
     {
         { // Voluntary scope
             // Locks mutex for this scope only.
             std::lock_guard<std::mutex> lg(m_ResultsMutex);
+
             // Update result.
             m_Results[result_.id] = result_;
+            if (result_.transcription.size() > 0 && is_final)
+            {
+                _pushToArea(result_.transcription);
+            }
+        }
+
+        if (is_final)
+        {
+            std::cout << "[TranscriptionManager] - result[" << std::to_string(result_.id) << "] - " << std::flush;
+            for (const auto &c : result_.transcription)
+            {
+                std::cout << c << std::flush;
+            }
+            std::cout << std::endl;
         }
 
         { // Debug : to rm later
@@ -159,6 +191,8 @@ namespace es::transcription
             // Returns false if no transcriptor are available
             return false;
         }
+
+        std::cout << "==> Available transcriptor found." << std::endl;
 
         // Initialize transcriptor with access token.
         t->init(this->accessToken);

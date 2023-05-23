@@ -60,6 +60,10 @@ namespace es::server
         // Mapping of std::string to enum on the different reaction types
         const std::unordered_map<std::string, es::area::ReactionType> REACTION_TYPE_MAP = {
             {"SCENE_SWITCH", es::area::ReactionType::SCENE_SWITCH},
+            {"START_REC", es::area::ReactionType::START_RECORDING},
+            {"STOP_REC", es::area::ReactionType::STOP_RECORDING},
+            {"START_STREAM", es::area::ReactionType::START_STREAMING},
+            {"STOP_STREAM", es::area::ReactionType::STOP_STREAMING},
             {"TOGGLE_AUDIO_COMPRESSOR", es::area::ReactionType::TOGGLE_AUDIO_COMPRESSOR},
         };
 

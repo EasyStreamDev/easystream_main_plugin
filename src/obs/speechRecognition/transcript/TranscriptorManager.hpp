@@ -4,20 +4,25 @@
 #include "ITranscriptorManager.hpp"
 #include "Transcriptor.hpp"
 #include "../../../Runnable.hpp"
+#include "../../../IPluginManager.hpp"
 
 namespace es::transcription
 {
     class TranscriptorManager : public es::Runnable, ITranscriptorManager
     {
     public:
-        TranscriptorManager();
+        const static int INACTIVITY_TIMEOUT_MS = 12500;
+
+    public:
+        TranscriptorManager(const std::function<void(std::vector<std::string>)> &);
         ~TranscriptorManager();
 
         // void start(void);
+        void init(IPluginManager *);
         void run(void *) override;
         const uint submit(const std::string &);
         void stop(void);
-        void storeTranscription(const ts_result_t &);
+        void storeTranscription(const ts_result_t &, const bool &);
         const Optional<ts_result_t> getTranscription(const int & = -1);
 
     private:
@@ -32,11 +37,14 @@ namespace es::transcription
         Queue<Pair<uint, String>> m_FilesQueue;
         std::mutex m_FilesQueueMutex;
         // Transcription results (transcripted)
-        // @todo (yem): make vector of pair instead.
+        // @todo (yem): make vector of pair instead. why ?
         Umap<uint, ts_result_t> m_Results;
         std::mutex m_ResultsMutex;
-    };
+        std::function<void(std::vector<std::string>)> _pushToArea;
 
+        // Plugin manager
+        IPluginManager *m_PluginManager = nullptr;
+    };
 }
 
 #endif // TRANSCRIPTOR_MANAGER_HPP
