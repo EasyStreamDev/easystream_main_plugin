@@ -94,20 +94,25 @@ namespace es::server
     {
         area::action_t action;
         area::reaction_t reaction;
+        std::cout << "======================================error here 1====================================" << std::endl;
         const json action_data = j.at("params").at("action");
         const json reaction_data = j.at("params").at("reaction");
 
         // Setting up action_t struct
         action.type = ACTION_TYPE_MAP.at(action_data.at("type"));
+        std::cout << "======================================error here 2 ====================================" << std::endl;
         action.params = action_data.at("params");
         // Setting up reaction_t struct
+        std::cout << "======================================error here 3====================================" << std::endl;
         reaction.name = reaction_data.at("name");
+        std::cout << "======================================error here 4====================================" << std::endl;
         reaction.type = REACTION_TYPE_MAP.at(reaction_data.at("type"));
+        std::cout << "======================================error here 5====================================" << std::endl;
         reaction.params = reaction_data.at("params");
 
         // Create AREA within AREA system.
         const json result = m_PluginManager->GetAreaMain()->CreateArea(action, reaction);
-
+        std::cout << "======================================error here 6====================================" << std::endl;
         // Error on creation of AREA
         if (result.at("return_value") != 0)
         {

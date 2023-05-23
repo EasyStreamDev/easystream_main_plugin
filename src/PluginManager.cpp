@@ -47,7 +47,9 @@ namespace es::testing
 namespace es
 {
     PluginManager::PluginManager()
-        : m_TranscriptorManager(new es::transcription::TranscriptorManager()), m_AreaMain(new es::area::AreaManager()), m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
+        : m_AreaMain(new es::area::AreaManager()), m_TranscriptorManager(new es::transcription::TranscriptorManager([this] (std::vector<std::string> words) {
+            this->GetAreaMain()->AddWords(words);
+        })), m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         // @dev @todo : issue when creating source tracker :thinking:
         this->m_SourceTracker = new es::obs::SourceTracker();
@@ -188,7 +190,9 @@ namespace es
         std::this_thread::sleep_for(2s);
         PluginManager *pm = static_cast<PluginManager *>(private_data);
         obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-        pm->_recorder = new obs::SourceRecorder(source);
+        pm->_recorder = new obs::SourceRecorder(source, [pm] (const std::string &fp) -> uint {
+            return pm->GetTranscriptorManager()->submit(fp);
+        });
 
         pm->_recorder->run(nullptr);
     }

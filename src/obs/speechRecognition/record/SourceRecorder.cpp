@@ -10,9 +10,12 @@
 
 namespace es::obs
 {
-    SourceRecorder::SourceRecorder(obs_source_t *input)
-        : _source(input), _outFile(AUDIOPATH, std::ios::binary), _headerWav(false), _checkPoint(std::chrono::steady_clock::now())
+    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint (const std::string &)> &func)
+        : _temporaryPath(std::filesystem::temp_directory_path()), _source(input), _headerWav(false), _checkPoint(std::chrono::steady_clock::now()), _submitFile(func)
     {
+        _temporaryPath += "/tempAudio";
+        std::filesystem::create_directory(_temporaryPath);
+        // _outFile.open(_temporaryPath.string()+ "/output.wav", std::ios::binary);
         const struct audio_output_info *obs_audio = audio_output_get_info(obs_get_audio());
 
         if (!obs_audio || !input)
@@ -46,6 +49,7 @@ namespace es::obs
     SourceRecorder::~SourceRecorder()
     {
         _outFile.close();
+        std::filesystem::remove_all(_temporaryPath);
     }
 
     void SourceRecorder::run(void *)
@@ -121,9 +125,24 @@ namespace es::obs
 
         std::chrono::duration<float> timer = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - self->_checkPoint);
         if (timer.count() >= TIMER_RECORD) {
-            self->_outFile.clear();
+
+            // // for test
+            // self->_outFile.open(self->_temporaryPath.string() + "/output" + std::to_string(self->nbOutNb++) + ".wav", std::ios::binary);
+            // // self->_outFile.clear();
+            // self->_outFile << self->_buffer.str();
+            // self->_outFile.close();
+
+            // for transcriptor
+            self->_outFile.open(self->_temporaryPath.string() + "/output.wav", std::ios::binary);
+            // self->_outFile.clear();
             self->_outFile << self->_buffer.str();
-            self->_buffer.clear();
+            self->_outFile.close();
+
+            //
+            std::cout << "===================================submitting====================================" << std::endl;
+            self->_submitFile(self->_temporaryPath.string() + "/output.wav");
+            // self->_buffer.clear();
+            self->_buffer.str(std::string());
             self->_checkPoint = std::chrono::steady_clock::now(); 
         }
         // blog(LOG_INFO, "### ---------[SourceRecorder] finished");
