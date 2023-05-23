@@ -13,7 +13,7 @@ namespace ws_socket = web::websockets::client;
 using WS_CallbackClient = ws_socket::websocket_callback_client;
 using WS_OutMessage = ws_socket::websocket_outgoing_message;
 using WS_InMessage = ws_socket::websocket_incoming_message;
-using TimePoint = std::chrono::_V2::steady_clock::time_point;
+using TimePoint = std::chrono::steady_clock::time_point;
 
 namespace es::transcription
 {
