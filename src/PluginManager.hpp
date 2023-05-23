@@ -19,6 +19,7 @@
 #include "server/include/AsioTcpServer.hpp"
 #include "utils/Thread.hpp"
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
+#include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 #include "IPluginManager.hpp"
 
@@ -37,7 +38,7 @@ namespace es
 
     public:
         area::AreaManager *GetAreaMain(void);
-        server::AsioTcpServer *GetServer(void);
+        server::IServer *GetServer(void);
         obs::SourceTracker *GetSourceTracker(void);
         thread::ThreadPool *GetThreadPool(void);
         transcription::TranscriptorManager *GetTranscriptorManager(void);
@@ -49,10 +50,11 @@ namespace es
         static void RunSceneSwitcherAI(void *);
         static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
+        static void RunRecorder(void *);
 
     private:
         std::atomic<bool> m_Running = false;
-        
+
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
 
         thread::ThreadPool *m_ThreadPool = nullptr;
@@ -61,6 +63,7 @@ namespace es
         std::atomic<area::AreaManager *> m_AreaMain = nullptr;
         std::atomic<server::AsioTcpServer *> m_Server = nullptr;
         std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
+        obs::SourceRecorder *_recorder = nullptr;
     };
 } // namespace es
 

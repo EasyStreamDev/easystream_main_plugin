@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 # Change obs-plugintemplate to your plugin's name in a machine-readable format
 # (e.g.: obs-myawesomeplugin) and set
@@ -33,6 +33,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # message(${CMAKE_BUILD_TYPE})
+
+SET(PACKAGE_TYPE "ALONE" CACHE STRING "With or with not OBS" FORCE)
+
 
 if(UNIX OR APPLE)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -177,11 +180,57 @@ endif()
 add_compile_definitions("DEBUG=$<CONFIG:Debug>")
 if(WIN32)
     add_library(${CMAKE_PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CONAN_LIBS} LibObs OBS_FRONTEND_LIB asio::asio Qt6::Core cpprestsdk::cpprest)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC ${CONAN_LIBS} LibObs OBS_FRONTEND_LIB asio::asio Qt6::Core cpprestsdk::cpprest)
+
 else()
-    add_library(${CMAKE_PROJECT_NAME} MODULE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
+    add_library(${CMAKE_PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${obs_main_plugin_PLATFORM_SOURCES})
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CONAN_LIBS} Qt6::Core)
 endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/\.git/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/\.vscode/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/release/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/installer/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/data/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/\.github/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/output\.wav/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/compileResource/")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES "/\.gitignore.*")
+    install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION ./)
+    set(CPACK_PACKAGE_NAME "Easystream")
+    set(CPACK_PACKAGE_VENDOR "Easystream")
+    if (WIN32)
+        set(CPACK_NSIS_INSTALL_ROOT "C:\\\\Program Files\\\\obs-studio")
+        set(CPACK_GENERATOR "NSIS;ZIP")
+        set(CPACK_SOURCE_GENERATOR "ZIP")
+    elseif(UNIX)
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Obs plugin" CACHE STRING "Package description for the package metadata")
+        set(CPACK_VERBATIM_VARIABLES YES)
+        set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/lib/obs-plugins")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "obs-studio")
+        set(CPACK_DEB_COMPONENT_INSTALL YES)
+        # set(PREINST_PATH "${CMAKE_SOURCE_DIR}/ci/linux/preinst")
+        set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Easystream")
+        set(CPACK_SET_DESTDIR ON)
+        set(CPACK_GENERATOR "DEB")
+        set(CPACK_SOURCE_GENERATOR "TGZ")
+        # set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${PREINST_PATH}")
+    endif()
+    if (${PACKAGE_TYPE} STREQUAL "ALL")
+        if (WIN32)
+            set(CPACK_PACKAGE_NAME "EasystreamWithObs")
+            list (APPEND CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS "ExecWait \\\"'curl' -L -O https://github.com/obsproject/obs-studio/releases/download/29.1.1/OBS-Studio-29.1.1-Full-Installer-x64.exe\\\"")
+            list (APPEND CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS "ExecWait ./OBS-Studio-29.1.1-Full-Installer-x64.exe")
+            string (REPLACE ";" "\n" CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS}")
+        endif()
+    endif()
+    include(CPack)
+endif()
+
+
 
 # find_package(GTest REQUIRED)
 # include_directories(${GTEST_INCLUDE_DIRS})
@@ -340,6 +389,11 @@ if(UNIX AND NOT APPLE)
 
             # LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
             LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
+
+        install(TARGETS ${CMAKE_PROJECT_NAME}
+
+            # LIBRARY DESTINATION "/usr/local/lib/obs-plugins")
+            LIBRARY DESTINATION "/usr/lib/x86_64-linux-gnu/obs-plugins")
         install(FILES ${locale_files}
             DESTINATION "/usr/share/obs/obs-plugins/${CMAKE_PROJECT_NAME}/locale")
     else()

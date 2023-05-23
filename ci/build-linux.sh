@@ -30,5 +30,5 @@ export PATH="$HOME/.local/bin:$PATH"
 source "${rootProject}/ci/linux/build-ubuntu.sh" $buildType $rebuild
 
 if [[ $package == true ]]; then
-    source "${rootProject}/ci/linux/package-ubuntu.sh"
+    source "${rootProject}/ci/linux/package.sh"
 fi

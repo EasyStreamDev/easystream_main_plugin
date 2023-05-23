@@ -15,7 +15,7 @@ namespace es::area
     class ActionWordDetect : public Action
     {
     public:
-        ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param);
+        ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param, const std::function<std::vector<std::string> ()> &);
         ~ActionWordDetect();
 
         virtual void Solve() override;
@@ -24,6 +24,7 @@ namespace es::area
     protected:
     private:
         std::vector<std::string> _words;
+        std::function<std::vector<std::string> ()> _getTranscriptWords;
     };
 }
 

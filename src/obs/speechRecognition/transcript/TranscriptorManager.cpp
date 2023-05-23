@@ -2,7 +2,7 @@
 
 namespace es::transcription
 {
-    TranscriptorManager::TranscriptorManager()
+    TranscriptorManager::TranscriptorManager(const std::function<void (std::vector<std::string>)> &func): _pushToArea(func)
     {
         for (int idx = 0; idx < m_Transcriptors.size(); ++idx)
         {
@@ -46,6 +46,7 @@ namespace es::transcription
                 }
                 else // If file could not be submitted (i.e. no transcriptor is available).
                 {
+                    // std::cout << "================= no transcriptor available" << std::endl;
                     break;
                 }
             }
@@ -92,6 +93,12 @@ namespace es::transcription
             std::lock_guard<std::mutex> lg(m_ResultsMutex);
             // Update result.
             m_Results[result_.id] = result_;
+            if (result_.transcription.size() > 0)
+                _pushToArea(result_.transcription);
+            for (const auto &c: result_.transcription) {
+                // blog(LOG_INFO, "==================================== [TRANSCRIPTION EASYSTREAM] transcription sentence: [%s]==================================", c.c_str());
+                std::cout << "====================================transcription sentence: " << std::to_string(result_.id) + "[" << c << "]==================================" << std::endl;
+            }
         }
 
         { // Debug : to rm later
@@ -156,9 +163,12 @@ namespace es::transcription
         // Check if any transcriptor was available.
         if (!t)
         {
+            std::cout << "c'est vraiment a cause de ca" << std::endl;
             // Returns false if no transcriptor are available
             return false;
         }
+
+        std::cout << "=========================================trouve========================================" << std::endl;
 
         // Initialize transcriptor with access token.
         t->init(this->accessToken);

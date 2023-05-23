@@ -18,16 +18,22 @@ param(
 
     [Parameter()]
     [validateSet('x86', 'x64')]
-    [string]$BuildArch
+    [string]$BuildArch,
+
+    [Parameter(Mandatory)]
+    [ValidateSet('Setup', 'Source', 'None')]
+    [string]$Setup
+
 )
 
 $rootDir = Resolve-Path -Path "$PSScriptRoot\..\.."
-$BoostFolder = "${rootDir}/compileResource/boostFolder/"
+$buildFolder = "${rootDir}/build"
 $obsFolder = "${rootDir}/compileResource/"
 
 .${PSScriptRoot}/installBoost.ps1
 .${PSScriptRoot}/installConan.ps1
 .${PSScriptRoot}/getObs.ps1
+.${PSScriptRoot}/package.ps1
 
 function printUsage {
     $Usage = @(
@@ -42,14 +48,25 @@ function printUsage {
 
 function buildEasyStream {
     Set-Location $rootDir
-    if (Test-Path -Path "build") {
+
+    Write-Output $rootDir
+    # Write-Output $rootDir
+    if (Test-Path -Path "${rootDir}/build") {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
+    } else {
+        mkdir "${rootDir}/build"
     }
-    Set-Location "build"
-    # if ($BuildType == )
+    Set-Location "${rootDir}/build"
+    Write-Output "===================================================================Location=========================================="
+    Get-Location
+    if (Test-Path -Path "${rootDir}/../utils/windows") {
+        Write-Output "It exits"
+    }
     if ($BuildType -eq "Release") {
+        conan.exe install ../utils/windows/cpprestsdk/ --profile ../utils/windows/windowsRelease --build=missing
         conan.exe install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing
     } else {
+        conan.exe install ../utils/windows/cpprestsdk/ --profile ../utils/windows/windowsDebug --build=missing
         conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
     }
     cmake -G "Visual Studio 17 2022" .. -DCMAKE_BUILD_TYPE="$BuildTypeObs"
@@ -61,6 +78,8 @@ function main {
         printUsage
         exit 0
     }
+    mkdir $obsFolder
+
     if ($Dependencies.IsPresent) {
         # installBoost $BoostFolder
         installConan
@@ -70,10 +89,16 @@ function main {
             getObs -obsFolder $obsFolder -Arch $BuildTypeObs
         } else {
             $arch = ('x86', 'x64')[[System.Environment]::Is64BitOperatingSystem]
-            getObs -obsFolder $obsFolder -Arch $arch $BuildTypeObs
+            getObs -obsFolder $obsFolder -Arch $arch -buildMode $BuildTypeObs
         }
     }
     buildEasyStream
+
+    if ($Setup -eq 'Setup') {
+        generateSetup -buildPath $buildFolder
+    } elseif ($Setup -eq 'Source') {
+        generateSetup -buildPath $buildFolder -source
+    }
 }
 
 main

@@ -11,7 +11,7 @@ function getObs {
         [string]$buildMode
     )
 
-    if (Test-Path -Path "obs-studio") {
+    if (Test-Path -Path "${obsFolder}/obs-studio") {
         Set-Location "${obsFolder}/obs-studio"
         git pull
     } else {
@@ -19,5 +19,6 @@ function getObs {
         git clone --recursive https://github.com/obsproject/obs-studio.git
         Set-Location "obs-studio"
     }
+    Get-Location
     ./CI/build-windows.ps1 -BuildArch $Arch -BuildConfiguration $buildMode
 }

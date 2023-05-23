@@ -34,13 +34,17 @@ namespace es
             const asio::ip::tcp::socket &getSocket() const;
             const std::vector<nlohmann::json> getMessage();
             bool isConnected() const;
+            inline void setBroadcastSubscription(const bool &v) { _subscribedToBroadcast = v; }
+            inline const bool &isSubscribedToBroadcast(void) const { return _subscribedToBroadcast; }
 
         private:
             bool _connected;
             char _buffer[MSGMAX];
             char _receiver[MSGMAX];
+            bool _subscribedToBroadcast = false;
             asio::ip::tcp::socket _socket;
             std::vector<nlohmann::json> _messages;
+            std::mutex _writeMutex;
         };
     }
 }

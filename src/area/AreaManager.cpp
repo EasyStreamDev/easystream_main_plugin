@@ -72,6 +72,7 @@ namespace es::area
         {
             Action *action = it.second;
 
+
             action->Solve();
             if (action->IsTrue())
             {
@@ -79,7 +80,14 @@ namespace es::area
             }
             action->Reset();
         }
+        _words.clear();
         this->_actions_mutex.unlock();
+    }
+
+    void AreaManager::AddWords(std::vector<std::string> words)
+    {
+        std::unique_lock lock(_wordMutex);
+        _words = words;
     }
 
     void AreaManager::AddAction(Action *action)

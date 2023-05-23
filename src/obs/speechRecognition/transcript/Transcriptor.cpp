@@ -29,24 +29,29 @@ namespace es::transcription
 
                     if (response_type == "connected")
                     {
-                        // blog(LOG_INFO, "--------- WSCallback : WebSocket Connected.");
+                        blog(LOG_INFO, "--------- WSCallback : WebSocket Connected.");
+                        std::cout << "--------- WSCallback : WebSocket Connected." << std::endl;
                         this->setStatus(Status::CONNECTED);
                     }
                     else // if (response_type == "final" || response_type == "partial")
                     {
                         ITranscriptorManager *tm = this->getManager();
-
+                        std::cerr << "errror 1 " << std::endl;
+                        // std::cerr << "errror 1 " << std::endl;
                         if (tm != nullptr)
                         {
                             const Vector<json> &elements = data.at("elements");
+                            std::cerr << "errror 2 " << std::endl;
                             Vector<String> transcript;
 
                             for (const json &elem : elements)
                             {
                                 transcript.push_back(elem.at("value"));
                             }
+                            std::cerr << "errror 3 " << std::endl;
                             this->m_FileData.transcription = transcript;
                             tm->storeTranscription(this->m_FileData);
+                            std::cerr << "errror 4 " << std::endl;
                         }
                         else
                         {
@@ -57,6 +62,7 @@ namespace es::transcription
                         if (response_type == "final")
                         {
                             this->stop();
+                            std::cerr << "errror 5 " << std::endl;
                         }
                     }
                 }
@@ -76,7 +82,7 @@ namespace es::transcription
                 client.close();        // Close connection to remote WS.
                 this->m_FileData = {}; // Reset current file data.
                 this->setStatus(Status::DISCONNECTED);
-                // std::cout << "Connection closed." << std::endl;
+                std::cout << "====================== Websocket Connection closed." << std::endl;
             });
     }
 

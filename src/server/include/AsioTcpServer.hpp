@@ -16,29 +16,36 @@
 // Global
 #include "../../Runnable.hpp"
 #include "../../utils/Obs.hpp"
+#include "../../utils/types/ThreadSafeQueue.hpp"
 #include "../../area/AreaManager.hpp"
 #include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
 #include "../../IPluginManager.hpp"
 
 // Local
+#include "interface/IServer.hpp"
 #include "AsioTcpConnection.hpp"
+#include "ResponseGenerator.hpp"
 #include "errorCode.hpp"
 #include "common_using.hpp"
 
 // Linked
 #include <iostream>
 #include <string>
+#include <queue>
 #include <vector>
-#include <algorithm>
 #include <unordered_map>
+#include <algorithm>
 #include <thread>
-// --- Boost
-// #include <boost/thread.hpp>
-// #include <boost/make_shared.hpp>
+#include <future>
 
 namespace es::server
 {
-    class AsioTcpServer : public std::enable_shared_from_this<AsioTcpServer>, Runnable
+    using TSRequestQueue = ThreadSafeQueue<std::pair<Shared<AsioTcpConnection>, json>>;
+
+    class AsioTcpServer
+        : public Runnable,
+          public IServer,
+          std::enable_shared_from_this<AsioTcpServer>
     {
         /*********************/
         /* USEFULL CONSTANTS */
@@ -53,6 +60,10 @@ namespace es::server
         // Mapping of std::string to enum on the different reaction types
         const std::unordered_map<std::string, es::area::ReactionType> REACTION_TYPE_MAP = {
             {"SCENE_SWITCH", es::area::ReactionType::SCENE_SWITCH},
+            {"START_REC", es::area::ReactionType::START_RECORDING},
+            {"STOP_REC", es::area::ReactionType::STOP_RECORDING},
+            {"START_STREAM", es::area::ReactionType::START_STREAMING},
+            {"STOP_STREAM", es::area::ReactionType::STOP_STREAMING},
             {"TOGGLE_AUDIO_COMPRESSOR", es::area::ReactionType::TOGGLE_AUDIO_COMPRESSOR},
         };
 
@@ -66,58 +77,65 @@ namespace es::server
         void run(void *) override;
 
         // --- Network
-        bool start();
-        void writeMessage(const std::string &);
-        void update();
+        bool start(void) final;
+        void update(void);
+        void submitBroadcast(const json &) final;
 
         // --- Getters
-        asio::io_context &getContext();
+        asio::io_context &getContext(void) final;
 
     private:
         // --- Network
-        void waitForClientConnection();
+        // void _writeMessage(const std::string &);
+        void _waitForClientConnection(void);
+        void _runRequestHandler(void *);
+        void _createRequestExecutorThread(const json &, Shared<AsioTcpConnection>);
 
+        /* REQUESTS */
         // --- GET requests
-        void getAllMics(const json &, Shared<AsioTcpConnection> &);
-        void getActReactCouples(const json &, Shared<AsioTcpConnection> &);
-
+        void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
+        void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
         // --- SET requests
-        void setAutoAudioLeveler(const json &, Shared<AsioTcpConnection> &);
-        void setMicLevel(const json &, Shared<AsioTcpConnection> &);
-        void setNewARea(const json &, Shared<AsioTcpConnection> &);
-
+        void r_SetCompressorLevel(const json &, Shared<AsioTcpConnection>);
+        void r_SetNewARea(const json &, Shared<AsioTcpConnection>);
+        void r_SetSubtitles(const json &, Shared<AsioTcpConnection>);
         // --- UPDATE requests
-        void updateAction(const json &, Shared<AsioTcpConnection> &);
-        void updateReaction(const json &j, Shared<AsioTcpConnection> &con);
-
+        void r_UpdateAction(const json &, Shared<AsioTcpConnection>);
+        void r_UpdateReaction(const json &j, Shared<AsioTcpConnection> con);
         // --- REMOVE requests
-        void removeActReact(const json &, Shared<AsioTcpConnection> &);
-
-        // --- RESPONSES
-        void sendSuccess(Shared<AsioTcpConnection> &, const std::string & = "", const json & = {});
-        void badCommand(Shared<AsioTcpConnection> &);
-        void badRequest(Shared<AsioTcpConnection> &, const std::string & = "");
-        void notFound(Shared<AsioTcpConnection> &, const std::string & = "");
+        void r_RemoveActReact(const json &, Shared<AsioTcpConnection>);
+        // --- SUBSCRIPTION requests
+        void r_SubscribeToBroadcast(const json &, Shared<AsioTcpConnection>);
 
         // --- MISCELLANEOUS
-        void generateMobileInformation(){};
+        void _generateMobileInformation(){};
+
+        // --- BROADCAST
+        void _broadcast(const json &);
 
         /********************/
         /* MEMBER VARIABLES */
         /********************/
+
     private:
         // --- Plugin manager
         es::IPluginManager *m_PluginManager;
         // --- Thread
-        std::thread _threadContext;
+        std::thread m_ThreadContext;
+        std::thread m_RequestHandler;
         // --- Network
-        asio::io_context _ioContext;
-        asio::ip::tcp::acceptor _acceptor;
+        asio::io_context m_IoContext;
+        asio::ip::tcp::acceptor m_Acceptor;
         // boost::asio::ip::tcp::endpoint _endPoint;
-        std::vector<Shared<AsioTcpConnection>> _connections;
+        std::vector<Shared<AsioTcpConnection>> m_Connections;
         // --- Request handler vars
-        std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection> &)> _handler;
+        TSRequestQueue m_InRequestQueue;
+        TSRequestQueue m_OutRequestQueue;
+        ThreadSafeQueue<json> m_BroadcastQueue;
+        std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection>)> m_Handler;
     };
+
+    const json get_mics_data(es::obs::SourceTracker *source_tracker);
 }
 
 #endif /* !ASIOTCPSERVER_HPP_ */

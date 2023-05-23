@@ -21,7 +21,10 @@ namespace es::area
 
     void ReactionSceneSwitch::Resolve()
     {
-        obs_frontend_set_current_scene(obs_scene_get_source(obs_get_scene_by_name(_sceneToSwitch.c_str())));
+        obs_scene_t *scene = obs_get_scene_by_name(_sceneToSwitch.c_str());
+
+        obs_frontend_set_current_scene(obs_scene_get_source(scene));
+        obs_scene_release(scene);
     }
 
     reaction_t ReactionSceneSwitch::ToStruct()
