@@ -95,6 +95,7 @@ namespace es::server
         // --- GET requests
         void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
+        void r_broadcastArea();
         // --- SET requests
         void r_SetCompressorLevel(const json &, Shared<AsioTcpConnection>);
         void r_SetNewARea(const json &, Shared<AsioTcpConnection>);

@@ -52,6 +52,37 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
     }
 
+    void AsioTcpServer::r_broadcastArea()
+    {
+        std::vector<json> areas_vec;
+
+        for (const auto &area : m_PluginManager->GetAreaMain()->GetAreas())
+        {
+            json area_data = {
+                {"actReactId", area.id},
+                {"isActive", area.is_active},
+                {"action", {
+                               //  {"actionId", area.action_data.id},
+                               {"type", area::ActionTypeToString(area.action_data.type)},
+                               {"params", area.action_data.params},
+                           }},
+                {"reaction", {
+                                 //  {"reactionId", area.reaction_data.id},
+                                 {"name", area.reaction_data.name},
+                                 {"type", area::ReactionTypeToString(area.reaction_data.type)},
+                                 {"params", area.reaction_data.params},
+                             }},
+            };
+            areas_vec.push_back(std::move(area_data));
+
+        }
+        json broadcast_request = {
+            {"length", areas_vec.size()},
+            {"actReacts", areas_vec},
+        };
+        submitBroadcast(broadcast_request);
+    }
+
     /****************/
     /* SET REQUESTS */
     /****************/
@@ -94,25 +125,25 @@ namespace es::server
     {
         area::action_t action;
         area::reaction_t reaction;
-        std::cout << "======================================error here 1====================================" << std::endl;
+        // std::cout << "======================================error here 1====================================" << std::endl;
         const json action_data = j.at("params").at("action");
         const json reaction_data = j.at("params").at("reaction");
 
         // Setting up action_t struct
         action.type = ACTION_TYPE_MAP.at(action_data.at("type"));
-        std::cout << "======================================error here 2 ====================================" << std::endl;
+        // std::cout << "======================================error here 2 ====================================" << std::endl;
         action.params = action_data.at("params");
         // Setting up reaction_t struct
-        std::cout << "======================================error here 3====================================" << std::endl;
+        // std::cout << "======================================error here 3====================================" << std::endl;
         reaction.name = reaction_data.at("name");
-        std::cout << "======================================error here 4====================================" << std::endl;
+        // std::cout << "======================================error here 4====================================" << std::endl;
         reaction.type = REACTION_TYPE_MAP.at(reaction_data.at("type"));
-        std::cout << "======================================error here 5====================================" << std::endl;
+        // std::cout << "======================================error here 5====================================" << std::endl;
         reaction.params = reaction_data.at("params");
 
         // Create AREA within AREA system.
         const json result = m_PluginManager->GetAreaMain()->CreateArea(action, reaction);
-        std::cout << "======================================error here 6====================================" << std::endl;
+        // std::cout << "======================================error here 6====================================" << std::endl;
         // Error on creation of AREA
         if (result.at("return_value") != 0)
         {
@@ -130,6 +161,7 @@ namespace es::server
             ResponseGenerator::Success(
                 "Act/React couple succesfully created.",
                 response_data)));
+        r_broadcastArea();
     }
 
     void AsioTcpServer::r_SetSubtitles(const json &j, Shared<AsioTcpConnection> con)
@@ -139,6 +171,9 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(
             con,
             ResponseGenerator::Success("OK")));
+
+        json broadcast_request = j;
+        submitBroadcast(broadcast_request);
     }
 
     /*******************/
