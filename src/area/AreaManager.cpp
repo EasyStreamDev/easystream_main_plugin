@@ -15,46 +15,12 @@ namespace es::area
 
     AreaManager::~AreaManager()
     {
-        // this->_actions_mutex.lock();
-        // for (auto it : this->_actions)
-        // {
-        //     delete it.second;
-        // }
         this->_actions.clear();
-        // this->_actions_mutex.unlock();
     }
 
     void AreaManager::run(void *)
     {
         this->thread_sleep_ms(2000);
-
-        {   // Test reaction start stream
-            action_t a_ = {
-                1,
-                ActionType::KEY_PRESSED,
-                {{"key", "u"}}};
-            reaction_t r_ = {
-                1,
-                "test_area_start_recording",
-                ReactionType::START_RECORDING,
-                {}};
-
-            this->CreateArea(a_, r_);
-        }
-
-        {   // Test reaction stop stream
-            // action_t a_ = {
-            //     87429876,
-            //     ActionType::APP_LAUNCH,
-            //     {{"app_name", "Mahjongg"}}};
-            // reaction_t r_ = {
-            //     87429876,
-            //     "test_area_stop_stream",
-            //     ReactionType::STOP_STREAMING,
-            //     {}};
-
-            // this->CreateArea(a_, r_);
-        }
 
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
@@ -71,7 +37,6 @@ namespace es::area
         for (auto it : _actions)
         {
             Action *action = it.second;
-
 
             action->Solve();
             if (action->IsTrue())
@@ -192,7 +157,6 @@ namespace es::area
                     {"message", "Unknown action"},
                 };
             }
-            blog(LOG_INFO, "ACTIONNNNNNNNNNNNNNNN?????????????????????");
 
             // Add action to AREA system.
             this->AddAction(act);
