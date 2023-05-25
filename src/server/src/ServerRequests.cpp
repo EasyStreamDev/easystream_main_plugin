@@ -74,7 +74,6 @@ namespace es::server
                              }},
             };
             areas_vec.push_back(std::move(area_data));
-
         }
         json broadcast_request = {
             {"length", areas_vec.size()},

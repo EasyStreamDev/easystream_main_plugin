@@ -10,7 +10,7 @@
 
 namespace es::obs
 {
-    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint (const std::string &)> &func)
+    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint(const std::string &)> &func)
         : _temporaryPath(std::filesystem::temp_directory_path()), _source(input), _headerWav(false), _checkPoint(std::chrono::steady_clock::now()), _submitFile(func)
     {
         _temporaryPath += "/tempAudio";
@@ -124,8 +124,8 @@ namespace es::obs
         }
 
         std::chrono::duration<float> timer = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - self->_checkPoint);
-        if (timer.count() >= TIMER_RECORD) {
-
+        if (timer.count() >= TIMER_RECORD)
+        {
             // // for test
             // self->_outFile.open(self->_temporaryPath.string() + "/output" + std::to_string(self->nbOutNb++) + ".wav", std::ios::binary);
             // // self->_outFile.clear();
@@ -138,12 +138,10 @@ namespace es::obs
             self->_outFile << self->_buffer.str();
             self->_outFile.close();
 
-            //
-            std::cout << "===================================submitting====================================" << std::endl;
             self->_submitFile(self->_temporaryPath.string() + "/output.wav");
             // self->_buffer.clear();
             self->_buffer.str(std::string());
-            self->_checkPoint = std::chrono::steady_clock::now(); 
+            self->_checkPoint = std::chrono::steady_clock::now();
         }
         // blog(LOG_INFO, "### ---------[SourceRecorder] finished");
     }

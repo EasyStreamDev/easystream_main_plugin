@@ -71,7 +71,7 @@ namespace es::server
                 //      @todo: Create "try/catch" statement around condition ?
                 if (m_Handler.find(request.at("command")) != m_Handler.end())
                 {
-                    this->_createRequestExecutorThread(request, socket);
+                    this->_executeRequest(request, socket);
                 }
                 else
                 {
@@ -87,39 +87,33 @@ namespace es::server
         }
     }
 
-    void AsioTcpServer::_createRequestExecutorThread(const json &request, Shared<AsioTcpConnection> socket)
+    void AsioTcpServer::_executeRequest(const json &request, Shared<AsioTcpConnection> socket)
     {
-        // Start new thread to execute request
-        std::thread w(
-            [this, request, socket]()
+        try
+        {
+            // Call method corresponding to the sent command.
+            (this->*m_Handler[request["command"]])(request, socket);
+        }
+        catch (const json::type_error &type_error)
+        {
+            // Method .at of json was walled on a non-object
+            if (type_error.id == 304)
             {
-                try
-                {
-                    // Call method corresponding to the sent command.
-                    (this->*m_Handler[request["command"]])(request, socket);
-                }
-                catch (const json::type_error &type_error)
-                {
-                    // Method .at of json was walled on a non-object
-                    if (type_error.id == 304)
-                    {
-                        m_OutRequestQueue.ts_push(std::make_pair(
-                            socket,
-                            ResponseGenerator::BadRequest("wrongly formulated.")));
-                    }
-                }
-                catch (const json::out_of_range &oor_error)
-                {
-                    // Invalid key was given to the .at method of json
-                    if (oor_error.id == 403)
-                    {
-                        m_OutRequestQueue.ts_push(std::make_pair(
-                            socket,
-                            ResponseGenerator::BadRequest("incomplete - missing value")));
-                    }
-                }
-            });
-        w.detach();
+                m_OutRequestQueue.ts_push(std::make_pair(
+                    socket,
+                    ResponseGenerator::BadRequest("wrongly formulated.")));
+            }
+        }
+        catch (const json::out_of_range &oor_error)
+        {
+            // Invalid key was given to the .at method of json
+            if (oor_error.id == 403)
+            {
+                m_OutRequestQueue.ts_push(std::make_pair(
+                    socket,
+                    ResponseGenerator::BadRequest("incomplete - missing value")));
+            }
+        }
     }
 
     /***********/
@@ -242,9 +236,6 @@ namespace es::server
             {"message", "BROADCAST"},
             {"data", data},
         };
-
-        // std::cout << "Broadcasting following message :" << std::endl;
-        // std::cout << toSendJson << std::endl;
 
         for (auto socket : m_Connections)
         {

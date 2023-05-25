@@ -43,7 +43,7 @@ namespace es::transcription
                 if (t.getStatus() == Transcriptor::Status::TRANSCRIPTING &&
                     t.getMsElapsedSinceConnection() > TranscriptorManager::INACTIVITY_TIMEOUT_MS)
                 {
-                    std::cerr << "[TranscriptorManager] - Early stop of Transcriptor for inactivity." << std::endl;
+                    // std::cerr << "[TranscriptorManager] - Early stop of Transcriptor for inactivity." << std::endl;
                     t.stop();
                 }
             }
@@ -191,8 +191,6 @@ namespace es::transcription
             // Returns false if no transcriptor are available
             return false;
         }
-
-        std::cout << "==> Available transcriptor found." << std::endl;
 
         // Initialize transcriptor with access token.
         t->init(this->accessToken);

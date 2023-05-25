@@ -32,7 +32,7 @@ namespace es::transcription
 
                     if (response_type == "connected")
                     {
-                        std::cerr << "--------- WSCallback : WebSocket Connected." << std::endl;
+                        // std::cerr << "--------- WSCallback : WebSocket Connected." << std::endl;
                         this->setStatus(Status::CONNECTED);
                     }
                     else // if (response_type == "final" || response_type == "partial")
@@ -85,7 +85,7 @@ namespace es::transcription
                 client.close();        // Close connection to remote WS.
                 this->m_FileData = {}; // Reset current file data.
                 this->setStatus(Status::DISCONNECTED);
-                std::cerr << "====================== Websocket Connection closed." << std::endl;
+                // std::cerr << "====================== Websocket Connection closed." << std::endl;
             });
     }
 
@@ -100,7 +100,7 @@ namespace es::transcription
         if (this->status != Status::DISCONNECTING &&
             this->status != Status::DISCONNECTED)
         {
-            std::cerr << "[Transcriptor] - Disconnecting..." << std::endl;
+            // std::cerr << "[Transcriptor] - Disconnecting..." << std::endl;
             this->disconnect();
         }
     }

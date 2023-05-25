@@ -89,7 +89,7 @@ namespace es::server
         // void _writeMessage(const std::string &);
         void _waitForClientConnection(void);
         void _runRequestHandler(void *);
-        void _createRequestExecutorThread(const json &, Shared<AsioTcpConnection>);
+        void _executeRequest(const json &, Shared<AsioTcpConnection>);
 
         /* REQUESTS */
         // --- GET requests
