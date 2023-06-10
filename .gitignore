@@ -87,7 +87,7 @@ Variables.h
 *.wav
 src/server/.vscode/c_cpp_properties.json
 
-test.json
+test*.json
 
 release
 script.txt

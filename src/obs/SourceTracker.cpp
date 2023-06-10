@@ -445,6 +445,11 @@ namespace es::obs
         return (_audioLevelers);
     }
 
+    const std::unordered_map<std::string, std::string> &SourceTracker::getSceneMap() const
+    {
+        return (_scenes);
+    }
+
     void SourceTracker::submitToBroadcast(const json &broad_request)
     {
         if (m_PluginManager)

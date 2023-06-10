@@ -35,6 +35,7 @@ namespace es::obs
         static bool filterTransitions(std::string name, obs_source_t *source);
         static bool filterScenes(std::string name, obs_source_t *source);
         const std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> &getAudioMap() const;
+        const std::unordered_map<std::string, std::string> &getSceneMap() const;
 
     private:
         static void onFrontendEvent(enum obs_frontend_event event, void *private_data);
@@ -117,6 +118,7 @@ namespace es::obs
         bool _obsLoaded;
         // std::vector<AutoAudioLeveler> _audioSource;
         std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> _audioLevelers;
+        std::unordered_map<std::string, std::string> _scenes;
     };
 }
 

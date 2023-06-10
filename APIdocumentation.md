@@ -38,6 +38,40 @@ Le client demande la liste de tous les micros ainsi que des données disponibles
 <br>
 
 ---
+
+### **Getting all scenes basic data**
+
+* **Description**  
+Le client demande la liste de toutes les scenes ainsi que des données disponibles à leurs sujet.  
+
+* **Request**  
+```json
+{
+    "command": "getAllScenes",
+}
+```
+
+* **Response**  
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "length": "integer",
+        "scenes": [
+            {
+                "name": "string",
+                "uuid": "string",
+            },
+            ...
+        ]
+    }
+}
+```
+
+<br>
+
+---
 ### **Getting action / reaction couples**
 
 * **Description**  

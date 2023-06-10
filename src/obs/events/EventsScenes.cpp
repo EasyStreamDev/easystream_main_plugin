@@ -13,7 +13,10 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
     std::string name(obs_source_get_name(source));
     std::string uuid(obs_source_get_uuid(source));
 
-    // blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());
+    // blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());*
+
+    // Add scene to map.
+    this->_scenes[uuid] = name;
 
     // @todo: submit to server
     const json broadcastRequestData = {
@@ -32,6 +35,9 @@ void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
 
     // blog(LOG_INFO, "### [SourceTracker::handleSceneRemoved]: %s:%s", name.c_str(), uuid.c_str());
 
+    // Remove scene from map.
+    this->_scenes.erase(uuid);
+
     // @todo: submit to server
     const json broadcastRequestData = {
         {"type", "sceneRemoved"},
@@ -46,6 +52,9 @@ void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::s
     std::string uuid(obs_source_get_uuid(source));
 
     // blog(LOG_INFO, "### [SourceTracker::handleSceneNameChanged]: %s:%s", name.c_str(), uuid.c_str());
+
+    // Changes name of scene in map or adds scene to map.
+    this->_scenes[uuid] = name;
 
     // @todo: submit to server
     const json broadcastRequestData = {

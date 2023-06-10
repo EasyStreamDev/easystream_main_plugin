@@ -20,6 +20,29 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
     }
 
+    void AsioTcpServer::r_GetAllScenes(const json &j, Shared<AsioTcpConnection> con)
+    {
+        // unordered_map<string, string>
+        const auto &scene_map = m_PluginManager->GetSourceTracker()->getSceneMap();
+        std::vector<json> scene_vec;
+
+        for (const auto &scene : scene_map)
+        {
+            scene_vec.push_back({
+                {"uuid", scene.first},
+                {"name", scene.second},
+            });
+        }
+
+        json response_data = {
+            {"length", scene_vec.size()},
+            {"scenes", scene_vec},
+        };
+
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+    }
+
     void AsioTcpServer::r_GetActReactCouples(const json &j, Shared<AsioTcpConnection> con)
     {
         std::vector<json> areas_vec;
