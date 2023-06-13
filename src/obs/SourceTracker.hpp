@@ -36,6 +36,7 @@ namespace es::obs
         static bool filterScenes(std::string name, obs_source_t *source);
         const std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> &getAudioMap() const;
         const std::unordered_map<std::string, std::string> &getSceneMap() const;
+        const std::unordered_map<std::string, json> &getTextFieldMap() const;
 
     private:
         static void onFrontendEvent(enum obs_frontend_event event, void *private_data);

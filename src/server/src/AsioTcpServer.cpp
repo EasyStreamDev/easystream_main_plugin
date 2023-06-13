@@ -19,6 +19,7 @@ namespace es::server
         /* Getters */
         m_Handler["getAllMics"] = &AsioTcpServer::r_GetAllMics;
         m_Handler["getAllScenes"] = &AsioTcpServer::r_GetAllScenes;
+        m_Handler["getAllTextFields"] = &AsioTcpServer::r_GetAllTextFields;
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
 
         /* Setters */

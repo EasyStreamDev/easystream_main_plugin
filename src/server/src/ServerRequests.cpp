@@ -43,6 +43,30 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
     }
 
+    void AsioTcpServer::r_GetAllTextFields(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const auto &tf_map = m_PluginManager->GetSourceTracker()->getTextFieldMap();
+        std::vector<json> tf_vec;
+
+        for (const auto &tf : tf_map)
+        {
+            json tmp = tf.second;
+
+            std::cerr << tmp << std::endl;
+
+            tmp.merge_patch({{"uuid", tf.first}});
+            tf_vec.push_back(tmp);
+        }
+
+        json response_data = {
+            {"length", tf_vec.size()},
+            {"scenes", tf_vec},
+        };
+
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+    }
+
     void AsioTcpServer::r_GetActReactCouples(const json &j, Shared<AsioTcpConnection> con)
     {
         std::vector<json> areas_vec;

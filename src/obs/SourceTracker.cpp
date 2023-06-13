@@ -450,6 +450,11 @@ namespace es::obs
         return (_scenes);
     }
 
+    const std::unordered_map<std::string, json> &SourceTracker::getTextFieldMap() const
+    {
+        return (_textfields);
+    }
+
     void SourceTracker::submitToBroadcast(const json &broad_request)
     {
         if (m_PluginManager)
