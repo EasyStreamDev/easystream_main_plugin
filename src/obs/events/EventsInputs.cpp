@@ -12,7 +12,7 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
 {
     const std::string name = obs_source_get_name(source);
     const std::string uuid = obs_source_get_uuid(source);
-    const std::string kind = obs_source_get_id(source); // depends on sound card
+    const std::string kind = obs_source_get_id(source); // @warning : depends on sound card
     OBSDataAutoRelease inputSettings = obs_source_get_settings(source);
     OBSDataAutoRelease defaultInputSettings = obs_get_source_defaults(kind.c_str());
 
@@ -25,55 +25,82 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
         blog(LOG_INFO, "### Instancing Audio Leveler for %s", name.c_str());
     }
 
-    // blog(LOG_INFO, "### [SourceTracker::handleInputCreated]: %s:%s:%s", name.c_str(), kind.c_str(), uuid.c_str());
+    { // @debug
+      // blog(LOG_INFO, "### [SourceTracker::handleInputCreated]: %s:%s:%s", name.c_str(), kind.c_str(), uuid.c_str());
+      // std::cerr << "Kind: " << kind << std::endl;
+    }
 
-    // @todo: submit to server
-    const json broadcastRequestData = {
-        {"type", "audioSourceCreated"},
-        {"name", name},
-        {"uuid", uuid},
-        {"type", kind},
-    };
-    this->submitToBroadcast(broadcastRequestData);
+    // @todo: map of string to func depending on "kind" var.
+
+    if (
+        kind == "pulse_input_capture" ||
+        kind == "pulse_output_capture" ||
+        kind == "alsa_input_capture")
+    {
+        const json broadcastRequestData = {
+            {"type", "audioSourceCreated"},
+            {"name", name},
+            {"uuid", uuid},
+            {"type", kind},
+        };
+        this->submitToBroadcast(broadcastRequestData);
+    }
 }
 
 void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
 {
     const std::string name = obs_source_get_name(source);
     const std::string uuid = obs_source_get_uuid(source);
-    const std::string kind = obs_source_get_id(source); // depends on sound card
+    const std::string kind = obs_source_get_id(source); // @warning : depends on sound card
 
-    // blog(LOG_INFO, "### [SourceTracker::handleInputRemoved]: %s ", name.c_str());
+    { // @debug
+      // blog(LOG_INFO, "### [SourceTracker::handleInputRemoved]: %s ", name.c_str());
+    }
 
-    // @todo: submit to server
-    const json broadcastRequestData = {
-        {"type", "audioSourceRemoved"},
-        {"name", name},
-        {"uuid", uuid},
-        {"type", kind},
-    };
-    this->submitToBroadcast(broadcastRequestData);
+    // @todo: map of string to func depending on "kind" var.
+
+    if (
+        kind == "pulse_input_capture" ||
+        kind == "pulse_output_capture" ||
+        kind == "alsa_input_capture")
+    {
+        const json broadcastRequestData = {
+            {"type", "audioSourceRemoved"},
+            {"name", name},
+            {"uuid", uuid},
+            {"type", kind},
+        };
+        this->submitToBroadcast(broadcastRequestData);
+    }
 }
 
 void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::string oldName, std::string name)
 {
     const std::string uuid = obs_source_get_uuid(source);
+    const std::string unv_kind = obs_source_get_unversioned_id(source); // @warning : depends on device hardware/OS
 
-    // blog(LOG_INFO, "### [SourceTracker::handleInputNameChanged]: from %s to %s.", oldName.c_str(), name.c_str());
-    // std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
+    { // @debug
+      // blog(LOG_INFO, "### [SourceTracker::handleInputNameChanged]: from %s to %s.", oldName.c_str(), name.c_str());
+      // std::vector<json> j = es::utils::obs::listHelper::GetSceneList();
+    }
 
-    // @dev : LEO SAROCHARD ????
-    // OBSSourceAutoRelease scene = obs_get_source_by_name(j[rand() % j.size()]["sceneName"].get<std::string>().c_str());
-    // obs_frontend_set_current_scene(scene);
-
-    // @todo: submit to server
-    const json broadcastRequestData = {
-        {"type", "audioSourceNameChanged"},
-        {"name", name},
-        {"oldName", oldName},
-        {"uuid", uuid},
-    };
-    this->submitToBroadcast(broadcastRequestData);
+    if (
+        unv_kind == "pulse_input_capture" ||
+        unv_kind == "pulse_output_capture" ||
+        unv_kind == "alsa_input_capture")
+    {
+        const json broadcastRequestData = {
+            {"type", "audioSourceNameChanged"},
+            {"name", name},
+            {"oldName", oldName},
+            {"uuid", uuid},
+        };
+        this->submitToBroadcast(broadcastRequestData);
+    }
+    else if (unv_kind == "text_ft2_source")
+    {
+        this->_textfields[uuid].at("text_field") = name;
+    }
 }
 
 void es::obs::SourceTracker::handleInputActiveStateChanged(void *param, calldata_t *data)

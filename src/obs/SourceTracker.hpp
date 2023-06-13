@@ -119,6 +119,7 @@ namespace es::obs
         // std::vector<AutoAudioLeveler> _audioSource;
         std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> _audioLevelers;
         std::unordered_map<std::string, std::string> _scenes;
+        std::unordered_map<std::string, json> _textfields;
     };
 }
 
