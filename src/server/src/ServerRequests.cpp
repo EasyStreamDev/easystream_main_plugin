@@ -52,15 +52,13 @@ namespace es::server
         {
             json tmp = tf.second;
 
-            std::cerr << tmp << std::endl;
-
             tmp.merge_patch({{"uuid", tf.first}});
             tf_vec.push_back(tmp);
         }
 
         json response_data = {
             {"length", tf_vec.size()},
-            {"scenes", tf_vec},
+            {"text_fields", tf_vec},
         };
 
         // Submit response to outgoing requests queue.

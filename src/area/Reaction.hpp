@@ -9,6 +9,7 @@
 #define REACTION_HPP_
 
 #include "../Common.hpp"
+#include "AreaException.hpp"
 
 namespace es::area
 {

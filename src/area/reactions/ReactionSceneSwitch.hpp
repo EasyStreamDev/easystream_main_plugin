@@ -12,6 +12,12 @@
 
 namespace es::area
 {
+    struct scene_data
+    {
+        std::string name;
+        std::string uuid;
+    };
+
     class ReactionSceneSwitch : public Reaction
     {
     public:
@@ -23,7 +29,7 @@ namespace es::area
 
     protected:
     private:
-        std::string _sceneToSwitch = "";
+        scene_data _sceneToSwitch;
     };
 }
 

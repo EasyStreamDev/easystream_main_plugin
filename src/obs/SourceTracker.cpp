@@ -146,17 +146,19 @@ namespace es::obs
         // if (!self->_obsLoaded) {
         //     return;
         // }
-        obs_source_t *target = GetCalldataPointer<obs_source_t>(data, "source");
 
+        obs_source_t *target = GetCalldataPointer<obs_source_t>(data, "source");
         if (!target || !self)
         {
             return;
         }
+
         const char *name = obs_source_get_name(target);
         if (!name)
         {
             return;
         }
+
         obs_weak_source_t *weak = obs_source_get_weak_source(target);
         if (!weak)
         {

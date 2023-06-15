@@ -72,6 +72,46 @@ Le client demande la liste de toutes les scenes ainsi que des données disponibl
 <br>
 
 ---
+
+### **Getting all text fields basic data**
+
+* **Description**  
+Le client demande la liste de tous les champs texte ainsi que certaines données à leurs sujet.  
+Les données renvoyées à leur sujet sont les suivantes:  
+    - Le nom du champ texte (`name`)
+    - Le nom de la scène à laquelle le champ texte appartient (`parent_scene`)
+    - L'identifiant unique du champ texte (`uuid`)
+
+
+* **Request**  
+```json
+{
+    "command": "getAllTextFields",
+}
+```
+
+* **Response**  
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "length": "integer",
+        "text_fields": [
+            {
+                "name": "string",
+                "parent_scene": "string",
+                "uuid": "string",
+            },
+            ...
+        ]
+    }
+}
+```
+
+<br>
+
+---
 ### **Getting action / reaction couples**
 
 * **Description**  
@@ -466,7 +506,8 @@ Si la requête est invalide, l'action reste inchangée.
         "type": "audioSourceCreated",
         "name": "string",
         "uuid": "string",
-        "type": "string"
+        "kind": "string",
+        "unversioned_kind": "string",
     },
 }
 ```
@@ -480,7 +521,8 @@ Si la requête est invalide, l'action reste inchangée.
         "type": "audioSourceRemoved",
         "name": "string",
         "uuid": "string",
-        "type": "string"
+        "kind": "string",
+        "unversioned_kind": "string",
     },
 }
 ```
@@ -544,7 +586,8 @@ Si la requête est invalide, l'action reste inchangée.
 {
     "type": "SCENE_SWITCH",
     "params": {
-        "scene": "scene_identifier"
+        "name": "scene_name", // Not necessary for SET or UPDATE requests
+        "uuid": "scene_unique_identifier"
     }
 }
 ```
@@ -563,7 +606,7 @@ Si la requête est invalide, l'action reste inchangée.
 **Start/Stop recording**
 ```json
 {
-    "type": "START_REC" | "STOP_REC",
+    "type": ["START_REC", "STOP_REC"], // One of ...
     "params": {
         "delay": "int" // In seconds
     }
@@ -573,7 +616,7 @@ Si la requête est invalide, l'action reste inchangée.
 **Start/Stop streaming**
 ```json
 {
-    "type": "START_STREAM" | "STOP_STREAM",
+    "type": ["START_STREAM", "STOP_STREAM"], // One of ...
     "params": {
         "delay": "int" // In seconds
     }

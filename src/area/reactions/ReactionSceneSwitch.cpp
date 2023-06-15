@@ -12,7 +12,22 @@ namespace es::area
     ReactionSceneSwitch::ReactionSceneSwitch(const size_t &area_id, const std::string &name, const json &param)
         : Reaction(area_id, name, param)
     {
-        _sceneToSwitch = param["scene"].get<std::string>();
+        std::string uuid = param["uuid"].get<std::string>();
+
+        obs_source_t *scene_source = obs_get_source_by_uuid(uuid.c_str());
+        if (!scene_source)
+        {
+            throw AreaException("UUID doesn't exist.");
+        }
+        if (!obs_source_is_scene(scene_source))
+        {
+            throw AreaException("UUID doesn't correspond to a scene object.");
+        }
+
+        _sceneToSwitch.uuid = uuid;
+        _sceneToSwitch.name = obs_source_get_name(scene_source);
+
+        obs_source_release(scene_source);
     }
 
     ReactionSceneSwitch::~ReactionSceneSwitch()
@@ -21,10 +36,21 @@ namespace es::area
 
     void ReactionSceneSwitch::Resolve()
     {
-        obs_scene_t *scene = obs_get_scene_by_name(_sceneToSwitch.c_str());
+        obs_source_t *scene_source = obs_get_source_by_uuid(_sceneToSwitch.uuid.c_str());
 
-        obs_frontend_set_current_scene(obs_scene_get_source(scene));
-        obs_scene_release(scene);
+        if (!scene_source)
+        {
+            return;
+        }
+        if (!obs_source_is_scene(scene_source))
+        {
+            obs_source_release(scene_source);
+            return;
+        }
+
+        // Changes the scene
+        obs_frontend_set_current_scene(scene_source);
+        obs_source_release(scene_source);
     }
 
     reaction_t ReactionSceneSwitch::ToStruct()
@@ -33,6 +59,10 @@ namespace es::area
             _id,
             "",
             ReactionType::SCENE_SWITCH,
-            {{"scene", _sceneToSwitch}}};
+            {
+                {"name", _sceneToSwitch.name},
+                {"uuid", _sceneToSwitch.uuid},
+            },
+        };
     }
 }

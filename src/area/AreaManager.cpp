@@ -164,9 +164,9 @@ namespace es::area
         catch (std::exception &e)
         {
             const json result = {
-                {"return_value", 3}, // 2 = Unknown exception
+                {"return_value", 3}, // 3 = Unknown exception
                 {"area_id", area_id},
-                {"message", "Unhandled issue creating area"},
+                {"message", e.what()},
             };
             return result;
         }
