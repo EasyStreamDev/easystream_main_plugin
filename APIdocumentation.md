@@ -139,7 +139,7 @@ Récupération des données de toutes les couples actions / réaction enregistr�
                     "actionId": "integer",
                     "type": "action_type",
                     "params": {
-                        "..." // Depends on action type
+                        ... // Depends on action type
                     }
                 },
                 "reaction": {
@@ -147,11 +147,11 @@ Récupération des données de toutes les couples actions / réaction enregistr�
                     "reactionId": "integer",
                     "type": "reaction_type",
                     "params": {
-                        "..." // Depends on reaction type
+                        ... // Depends on reaction type
                     }
                 }
             },
-            "..." // Next element
+            ... // Next element
         ]
     }
 }
@@ -231,14 +231,14 @@ Lorsque l'action est détectée, la réaction est déclenchée automatiquement.
         "action": {
             "type": "action_type",
             "params": {
-                "..."
+                ... // Depends on action type
             }
         },
         "reaction": {
             "name": "string",
             "type": "reaction_type",
             "params": {
-                "..."
+                ... // Depends on reaction type
             }
         }
     }
@@ -307,7 +307,7 @@ Si la requête est invalide, l'action reste inchangée.
         "actionId": "integer",
         "type": "action_type",
         "params": {
-            "..."
+            ... // Depends on action type
         }
     }
 }
@@ -344,7 +344,7 @@ Si la requête est invalide, l'action reste inchangée.
         "reactionId": "integer",
         "type": "reaction_type",
         "params": {
-            "..."
+            ... // Depends on reaction type
         }
     }
 }
@@ -394,6 +394,7 @@ Si la requête est invalide, l'action reste inchangée.
     "statusCode": 201,
     "message": "BROADCAST",
     "data": {
+        "type": "areasChanged",
         "length": "integer",
         "actReacts": [
             {
@@ -403,7 +404,7 @@ Si la requête est invalide, l'action reste inchangée.
                     "actionId": "integer",
                     "type": "action_type",
                     "params": {
-                        "..." // Depends on action type
+                        ... // Depends on action type
                     }
                 },
                 "reaction": {
@@ -411,11 +412,11 @@ Si la requête est invalide, l'action reste inchangée.
                     "reactionId": "integer",
                     "type": "reaction_type",
                     "params": {
-                        "..." // Depends on reaction type
+                        ... // Depends on reaction type
                     }
                 }
             },
-            "..." // Next element
+            ... // Next element
         ]
     },
 }
@@ -427,6 +428,7 @@ Si la requête est invalide, l'action reste inchangée.
     "statusCode": 201,
     "message": "BROADCAST",
     "data": {
+        "type": "compressorSettingsChanged",
         "length": "integer",
         "mics": [
             {
@@ -434,7 +436,7 @@ Si la requête est invalide, l'action reste inchangée.
                 "level": "integer",
                 "isActive": "boolean",
             },
-            "..." // Next element
+            ... // Next element
         ]
     },
 }
@@ -446,6 +448,7 @@ Si la requête est invalide, l'action reste inchangée.
     "statusCode": 201,
     "message": "BROADCAST",
     "data": {
+        "type": "subtitlesSettingsChanged",
         "enable": "boolean",
         "language": "string", // IETF language tag
     },
