@@ -121,6 +121,7 @@ namespace es::server
             areas_vec.push_back(std::move(area_data));
         }
         json broadcast_request = {
+            {"type", "areasChanged"},
             {"length", areas_vec.size()},
             {"actReacts", areas_vec},
         };
@@ -159,10 +160,12 @@ namespace es::server
         // Send success response to asking client.
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
 
-        // Broadcast new mics levels to all client.
-        json broadcast_request = get_mics_data(m_PluginManager->GetSourceTracker());
-        broadcast_request["type"] = "micLevelChanged";
-        this->submitBroadcast(broadcast_request);
+        { // Broadcast new compressors settings to all client.
+            json broadcast_request = get_mics_data(m_PluginManager->GetSourceTracker());
+
+            broadcast_request["type"] = "compressorSettingsChanged";
+            this->submitBroadcast(broadcast_request);
+        }
     }
 
     void AsioTcpServer::r_SetNewARea(const json &j, Shared<AsioTcpConnection> con)
@@ -216,8 +219,12 @@ namespace es::server
             con,
             ResponseGenerator::Success("OK")));
 
-        json broadcast_request = j;
-        submitBroadcast(broadcast_request);
+        { // Broadcast new subtitles settings to all client.
+            json broadcast_request = j;
+
+            broadcast_request["type"] = "subtitlesSettingsChanged";
+            this->submitBroadcast(broadcast_request);
+        }
     }
 
     /*******************/
