@@ -47,7 +47,7 @@ namespace es::testing
 namespace es
 {
     PluginManager::PluginManager()
-        : m_AreaMain(new es::area::AreaManager()),
+        : m_AreaManager(new es::area::AreaManager()),
           m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         this->m_TranscriptorManager = new es::transcription::TranscriptorManager(
@@ -55,6 +55,7 @@ namespace es
             { this->GetAreaMain()->AddWords(words); });
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
+        this->m_SubtitlesManager = new es::subtitles::SubtitlesManager();
     }
 
     PluginManager::~PluginManager()
@@ -69,7 +70,7 @@ namespace es
         this->m_SourceTracker->init(this);
 
         // this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
-        // this->m_AreaMain = new es::area::AreaManager();
+        // this->m_AreaManager = new es::area::AreaManager();
         // this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
 
@@ -81,8 +82,7 @@ namespace es
         // m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
         // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
-        // m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
 
         { // Testing functions
           // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
@@ -95,9 +95,9 @@ namespace es
         m_Running = false;
         { // Module deletion commented (probably crashing)
           // blog(LOG_INFO, "\n### --- DELETING : AREA Main.");
-          // if (this->m_AreaMain)
+          // if (this->m_AreaManager)
           // {
-          //     delete this->m_AreaMain;
+          //     delete this->m_AreaManager;
           // }
           // blog(LOG_INFO, "\n### --- DELETED : AREA Main.");
           // blog(LOG_INFO, "\n### --- DELETING : Server.");
@@ -128,7 +128,7 @@ namespace es
 
     area::AreaManager *PluginManager::GetAreaMain(void)
     {
-        return m_AreaMain;
+        return m_AreaManager;
     }
 
     server::IServer *PluginManager::GetServer(void)
@@ -166,7 +166,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_AreaMain.load()->run(nullptr);
+        pm->m_AreaManager.load()->run(nullptr);
     }
 
     void PluginManager::RunSceneSwitcherAI(void *private_data)
@@ -178,7 +178,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        es::obs::sub_titles::run(pm);
+        pm->m_SubtitlesManager.load()->run(pm);
     }
 
     void PluginManager::RunTranscriptor(void *private_data)

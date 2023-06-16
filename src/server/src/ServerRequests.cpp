@@ -213,7 +213,18 @@ namespace es::server
 
     void AsioTcpServer::r_SetSubtitles(const json &j, Shared<AsioTcpConnection> con)
     {
-        const json params = j.at("params");
+        const json &params = j.at("params");
+        const bool &enable = params.at("enable");
+        const std::string &target_uuid = params.at("uuid");
+        const auto &tf_map = m_PluginManager->GetSourceTracker()->getTextFieldMap();
+
+        // Check if text field with given uuid exists
+        if (tf_map.find(target_uuid) == tf_map.end())
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::NotFound("Text field with given UUID doesn't exist")));
+        }
 
         m_OutRequestQueue.ts_push(std::make_pair(
             con,

@@ -201,7 +201,8 @@ Le paramètre `language` n'est pris en compte que si la transciption est activé
     "command": "setSubtitles",
     "params": {
         "enable": "boolean",
-        "language": "string", // IETF language tag
+        "uuid": "string",
+        // "language": "string", // IETF language tag
     }
 }
 ```

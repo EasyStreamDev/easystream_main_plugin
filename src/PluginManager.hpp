@@ -12,12 +12,12 @@
 #define SERVER_HOST "0.0.0.0"
 #define SERVER_PORT 47920
 
+#include "utils/Thread.hpp"
 #include "area/AreaManager.hpp"
+#include "server/include/AsioTcpServer.hpp"
 #include "obs/SourceTracker.hpp"
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
-#include "obs/SubTitles/SubTitles.hpp"
-#include "server/include/AsioTcpServer.hpp"
-#include "utils/Thread.hpp"
+#include "obs/subtitles/SubtitlesManager.hpp"
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 
@@ -60,9 +60,10 @@ namespace es
         thread::ThreadPool *m_ThreadPool = nullptr;
 
         // Runnable
-        std::atomic<area::AreaManager *> m_AreaMain = nullptr;
+        std::atomic<area::AreaManager *> m_AreaManager = nullptr;
         std::atomic<server::AsioTcpServer *> m_Server = nullptr;
         std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
+        std::atomic<subtitles::SubtitlesManager *> m_SubtitlesManager = nullptr;
         obs::SourceRecorder *_recorder = nullptr;
     };
 } // namespace es
