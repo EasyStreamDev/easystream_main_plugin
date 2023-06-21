@@ -34,9 +34,9 @@ namespace es::subtitles
                         text_data += _w;
                     }
 
-                    for (const std::string &uuid : m_TextFieldsTargets)
+                    for (const auto &tf : m_TextFieldsTargets)
                     {
-                        obs_source_t *tf_source = obs_get_source_by_uuid(uuid.c_str());
+                        obs_source_t *tf_source = obs_get_source_by_uuid(tf.uuid.c_str());
                         obs_data_t *text_settings = obs_data_create();
 
                         if (!tf_source || !text_settings)
@@ -63,16 +63,23 @@ namespace es::subtitles
         }
     }
 
-    void SubtitlesManager::updateSubtitlesSettings(const std::string &uuid, const bool &enable)
+    void SubtitlesManager::updateSubtitlesSettings(const std::string &uuid, const bool &enable, const std::string &name)
     {
         if (enable)
         {
-            this->m_TextFieldsTargets.push_back(uuid);
+            this->m_TextFieldsTargets.push_back({uuid, name});
         }
         else
         {
+            // To modify
             m_TextFieldsTargets.erase(
-                std::remove(m_TextFieldsTargets.begin(), m_TextFieldsTargets.end(), uuid),
+                std::remove_if(
+                    m_TextFieldsTargets.begin(),
+                    m_TextFieldsTargets.end(),
+                    [uuid](const text_field_data &tf)
+                    {
+                        return tf.uuid == uuid;
+                    }),
                 m_TextFieldsTargets.end());
         }
     }
@@ -81,11 +88,12 @@ namespace es::subtitles
     {
         std::vector<json> ret;
 
-        for (const std::string uuid : m_TextFieldsTargets)
+        for (const text_field_data tf : m_TextFieldsTargets)
         {
             ret.push_back({
-                {"uuid", uuid},
-                {"language", "to_be_ignored_for_now"},
+                {"uuid", tf.uuid},
+                {"name", tf.name},
+                // {"language", "to_be_ignored_for_now"},
             });
         }
 

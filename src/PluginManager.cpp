@@ -151,6 +151,11 @@ namespace es
         return m_TranscriptorManager;
     }
 
+    subtitles::SubtitlesManager *PluginManager::GetSubtitlesManager(void)
+    {
+        return m_SubtitlesManager;
+    }
+
     /**************************/
     /* ASYNCHROUNOUS ROUTINES */
     /**************************/

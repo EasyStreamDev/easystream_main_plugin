@@ -218,13 +218,22 @@ namespace es::server
         const std::string &target_uuid = params.at("uuid");
         const auto &tf_map = m_PluginManager->GetSourceTracker()->getTextFieldMap();
 
+        const auto tf = tf_map.find(target_uuid);
+
         // Check if text field with given uuid exists
-        if (tf_map.find(target_uuid) == tf_map.end())
+        if (tf == tf_map.end())
         {
             m_OutRequestQueue.ts_push(std::make_pair(
                 con,
                 ResponseGenerator::NotFound("Text field with given UUID doesn't exist")));
+            return;
         }
+
+        m_PluginManager->GetSubtitlesManager()->updateSubtitlesSettings(
+            target_uuid,          // text field uuid
+            enable,               // enable/disable parameter
+            tf->second.at("name") // text field name in obs
+        );
 
         m_OutRequestQueue.ts_push(std::make_pair(
             con,

@@ -37,11 +37,12 @@ namespace es
         const std::atomic<bool> &IsRunning(void) const;
 
     public:
-        area::AreaManager *GetAreaMain(void);
-        server::IServer *GetServer(void);
-        obs::SourceTracker *GetSourceTracker(void);
-        thread::ThreadPool *GetThreadPool(void);
-        transcription::TranscriptorManager *GetTranscriptorManager(void);
+        area::AreaManager *GetAreaMain(void) final;
+        server::IServer *GetServer(void) final;
+        obs::SourceTracker *GetSourceTracker(void) final;
+        thread::ThreadPool *GetThreadPool(void) final;
+        transcription::TranscriptorManager *GetTranscriptorManager(void) final;
+        subtitles::SubtitlesManager *GetSubtitlesManager(void) final;
 
     private:
         // Asynchrounous routines (run in separate threads)

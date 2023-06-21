@@ -38,6 +38,11 @@ namespace es
         class TranscriptorManager;
     }
 
+    namespace subtitles
+    {
+        class SubtitlesManager;
+    }
+
     class IPluginManager
     {
     public:
@@ -52,6 +57,7 @@ namespace es
         virtual thread::ThreadPool *GetThreadPool(void) = 0;
         virtual server::IServer *GetServer(void) = 0;
         virtual transcription::TranscriptorManager *GetTranscriptorManager(void) = 0;
+        virtual subtitles::SubtitlesManager *GetSubtitlesManager(void) = 0;
     };
 } // namespace es
 

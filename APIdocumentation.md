@@ -157,6 +157,37 @@ Récupération des données de toutes les couples actions / réaction enregistr�
 }
 ```
 
+---
+### **Getting subtitles settings**
+
+* **Description**  
+Récupération des paramètres de sous-titrage enregistrés au niveau du serveur (plugin).  
+
+* **Request**
+```json
+{
+    "command": "getSubtitlesSettings",
+}
+```
+
+* **Response**
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "length": "integer",
+        "text_fields": [
+            {
+                "uuid": "string",
+                "name": "string",
+            },
+            ... // Next element
+        ]
+    }
+}
+```
+
 
 <br>
 

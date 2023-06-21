@@ -19,6 +19,7 @@
 #include "../../utils/types/ThreadSafeQueue.hpp"
 #include "../../area/AreaManager.hpp"
 #include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
+#include "../../obs/subtitles/SubtitlesManager.hpp"
 #include "../../IPluginManager.hpp"
 
 // Local
