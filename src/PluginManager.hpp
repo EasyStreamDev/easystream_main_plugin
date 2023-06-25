@@ -43,6 +43,9 @@ namespace es
         thread::ThreadPool *GetThreadPool(void) final;
         transcription::TranscriptorManager *GetTranscriptorManager(void) final;
         subtitles::SubtitlesManager *GetSubtitlesManager(void) final;
+        int addRecorder(const std::string micName) final;
+        bool changeTimer(std::string micName, int newTimer) final;
+        json getAllRecorders() final;
 
     private:
         // Asynchrounous routines (run in separate threads)
@@ -65,6 +68,7 @@ namespace es
         std::atomic<server::AsioTcpServer *> m_Server = nullptr;
         std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
         std::atomic<subtitles::SubtitlesManager *> m_SubtitlesManager = nullptr;
+        std::unordered_map<std::string, obs::SourceRecorder *> _recorders;
         obs::SourceRecorder *_recorder = nullptr;
     };
 } // namespace es

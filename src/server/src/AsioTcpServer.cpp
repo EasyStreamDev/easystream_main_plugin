@@ -21,11 +21,15 @@ namespace es::server
         m_Handler["getAllScenes"] = &AsioTcpServer::r_GetAllScenes;
         m_Handler["getAllTextFields"] = &AsioTcpServer::r_GetAllTextFields;
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
+        m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
+        m_Handler["getAllRecorders"] = &AsioTcpServer::r_GetAllRecorders;
 
         /* Setters */
         m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;
         m_Handler["setActionReaction"] = &AsioTcpServer::r_SetNewARea;
         m_Handler["setSubtitles"] = &AsioTcpServer::r_SetSubtitles;
+        m_Handler["setNewOffset"] = &AsioTcpServer::r_SetNewOffset;
+        m_Handler["setNewRecorder"] = &AsioTcpServer::r_SetNewRecorder;
 
         /* Removers */
         m_Handler["removeActReact"] = &AsioTcpServer::r_RemoveActReact;

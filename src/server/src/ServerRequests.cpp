@@ -11,6 +11,17 @@ namespace es::server
     /****************/
     /* GET REQUESTS */
     /****************/
+    void AsioTcpServer::r_GetSubtitlesSettings(const json &req, Shared<AsioTcpConnection> con)
+    {
+        const json subtitlesSettings = m_PluginManager->GetSubtitlesManager()->getSubtitlesSettings();
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", subtitlesSettings)));
+    }
+
+    void AsioTcpServer::r_GetAllRecorders(const json &req, Shared<AsioTcpConnection> con)
+    {
+        const json response_data = m_PluginManager->getAllRecorders();
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+    }
 
     void AsioTcpServer::r_GetAllMics(const json &j, Shared<AsioTcpConnection> con)
     {
@@ -131,6 +142,46 @@ namespace es::server
     /****************/
     /* SET REQUESTS */
     /****************/
+    void AsioTcpServer::r_SetNewRecorder(const json &req, Shared<AsioTcpConnection> con)
+    {
+        std::string micName = req["params"]["micName"];
+        int result = m_PluginManager->addRecorder(micName);
+
+        if (result == -1)
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::BadRequest("There is already a recorder for this mic")
+            ));
+        else if (result == -2)
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::NotFound("There is no mic named " + micName)
+            ));
+        else
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::Success()
+            ));
+
+        json broadcastData = m_PluginManager->getAllRecorders();
+        broadcastData["type"] = "recorderUpdate";  
+        submitBroadcast(broadcastData);
+    }
+
+    void AsioTcpServer::r_SetNewOffset(const json &req, Shared<AsioTcpConnection> con)
+    {
+        if (!m_PluginManager->changeTimer(req["params"]["micName"], req["params"]["offset"]))
+            m_OutRequestQueue.ts_push(std::make_pair(
+                con,
+                ResponseGenerator::NotFound("There is no mic named " + req["params"]["micName"].get<std::string>())
+            ));
+
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
+
+        json broadcastData = m_PluginManager->getAllRecorders();
+        broadcastData["type"] = "recorderUpdate";  
+        submitBroadcast(broadcastData);     
+    }
 
     void AsioTcpServer::r_SetCompressorLevel(const json &j, Shared<AsioTcpConnection> con)
     {

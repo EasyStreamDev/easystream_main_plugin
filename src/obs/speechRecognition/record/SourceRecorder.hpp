@@ -38,11 +38,13 @@ namespace es::obs
     class SourceRecorder
     {
     public:
-        SourceRecorder(obs_source_t *input, const std::function<uint (const std::string &)> &);
+        SourceRecorder(obs_source_t *input, const std::function<uint (const std::string &)> &, const std::string & micName = "Mic/Aux", size_t timerRecord = 5);
         ~SourceRecorder();
 
         static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
         void run(void *);
+        void updateTimerRecord(int newTimer);
+        int getTimerRecord() const;
 
     private:
         std::filesystem::path _temporaryPath;
@@ -55,6 +57,11 @@ namespace es::obs
         std::chrono::steady_clock::time_point _checkPoint;
         std::function<uint (const std::string &)> _submitFile;
         int nbOutNb = 0;
+        std::string _micName;
+        std::string _micNameClear;
+        std::atomic_int _timerRecord;
+
+        void clearMicName();
     };
 }
 

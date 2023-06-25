@@ -92,3 +92,4 @@ test*.json
 release
 script.txt
 log.txt
+tmp

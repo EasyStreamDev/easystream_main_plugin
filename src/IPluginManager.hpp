@@ -9,6 +9,8 @@
 #define IPLUGINMANAGER_HPP_
 
 #include <atomic>
+#include <iostream>
+#include "utils/Json.hpp"
 
 namespace es
 {
@@ -58,6 +60,11 @@ namespace es
         virtual server::IServer *GetServer(void) = 0;
         virtual transcription::TranscriptorManager *GetTranscriptorManager(void) = 0;
         virtual subtitles::SubtitlesManager *GetSubtitlesManager(void) = 0;
+
+        //
+        virtual int addRecorder(const std::string micName) = 0;
+        virtual bool changeTimer(std::string micName, int newTimer) = 0;
+        virtual json getAllRecorders() = 0;
     };
 } // namespace es
 

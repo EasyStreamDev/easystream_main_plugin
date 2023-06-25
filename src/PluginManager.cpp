@@ -79,9 +79,9 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
+        m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
         // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
-        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
 
         { // Testing functions
@@ -201,9 +201,47 @@ namespace es
         std::this_thread::sleep_for(2s);
         PluginManager *pm = static_cast<PluginManager *>(private_data);
         obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-        pm->_recorder = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
-                                                { return pm->GetTranscriptorManager()->submit(fp); });
+        pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
+                                                { return 1; });
+        pm->_recorders["Mic/Aux"]->run(nullptr);
+    }
 
-        pm->_recorder->run(nullptr);
+    int PluginManager::addRecorder(const std::string micName)
+    {
+        if (_recorders.find(micName) != _recorders.end())
+            return -1;
+        obs_source_t *source = obs_get_source_by_name(micName.c_str());
+        std::cout << "Add Recorder " << micName << std::endl;
+        if (!source)
+            return -2;
+        _recorders[micName] = new obs::SourceRecorder(source, [this](const std::string &fp) -> uint
+                                                { return 1; }, micName);
+        m_ThreadPool->push([this, micName](void *) {
+            std::cout << "Ok here : " << micName << std::endl;
+            this->_recorders[std::string(micName)]->run(nullptr);
+        }, nullptr);
+        return 1;
+    }
+
+    bool PluginManager::changeTimer(std::string micName, int newTimer)
+    {
+        if (_recorders.find(micName) != _recorders.end()) {
+            _recorders[micName]->updateTimerRecord(newTimer);
+            return true;
+        }
+        return false;
+    }
+
+    json PluginManager::getAllRecorders()
+    {
+        json result;
+        result["data"] = {};
+        for (const auto &rec: _recorders) {
+            result["data"] += json{
+                {"micName", rec.first},
+                {"offset", rec.second->getTimerRecord()}
+            };
+        }
+        return result;
     }
 }

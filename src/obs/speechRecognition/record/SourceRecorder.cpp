@@ -10,11 +10,13 @@
 
 namespace es::obs
 {
-    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint(const std::string &)> &func)
-        : _temporaryPath(std::filesystem::temp_directory_path()), _source(input), _headerWav(false), _checkPoint(std::chrono::steady_clock::now()), _submitFile(func)
+    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint(const std::string &)> &func, const std::string & micName, size_t timerRecord)
+        : _temporaryPath(std::filesystem::temp_directory_path()), _source(input), _headerWav(false), _checkPoint(std::chrono::steady_clock::now()), _submitFile(func), _micName(micName), _timerRecord(timerRecord)
     {
-        _temporaryPath += "/tempAudio";
+        _temporaryPath += "/tempEasyStreamAudio";
+        // std::cout << _micName << std::endl;
         std::filesystem::create_directory(_temporaryPath);
+        clearMicName();
         // _outFile.open(_temporaryPath.string()+ "/output.wav", std::ios::binary);
         const struct audio_output_info *obs_audio = audio_output_get_info(obs_get_audio());
 
@@ -54,7 +56,9 @@ namespace es::obs
 
     void SourceRecorder::run(void *)
     {
+        std::cout << _micName << " BEFORE        RECORDING            " << std::endl;
         obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
+        std::cout << _micName << " STARTTTINNNNNNNNNNNNNNG        RECORDING            " << std::endl;
         while (1)
         {
             /* code */
@@ -70,6 +74,8 @@ namespace es::obs
         {
             return;
         }
+
+        std::cout << "Storing data " << self->_micName << std::endl;
 
         unsigned int size = 0;
         uint8_t *out[MAX_AV_PLANES];
@@ -124,7 +130,7 @@ namespace es::obs
         }
 
         std::chrono::duration<float> timer = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - self->_checkPoint);
-        if (timer.count() >= TIMER_RECORD)
+        if (timer.count() >= self->_timerRecord)
         {
             // // for test
             // self->_outFile.open(self->_temporaryPath.string() + "/output" + std::to_string(self->nbOutNb++) + ".wav", std::ios::binary);
@@ -132,17 +138,40 @@ namespace es::obs
             // self->_outFile << self->_buffer.str();
             // self->_outFile.close();
 
+            // std::cout << "Storing data " << self->_temporaryPath.string() + "/" + self->_micNameClear << std::endl;
+
             // for transcriptor
-            self->_outFile.open(self->_temporaryPath.string() + "/output.wav", std::ios::binary);
+            self->_outFile.open(self->_temporaryPath.string() + "/" + self->_micNameClear + ".wav", std::ios::binary);
+            // if (!self->_outFile.is_open()) 
+            //     std::cout << "cannot open" << std::endl;
             // self->_outFile.clear();
             self->_outFile << self->_buffer.str();
             self->_outFile.close();
 
-            self->_submitFile(self->_temporaryPath.string() + "/output.wav");
+            self->_submitFile(self->_temporaryPath.string() + self->_micName);
             // self->_buffer.clear();
             self->_buffer.str(std::string());
             self->_checkPoint = std::chrono::steady_clock::now();
         }
         // blog(LOG_INFO, "### ---------[SourceRecorder] finished");
+    }
+
+    void SourceRecorder::updateTimerRecord(int newTimer)
+    {
+        _timerRecord = newTimer;
+    }
+
+    int SourceRecorder::getTimerRecord() const {
+        return _timerRecord;
+    }
+
+    void SourceRecorder::clearMicName() 
+    {
+        for (auto &c: _micName) {
+            if (!isalnum(c))
+                _micNameClear += '_';
+            else
+                _micNameClear += c;
+        }
     }
 }
