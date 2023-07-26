@@ -41,7 +41,7 @@ namespace es
         server::IServer *GetServer(void) final;
         obs::SourceTracker *GetSourceTracker(void) final;
         thread::ThreadPool *GetThreadPool(void) final;
-        transcription::TranscriptorManager *GetTranscriptorManager(void) final;
+        // transcription::TranscriptorManager *GetTranscriptorManager(void) final;
         subtitles::SubtitlesManager *GetSubtitlesManager(void) final;
         int addRecorder(const std::string micName) final;
         bool changeTimer(std::string micName, int newTimer) final;
@@ -66,7 +66,7 @@ namespace es
         // Runnable
         std::atomic<area::AreaManager *> m_AreaManager = nullptr;
         std::atomic<server::AsioTcpServer *> m_Server = nullptr;
-        std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
+        // std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
         std::atomic<subtitles::SubtitlesManager *> m_SubtitlesManager = nullptr;
         std::unordered_map<std::string, obs::SourceRecorder *> _recorders;
         obs::SourceRecorder *_recorder = nullptr;

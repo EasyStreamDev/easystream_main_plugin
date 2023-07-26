@@ -5,7 +5,7 @@ on:
     branches: [main]
   push:
     branches:
-      # - "testvcpkg"
+      - "TestConan2"
       - "dev"
 
 jobs:
@@ -38,21 +38,21 @@ jobs:
       #     tag_name: ${{ steps.package.outputs.plugin-version }}
       #     files: ./package/*.deb
 
-  win64Build:
-    name: "win64Build"
-    runs-on: [windows-latest]
-    env:
-      CMAKE_GENERATOR: "Visual Studio 17 2022"
-      CMAKE_SYSTEM_VERSION: "10.0.18363.657"
-      WINDOWS_DEPS_VERSION: "2022"
-      WINDOWS_DEPS_CACHE_VERSION: "1"
-    steps:
-      - name: "Add msbuild to PATH"
-        uses: microsoft/setup-msbuild@v1.0.2
-        with:
-          vs-version: '['
-      - name: "Checkout"
-        uses: actions/checkout@v2.3.3
+  # win64Build:
+  #   name: "win64Build"
+  #   runs-on: [windows-latest]
+  #   env:
+  #     CMAKE_GENERATOR: "Visual Studio 17 2022"
+  #     CMAKE_SYSTEM_VERSION: "10.0.18363.657"
+  #     WINDOWS_DEPS_VERSION: "2022"
+  #     WINDOWS_DEPS_CACHE_VERSION: "1"
+  #   steps:
+  #     - name: "Add msbuild to PATH"
+  #       uses: microsoft/setup-msbuild@v1.0.2
+  #       with:
+  #         vs-version: '['
+  #     - name: "Checkout"
+  #       uses: actions/checkout@v2.3.3
       # - name: "Restore QT dependency from cache"
       #   id: qt-cache
       #   uses: actions/cache@v2.1.2
@@ -61,10 +61,10 @@ jobs:
       #   with:
       #     path: ${{ github.workspace }}/cmbuild/QT
       #     key: ${{ runner.os }}-pr-${{ env.CACHE_NAME }}-${{ env.QT_VERSION }}
-      - name: "Build OBS"
-        working-directory: ${{github.workspace}}
-        run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None
+      # - name: "Build OBS"
+      #   working-directory: ${{github.workspace}}
+      #   run: |
+      #       pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
@@ -76,23 +76,23 @@ jobs:
       #     path: "package/*.exe"
 
   
-  win32Build:
-    name: "win32Build"
-    runs-on: [windows-latest]
-    env:
-      CMAKE_GENERATOR: "Visual Studio 17 2022"
-      CMAKE_SYSTEM_VERSION: "10.0.18363.657"
-      WINDOWS_DEPS_VERSION: "2019"
-      WINDOWS_DEPS_CACHE_VERSION: "1"
-    steps:
-      - name: "Add msbuild to PATH"
-        uses: microsoft/setup-msbuild@v1.0.2
-      - name: "Checkout"
-        uses: actions/checkout@v2.3.3
-      - name: "Build OBS"
-        working-directory: ${{github.workspace}}
-        run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None
+  # win32Build:
+  #   name: "win32Build"
+  #   runs-on: [windows-latest]
+  #   env:
+  #     CMAKE_GENERATOR: "Visual Studio 17 2022"
+  #     CMAKE_SYSTEM_VERSION: "10.0.18363.657"
+  #     WINDOWS_DEPS_VERSION: "2019"
+  #     WINDOWS_DEPS_CACHE_VERSION: "1"
+  #   steps:
+  #     - name: "Add msbuild to PATH"
+  #       uses: microsoft/setup-msbuild@v1.0.2
+  #     - name: "Checkout"
+  #       uses: actions/checkout@v2.3.3
+  #     - name: "Build OBS"
+  #       working-directory: ${{github.workspace}}
+  #       run: |
+  #           pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs RelWithDebInfo -BuildType Debug -Setup None
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd

@@ -11,36 +11,36 @@ namespace es::testing
 {
     void test_transcription_submit(void *private_data)
     {
-        PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
+        // PluginManager *pm = static_cast<PluginManager *>(private_data);
+        // transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
 
-        const std::string full_path_base = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
-        const std::vector<std::string> paths = {
-            full_path_base + "league.wav",
-            full_path_base + "sweden.wav",
-            full_path_base + "untitled.wav"};
+        // const std::string full_path_base = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
+        // const std::vector<std::string> paths = {
+        //     full_path_base + "league.wav",
+        //     full_path_base + "sweden.wav",
+        //     full_path_base + "untitled.wav"};
 
-        while (1)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
-            std::string file_path = paths[rand() % paths.size()];
+        // while (1)
+        // {
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
+        //     std::string file_path = paths[rand() % paths.size()];
 
-            tm->submit(file_path);
-            std::cerr << "[TEST SUBMIT TRANSCRIPT]\n--- Submitted: " << file_path.substr(71, file_path.length()) << std::endl;
-        }
+        //     // tm->submit(file_path);
+        //     std::cerr << "[TEST SUBMIT TRANSCRIPT]\n--- Submitted: " << file_path.substr(71, file_path.length()) << std::endl;
+        // }
     }
 
     void test_transcription_results(void *private_data)
     {
-        PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
+        // PluginManager *pm = static_cast<PluginManager *>(private_data);
+        // transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(3 * 1000));
-        while (1)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(15 * 1000));
-            auto container = tm->getTranscription();
-        }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(3 * 1000));
+        // while (1)
+        // {
+        //     std::this_thread::sleep_for(std::chrono::milliseconds(15 * 1000));
+        //     // auto container = tm->getTranscription();
+        // }
     }
 }
 
@@ -50,9 +50,9 @@ namespace es
         : m_AreaManager(new es::area::AreaManager()),
           m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
-        this->m_TranscriptorManager = new es::transcription::TranscriptorManager(
-            [this](std::vector<std::string> words)
-            { this->GetAreaMain()->AddWords(words); });
+        // this->m_TranscriptorManager = new es::transcription::TranscriptorManager(
+        //     [this](std::vector<std::string> words)
+        //     { this->GetAreaMain()->AddWords(words); });
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
         this->m_SubtitlesManager = new es::subtitles::SubtitlesManager();
@@ -146,10 +146,10 @@ namespace es
         return m_ThreadPool;
     }
 
-    transcription::TranscriptorManager *PluginManager::GetTranscriptorManager(void)
-    {
-        return m_TranscriptorManager;
-    }
+    // transcription::TranscriptorManager *PluginManager::GetTranscriptorManager(void)
+    // {
+    //     return m_TranscriptorManager;
+    // }
 
     subtitles::SubtitlesManager *PluginManager::GetSubtitlesManager(void)
     {
@@ -188,11 +188,11 @@ namespace es
 
     void PluginManager::RunTranscriptor(void *private_data)
     {
-        PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcription::TranscriptorManager *tm = pm->m_TranscriptorManager.load();
+        // PluginManager *pm = static_cast<PluginManager *>(private_data);
+        // // transcription::TranscriptorManager *tm = pm->m_TranscriptorManager.load();
 
-        tm->init(pm);
-        tm->run(nullptr);
+        // tm->init(pm);
+        // tm->run(nullptr);
     }
 
     void PluginManager::RunRecorder(void *private_data)
