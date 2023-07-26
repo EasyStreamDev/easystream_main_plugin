@@ -9,6 +9,7 @@ fi
 # set -ex
 if [[ $2 == true ]]; then
     rm -rf build && mkdir build && cd build
+    conan profile detect --force
     if [ "$1" = "Debug" ]; then
         conan install "$rootProject/utils/ubuntu/" --output-folder=. --build=missing -pr "$rootProject/utils/ubuntu/ubuntuDebug"
     else
