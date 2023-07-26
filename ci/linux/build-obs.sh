@@ -29,9 +29,9 @@ fi
 
 cd $obsFolder
 git pull
-cd CI
-chmod +x build-linux.sh
-./build-linux.sh --build-dir $buildDir 
+cd .github/scripts/
+chmod +x build-linux
+./build-linux -c "$1"  -t "linux-x86_64"
 cd $buildDir
 sudo cmake -P cmake_install.cmake
 sudo cp /usr/local/lib/cmake/libobs/libobsConfig.cmake /usr/local/lib/cmake/libobs/LibObsConfig.cmake

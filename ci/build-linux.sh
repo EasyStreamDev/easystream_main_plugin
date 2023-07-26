@@ -23,7 +23,7 @@ source $variableScript
 
 if [[ $skip == false ]]; then
     source "${rootProject}/ci/linux/install-dependencies-ubuntu.sh"
-    source "${rootProject}/ci/linux/build-obs.sh"
+    source "${rootProject}/ci/linux/build-obs.sh" $buildType
 fi
 
 export PATH="$HOME/.local/bin:$PATH"
