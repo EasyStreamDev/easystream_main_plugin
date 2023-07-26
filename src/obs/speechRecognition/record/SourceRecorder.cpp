@@ -10,7 +10,7 @@
 
 namespace es::obs
 {
-    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint(const std::string &)> &func, const std::string & micName, size_t timerRecord)
+    SourceRecorder::SourceRecorder(obs_source_t *input, const std::function<uint(const std::string &)> &func, const std::string &micName, size_t timerRecord)
         : _temporaryPath(std::filesystem::temp_directory_path()), _source(input), _headerWav(false), _checkPoint(std::chrono::steady_clock::now()), _submitFile(func), _micName(micName), _timerRecord(timerRecord)
     {
         _temporaryPath += "/tempEasyStreamAudio";
@@ -56,9 +56,9 @@ namespace es::obs
 
     void SourceRecorder::run(void *)
     {
-        std::cout << _micName << " BEFORE        RECORDING            " << std::endl;
+        // std::cout << _micName << " BEFORE        RECORDING            " << std::endl;
         obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
-        std::cout << _micName << " STARTTTINNNNNNNNNNNNNNG        RECORDING            " << std::endl;
+        // std::cout << _micName << " STARTTTINNNNNNNNNNNNNNG        RECORDING            " << std::endl;
         while (1)
         {
             /* code */
@@ -75,7 +75,7 @@ namespace es::obs
             return;
         }
 
-        std::cout << "Storing data " << self->_micName << std::endl;
+        // std::cout << "Storing data " << self->_micName << std::endl;
 
         unsigned int size = 0;
         uint8_t *out[MAX_AV_PLANES];
@@ -142,7 +142,7 @@ namespace es::obs
 
             // for transcriptor
             self->_outFile.open(self->_temporaryPath.string() + "/" + self->_micNameClear + ".wav", std::ios::binary);
-            // if (!self->_outFile.is_open()) 
+            // if (!self->_outFile.is_open())
             //     std::cout << "cannot open" << std::endl;
             // self->_outFile.clear();
             self->_outFile << self->_buffer.str();
@@ -161,13 +161,15 @@ namespace es::obs
         _timerRecord = newTimer;
     }
 
-    int SourceRecorder::getTimerRecord() const {
+    int SourceRecorder::getTimerRecord() const
+    {
         return _timerRecord;
     }
 
-    void SourceRecorder::clearMicName() 
+    void SourceRecorder::clearMicName()
     {
-        for (auto &c: _micName) {
+        for (auto &c : _micName)
+        {
             if (!isalnum(c))
                 _micNameClear += '_';
             else

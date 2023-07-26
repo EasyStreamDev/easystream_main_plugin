@@ -84,7 +84,7 @@ namespace es::subtitles
         }
     }
 
-    const std::vector<json> SubtitlesManager::getSubtitlesSettings(void) const
+    const json SubtitlesManager::getSubtitlesSettings(void) const
     {
         std::vector<json> ret;
 
@@ -97,6 +97,9 @@ namespace es::subtitles
             });
         }
 
-        return ret;
+        return json({
+            {"length", ret.size()},
+            {"text_fields", ret},
+        });
     }
 }

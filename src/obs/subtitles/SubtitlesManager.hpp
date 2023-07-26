@@ -23,7 +23,7 @@ namespace es::subtitles
     public:
         void run(void *) final;
         void updateSubtitlesSettings(const std::string &, const bool &, const std::string &);
-        const std::vector<json> getSubtitlesSettings(void) const;
+        const json getSubtitlesSettings(void) const;
 
     private:
         std::vector<text_field_data> m_TextFieldsTargets;
