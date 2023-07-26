@@ -22,9 +22,10 @@ sudo apt-get install -y \
 	libxss-dev \
 	libxtst-dev	\
 	python-is-python3	\
-	python3-pip
+	python3-pip	\
+	zsh
 
-sudo pip install "conan==1.59.0"
+sudo pip install conan
 	# pip install conan
 	# libboost-all-dev \
 	# libpipewire-0.3-dev
