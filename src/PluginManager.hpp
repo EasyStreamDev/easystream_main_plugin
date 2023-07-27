@@ -22,6 +22,9 @@
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 #include "IPluginManager.hpp"
+#include <signal.h>
+#include <unistd.h>
+#include <string.h>
 
 namespace es
 {
@@ -55,8 +58,10 @@ namespace es
         static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
         static void RunRecorder(void *);
+        static void RunPyProgram(void *);
 
     private:
+        pid_t _pyProgramPid;
         std::atomic<bool> m_Running = false;
 
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?

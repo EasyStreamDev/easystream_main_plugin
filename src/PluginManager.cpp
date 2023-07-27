@@ -60,6 +60,7 @@ namespace es
 
     PluginManager::~PluginManager()
     {
+        kill(_pyProgramPid, SIGQUIT);
         this->Stop();
     }
 
@@ -83,6 +84,7 @@ namespace es
         // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
+        m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
 
         { // Testing functions
           // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
@@ -204,6 +206,22 @@ namespace es
         pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
                                                 { return 1; });
         pm->_recorders["Mic/Aux"]->run(nullptr);
+    }
+
+    void PluginManager::RunPyProgram(void *private_data)
+    {
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+        pm->_pyProgramPid = fork();
+
+        if (pm->_pyProgramPid == -1) {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        } else if (pm->_pyProgramPid > 0) {
+            std::cout << "running obs (parent process)" << std::endl;
+        } else {
+            char *args[] = {strdup(TRANSCRIPTPATH), NULL};
+            execv(args[0], args);
+        }
     }
 
     int PluginManager::addRecorder(const std::string micName)

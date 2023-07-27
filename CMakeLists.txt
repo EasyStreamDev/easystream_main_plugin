@@ -68,6 +68,7 @@ endif()
 # endif()
 
 set(AUDIOPATH "${CMAKE_SOURCE_DIR}/output.wav")
+set(TRANSCRIPTPATH "${CMAKE_SOURCE_DIR}/src/Transcription/Ubuntu/main.py")
 configure_file(${CMAKE_SOURCE_DIR}/include/Variables.h.in ${CMAKE_SOURCE_DIR}/include/Variables.h)
 
 # if(WIN32 OR APPLE)

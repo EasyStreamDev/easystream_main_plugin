@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+cd $easyStreamEnv
+source ./bin/activate
 cd $rootProject
 
 if [ $# -eq 0 ]; then

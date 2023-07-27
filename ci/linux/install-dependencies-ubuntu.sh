@@ -25,7 +25,10 @@ sudo apt-get install -y \
 	python3-pip	\
 	zsh
 
-sudo pip install conan
+# pip install virtualenv
+
+
+# sudo pip install conan
 	# pip install conan
 	# libboost-all-dev \
 	# libpipewire-0.3-dev
