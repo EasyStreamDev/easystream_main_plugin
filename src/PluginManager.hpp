@@ -18,7 +18,6 @@
 #include "obs/SourceTracker.hpp"
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
 #include "obs/subtitles/SubtitlesManager.hpp"
-#include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 #include "IPluginManager.hpp"
@@ -61,7 +60,9 @@ namespace es
         static void RunPyProgram(void *);
 
     private:
-        pid_t _pyProgramPid;
+        #ifdef linux
+            pid_t _pyProgramPid;
+        #endif
         std::atomic<bool> m_Running = false;
 
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?

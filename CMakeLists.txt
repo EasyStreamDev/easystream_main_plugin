@@ -45,9 +45,9 @@ if(UNIX OR APPLE)
 endif()
 
 # if(WIN32)
-# include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 set(CONAN_DISABLE_CHECK_COMPILER True CACHE BOOL "" FORCE)
-# conan_basic_setup()
+conan_basic_setup()
 # endif()
 
 # set(LibObs_DIR "${CMAKE_SOURCE_DIR}/../obsBuildDir/libobs")
@@ -113,7 +113,7 @@ find_package(asio REQUIRED)
 # endif()
 # find_package(cpprestsdk REQUIRED)
 # if(WIN32)
-# include_directories(${CONAN_INCLUDE_DIRS})add
+include_directories(${CONAN_INCLUDE_DIRS})
 # endif()
 
 
