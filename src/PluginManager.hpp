@@ -21,10 +21,12 @@
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 
 #include "IPluginManager.hpp"
-#include <signal.h>
-#include <unistd.h>
-#include <string.h>
 
+#ifdef linux
+    #include <string.h>
+    #include <signal.h>
+    #include <unistd.h>
+#endif
 namespace es
 {
     class PluginManager : public IPluginManager

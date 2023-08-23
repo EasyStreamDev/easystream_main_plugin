@@ -37,10 +37,7 @@ namespace es::area
                 {area::ActionType::APP_LAUNCH, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action *
                  { return new ActionAppLaunch(reaction, area_id, param); }},
                 {area::ActionType::WORD_DETECT, [this] (Reaction *reaction, const size_t &area_id, const json &param) -> Action *
-                 { return new ActionWordDetect(reaction, area_id, param, [this] () -> std::vector<std::string> {
-                    std::shared_lock lock(_wordMutex);
-                    return _words;
-                 }); }},
+                 { return new ActionWordDetect(reaction, area_id, param); }},
             };
         const std::unordered_map<area::ReactionType, std::function<Reaction *(const size_t &, const std::string &, const json &)>>
             REACTION_TYPE_TO_CREATE_FUNC = {

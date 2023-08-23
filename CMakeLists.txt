@@ -93,13 +93,13 @@ endif()
 
 if(WIN32 OR WIN64)
     add_library(LibObs SHARED IMPORTED)
-    set_property(TARGET LibObs PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/${CMAKE_BUILD_TYPE}/obs.dll")
-    set_property(TARGET LibObs PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/libobs/${CMAKE_BUILD_TYPE}/obs.lib")
+    set_property(TARGET LibObs PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build_x64/libobs/${CMAKE_BUILD_TYPE}/obs.dll")
+    set_property(TARGET LibObs PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build_x64/libobs/${CMAKE_BUILD_TYPE}/obs.lib")
 
     # obs-frontend
     add_library(OBS_FRONTEND_LIB SHARED IMPORTED)
-    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/${CMAKE_BUILD_TYPE}/obs-frontend-api.dll")
-    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build64/UI/obs-frontend-api/${CMAKE_BUILD_TYPE}/obs-frontend-api.lib")
+    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build_x64/UI/obs-frontend-api/${CMAKE_BUILD_TYPE}/obs-frontend-api.dll")
+    set_property(TARGET OBS_FRONTEND_LIB PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/compileResource/obs-studio/build_x64/UI/obs-frontend-api/${CMAKE_BUILD_TYPE}/obs-frontend-api.lib")
 endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core)

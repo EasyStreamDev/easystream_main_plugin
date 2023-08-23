@@ -1,6 +1,6 @@
 #include "SubtitlesManager.hpp"
 #include "../../PluginManager.hpp"
-#include "../speechRecognition/transcript/TranscriptorManager.hpp"
+// #include "../speechRecognition/transcript/TranscriptorManager.hpp"
 
 namespace es::subtitles
 {
