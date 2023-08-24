@@ -88,7 +88,7 @@ namespace es::server
                 m_InRequestQueue.ts_pop();
             }
 
-            // Sleep 50ms to not run fullspeed.
+            // Sleep 50ms, to save some CPUs lifetime.
             this->thread_sleep_ms(50);
         }
     }
@@ -112,7 +112,7 @@ namespace es::server
         }
         catch (const json::out_of_range &oor_error)
         {
-            // Invalid key was given to the .at method of json
+            // Invalid key was given to the .at method of json (out of range)
             if (oor_error.id == 403)
             {
                 m_OutRequestQueue.ts_push(std::make_pair(
@@ -137,8 +137,6 @@ namespace es::server
                     m_IoContext.run();
                 });
             blog(LOG_INFO, "### [SERVER EASYSTREAM] new server started on port: %d", m_Acceptor.local_endpoint().port());
-            // std::cout << "### [SERVER EASYSTREAM] new server started on " << m_Acceptor.local_endpoint().address() << ":" << m_Acceptor.local_endpoint().port() << std::endl;
-            // Start request handler
             this->m_RequestHandler = std::thread([this]()
                                                  { this->_runRequestHandler(nullptr); });
         }
@@ -166,9 +164,9 @@ namespace es::server
                     m_Connections.push_back(CreateShared<AsioTcpConnection>(sock));
 
                     m_Connections.back()->readMessage();
-                    tmpJson["socketAdress"] = m_Connections.back()->getSocket().remote_endpoint().address().to_string();
+                    tmpJson["socketAddress"] = m_Connections.back()->getSocket().remote_endpoint().address().to_string();
                     tmpJson["socketPort"] = m_Connections.back()->getSocket().remote_endpoint().port();
-                    tmpJson["Message"] = std::string("succesfully connected");
+                    tmpJson["message"] = std::string("successfully connected");
                     tmpJson["statusCode"] = 200;
                     m_Connections.back()->writeMessage(tmpJson.dump());
                 }

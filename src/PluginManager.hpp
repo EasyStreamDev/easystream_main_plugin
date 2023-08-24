@@ -21,6 +21,8 @@
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 
+#include "obs/profile/UserProfile.hpp"
+
 #include "IPluginManager.hpp"
 
 namespace es
