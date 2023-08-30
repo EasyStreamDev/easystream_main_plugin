@@ -21,7 +21,7 @@ namespace es::subtitles
                 {
                     std::unique_lock lock(_mtx);
                     _cVar.wait(lock, [this]() {
-                        return _TextFieldsTargets.empty() || _transcripts.empty();
+                        return !_TextFieldsTargets.empty() && !_transcripts.empty();
                     });
                 }
                     // std::unique_lock 
@@ -31,11 +31,14 @@ namespace es::subtitles
                 //     continue;
                 // }
                 // std::string subtitlesTranscript;
-                while (!_transcripts.empty()) {
-                    // subtitlesTranscript += _transcripts.front()._transcript;
-                    auto tr = _transcripts.front();
-                    setTextSubtitle(tr._micName, tr._transcript);
-                    _transcripts.pop();
+                {
+                    std::unique_lock lock(_mtxP);
+                    while (!_transcripts.empty()) {
+                        // subtitlesTranscript += _transcripts.front()._transcript;
+                        auto tr = _transcripts.front();
+                        setTextSubtitle(tr._micName, tr._transcript);
+                        _transcripts.pop();
+                    }
                 }
 
 
@@ -89,6 +92,7 @@ namespace es::subtitles
     {
         for (const auto &tf : _TextFieldsTargets)
         {
+            std::cerr << micName << "  " << tf.second.linkedMics << std::endl;
             if (tf.second.linkedMics.find(micName) == tf.second.linkedMics.npos)
                 continue;
             obs_source_t *tf_source = obs_get_source_by_uuid(tf.first.c_str());
@@ -146,6 +150,7 @@ namespace es::subtitles
     {
         std::unique_lock lock(_mtxP);
         _transcripts.push(transcriptInfo{micName, tr});
+        _cVar.notify_all();
     }
 
     void SubtitlesManager::setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics)

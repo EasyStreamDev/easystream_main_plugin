@@ -1,45 +1,44 @@
 #include "Transcriptor.hpp"
 #include "../../PluginManager.hpp"
 
-es::transcript::Transcriptor::Transcriptor(): _isRunning(false), _tcpCli(_isRunning)
+es::transcript::Transcriptor::Transcriptor() : _isRunning(false), _tcpCli(_isRunning)
 {
-
 }
 
 es::transcript::Transcriptor::~Transcriptor()
 {
-
 }
 
 void es::transcript::Transcriptor::run(void *pm)
 {
     _isRunning = true;
-    
 
-    if (!_tcpCli.connectToServer()) {
+    if (!_tcpCli.connectToServer())
+    {
         std::cerr << "[EASYSTREAM TRANSCRIPTOR]: could not connect to echostra" << std::endl;
         return;
     }
 
-    _tcpCli.setPushFunc([this](const json &req) {
+    _tcpCli.setPushFunc(
+        [this](const json &req)
         {
-            std::unique_lock lock(_mtx);
-            _tasks.push(req);
-        }
-        _cVar.notify_all();
-    });
+            {
+                std::unique_lock lock(_mtx);
+                _tasks.push(req);
+            }
+            _cVar.notify_all();
+        });
 
     _threads.emplace_back(std::thread(&AsioClient::readMessage, std::ref(_tcpCli)));
 
     _pluginManager = static_cast<PluginManager *>(pm);
 
-    while(_isRunning) {
-        std::cerr << "Running here" << std::endl;
+    while (_isRunning)
+    {
         {
             std::unique_lock lock(_mtx);
-            _cVar.wait(lock, [this]() {
-                return !_isRunning || (_tasks.size() > 0);
-            });
+            _cVar.wait(lock, [this]()
+                       { return !_isRunning || (_tasks.size() > 0); });
         }
         executeRequest();
     }
@@ -57,8 +56,8 @@ void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName)
 
     auto it = _recorders.emplace(micName, new micsInfo());
 
-    // std::cerr << "Transcriptor, succesfully created transcription for mic " << micName << std::endl;
-    if (it.second) {
+    if (it.second)
+    {
         _recorders[micName]->_recorder = new obs::SourceRecorder();
         _recorders[micName]->_pusher = new DataStream();
         _recorders[micName]->_recorder->init(source, micName);
@@ -66,13 +65,7 @@ void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName)
 
     json message{
         {"command", "createSTTStream"},
-        {"params", {
-            {"bit_depth", 16},
-            {"sample_rate", 48000},
-            {"stereo", true},
-            {"mic_id", it.first->first}
-        }}
-    };
+        {"params", {{"bit_depth", 16}, {"sample_rate", 48000}, {"stereo", true}, {"mic_id", it.first->first}}}};
     _tcpCli.writeMessage(message.dump().c_str());
     std::cerr << "Transcriptor, succesfully created transcription for mic " << micName << std::endl;
     // TcpClient send message for new transcription
@@ -96,8 +89,7 @@ void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName)
 json es::transcript::Transcriptor::getAllActiveMics()
 {
     json result = {
-        {"data", {}}
-    };
+        {"data", {}}};
 
     // for (const auto &it: _recorders) {
     //     if (it.second.isActive())
@@ -110,7 +102,8 @@ json es::transcript::Transcriptor::getAllActiveMics()
 
 void es::transcript::Transcriptor::executeRequest()
 {
-    while (_tasks.size()) {
+    while (_tasks.size())
+    {
         json req = _tasks.front();
         if (req["type"] == "createSTTStream")
             enableMics(req);
@@ -127,14 +120,16 @@ void es::transcript::Transcriptor::enableMics(json req)
     int i = req.at("port");
     // _recorders[nameMic]->_pusher->getPort();
     _recorders[nameMic]->_pusher->setPort(i);
-    _recorders[nameMic]->_recorder->setPushFunc([this] (std::string name, std::string audio) { 
-        es::transcript::micsInfo *tmp = nullptr;
+    _recorders[nameMic]->_recorder->setPushFunc(
+        [this](const char *name, std::string audio)
         {
-            std::unique_lock lock(_mtxPush);
-            tmp = _recorders[name];
-        }
-        tmp->_pusher->sendMessage(audio);
-    });
+            es::transcript::micsInfo *tmp = nullptr;
+            {
+                std::unique_lock lock(_mtxPush);
+                tmp = _recorders[name];
+            }
+            tmp->_pusher->sendMessage(std::move(audio));
+        });
     _recorders[nameMic]->_pusher->connectToTranscription();
     _recorders[nameMic]->_recorder->setActive(true);
 }
@@ -144,10 +139,11 @@ void es::transcript::Transcriptor::pushAudio(const char *name, const std::string
     _recorders[name]->_pusher->sendMessage(audio.c_str());
 }
 
-void es::transcript::Transcriptor::publishTranscript(const json &req)
+void es::transcript::Transcriptor::publishTranscript(json req)
 {
     // const char *micId = req["mic_id"].get<std::string>().c_str();
     // std::string _transcription = req["transcript"];
+    std::cerr << "name is " << req << std::endl; 
     _pluginManager->GetSubtitlesManager()->pushSubtitles(req["mic_id"].get<std::string>(), req["transcript"]);
     std::cerr << "[ASIOCLIENT]: TRANSCRIPTION SUBMITTED" << std::endl;
 }

@@ -26,9 +26,9 @@ namespace es
 
     PluginManager::~PluginManager()
     {
-        #ifdef unix
-            kill(_pyProgramPid, SIGQUIT);
-        #endif
+#ifdef unix
+        kill(_pyProgramPid, SIGQUIT);
+#endif
         this->Stop();
     }
 
@@ -52,7 +52,7 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
-        m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
 
         { // Testing functions
           // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
@@ -187,19 +187,24 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        #ifdef unix
-            pm->_pyProgramPid = fork();
+#ifdef unix
+        pm->_pyProgramPid = fork();
 
-            if (pm->_pyProgramPid == -1) {
-                perror("fork");
-                exit(EXIT_FAILURE);
-            } else if (pm->_pyProgramPid > 0) {
-                std::cout << "running obs (parent process)" << std::endl;
-            } else {
-                char *args[] = {strdup(TRANSCRIPTPATH), NULL};
-                execv(args[0], args);
-            }
-        #endif
+        if (pm->_pyProgramPid == -1)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        else if (pm->_pyProgramPid > 0)
+        {
+            std::cout << "running obs (parent process)" << std::endl;
+        }
+        else
+        {
+            char *args[] = {strdup(TRANSCRIPTPATH), NULL};
+            execv(args[0], args);
+        }
+#endif
     }
 
     int PluginManager::addRecorder(const std::string micName)
@@ -221,7 +226,8 @@ namespace es
 
     bool PluginManager::changeTimer(std::string micName, int newTimer)
     {
-        if (_recorders.find(micName) != _recorders.end()) {
+        if (_recorders.find(micName) != _recorders.end())
+        {
             _recorders[micName]->updateTimerRecord(newTimer);
             return true;
         }
@@ -232,11 +238,11 @@ namespace es
     {
         json result;
         result["data"] = {};
-        for (const auto &rec: _recorders) {
+        for (const auto &rec : _recorders)
+        {
             result["data"] += json{
                 {"micName", rec.first},
-                {"offset", rec.second->getTimerRecord()}
-            };
+                {"offset", rec.second->getTimerRecord()}};
         }
         return result;
     }

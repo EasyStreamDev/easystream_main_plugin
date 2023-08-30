@@ -27,7 +27,7 @@ namespace es::obs
         uint8_t fmt[4] = {'f', 'm', 't', ' '};
         uint32_t subChunkSize = 16;
         uint16_t audioFormat = 1;
-        uint16_t numOfChan = 2;
+        uint16_t numOfChan = 1;
         uint32_t samplesPerSec = 48000;
         uint32_t bytesPerSec = 0;
         uint16_t blockAlign = 0;
@@ -48,8 +48,8 @@ namespace es::obs
         int getTimerRecord() const;
         bool isActive() const;
         void setActive(bool);
-        void setPushFunc(std::function<void (const char *name, const std::string &)>);
-        void init(obs_source_t *input, const std::string & micName); 
+        void setPushFunc(std::function<void(const char *name, const std::string &)>);
+        void init(obs_source_t *input, const std::string &micName);
 
     private:
         std::filesystem::path _temporaryPath;
@@ -67,10 +67,7 @@ namespace es::obs
         std::string _micNameClear;
         std::atomic_int _timerRecord;
         std::atomic_bool _isActive;
-        std::function<void (const char *, const std::string &)> _push;
-
-        
-
+        std::function<void(const char *, const std::string &)> _push;
 
         void clearMicName();
     };

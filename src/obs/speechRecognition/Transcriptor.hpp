@@ -49,7 +49,7 @@ namespace es::transcript
             // void createNewTranscription(int idClient);
 
             void enableMics(json);
-            void publishTranscript(const json &);
+            void publishTranscript(json);
 
             void executeRequest();
 
