@@ -15,14 +15,14 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
 
     // blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());*
 
-    OBSSourceAutoRelease captExample = obs_get_source_by_name("testCapture");
+    // OBSSourceAutoRelease captExample = obs_get_source_by_name("testCapture");
 
-    if (captExample) {
-        OBSSourceAutoRelease displayCapture = obs_source_duplicate(captExample, "capture", false);
+    // if (captExample) {
+    //     OBSSourceAutoRelease displayCapture = obs_source_duplicate(captExample, "capture", false);
 
-        obs_source_set_monitoring_type(displayCapture, OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT);
-        obs_scene_add(obs_get_scene_by_name(name.c_str()), displayCapture);
-    }
+    //     obs_source_set_monitoring_type(displayCapture, OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT);
+    //     obs_scene_add(obs_get_scene_by_name(name.c_str()), displayCapture);
+    // }
 
     // Add scene to map.
     this->_scenes[uuid] = name;

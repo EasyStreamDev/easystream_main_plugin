@@ -22,7 +22,8 @@ namespace es::server
         m_Handler["getAllTextFields"] = &AsioTcpServer::r_GetAllTextFields;
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
         m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
-        m_Handler["getAllRecorders"] = &AsioTcpServer::r_GetAllRecorders;
+        m_Handler["getCurrentMicsTranscription"] = &AsioTcpServer::r_GetCurrentMicsTranscription;
+        // m_Handler["getAllRecorders"] = &AsioTcpServer::r_GetAllRecorders;
 
         /* Setters */
         m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;

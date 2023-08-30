@@ -19,6 +19,7 @@
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
 #include "obs/subtitles/SubtitlesManager.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
+#include "obs/speechRecognition/Transcriptor.hpp"
 
 #include "IPluginManager.hpp"
 
@@ -45,6 +46,7 @@ namespace es
         server::IServer *GetServer(void) final;
         obs::SourceTracker *GetSourceTracker(void) final;
         thread::ThreadPool *GetThreadPool(void) final;
+        transcript::Transcriptor *GetTranscriptor(void) final;
         // transcription::TranscriptorManager *GetTranscriptorManager(void) final;
         subtitles::SubtitlesManager *GetSubtitlesManager(void) final;
         int addRecorder(const std::string micName) final;
@@ -77,7 +79,9 @@ namespace es
         // std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
         std::atomic<subtitles::SubtitlesManager *> m_SubtitlesManager = nullptr;
         std::unordered_map<std::string, obs::SourceRecorder *> _recorders;
-        obs::SourceRecorder *_recorder = nullptr;
+        // obs::SourceRecorder *_recorder = nullptr;
+
+        transcript::Transcriptor *_transcriptor = nullptr;
     };
 } // namespace es
 

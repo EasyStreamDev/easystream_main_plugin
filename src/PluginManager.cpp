@@ -21,6 +21,7 @@ namespace es
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
         this->m_SubtitlesManager = new es::subtitles::SubtitlesManager();
+        _transcriptor = new es::transcript::Transcriptor();
     }
 
     PluginManager::~PluginManager()
@@ -47,8 +48,8 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
+        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
         m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
@@ -120,6 +121,11 @@ namespace es
     //     return m_TranscriptorManager;
     // }
 
+    transcript::Transcriptor *PluginManager::GetTranscriptor(void)
+    {
+        return _transcriptor;
+    }
+
     subtitles::SubtitlesManager *PluginManager::GetSubtitlesManager(void)
     {
         return m_SubtitlesManager;
@@ -157,22 +163,24 @@ namespace es
 
     void PluginManager::RunTranscriptor(void *private_data)
     {
-        // PluginManager *pm = static_cast<PluginManager *>(private_data);
+        PluginManager *pm = static_cast<PluginManager *>(private_data);
+        transcript::Transcriptor *tm = pm->_transcriptor;
         // // transcription::TranscriptorManager *tm = pm->m_TranscriptorManager.load();
 
+        tm->run(pm);
         // tm->init(pm);
         // tm->run(nullptr);
     }
 
     void PluginManager::RunRecorder(void *private_data)
     {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(2s);
-        PluginManager *pm = static_cast<PluginManager *>(private_data);
-        obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-        pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
-                                                { return 1; });
-        pm->_recorders["Mic/Aux"]->run(nullptr);
+        // using namespace std::chrono_literals;
+        // std::this_thread::sleep_for(2s);
+        // PluginManager *pm = static_cast<PluginManager *>(private_data);
+        // obs_source_t *source = obs_get_source_by_name("Mic/Aux");
+        // pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
+        //                                         { return 1; });
+        // pm->_recorders["Mic/Aux"]->run(nullptr);
     }
 
     void PluginManager::RunPyProgram(void *private_data)
@@ -196,18 +204,18 @@ namespace es
 
     int PluginManager::addRecorder(const std::string micName)
     {
-        if (_recorders.find(micName) != _recorders.end())
-            return -1;
-        obs_source_t *source = obs_get_source_by_name(micName.c_str());
-        std::cout << "Add Recorder " << micName << std::endl;
-        if (!source)
-            return -2;
-        _recorders[micName] = new obs::SourceRecorder(source, [this](const std::string &fp) -> uint
-                                                { return 1; }, micName);
-        m_ThreadPool->push([this, micName](void *) {
-            std::cout << "Ok here : " << micName << std::endl;
-            this->_recorders[std::string(micName)]->run(nullptr);
-        }, nullptr);
+        // if (_recorders.find(micName) != _recorders.end())
+        //     return -1;
+        // obs_source_t *source = obs_get_source_by_name(micName.c_str());
+        // std::cout << "Add Recorder " << micName << std::endl;
+        // if (!source)
+        //     return -2;
+        // _recorders[micName] = new obs::SourceRecorder(source, [this](const std::string &fp) -> uint
+        //                                         { return 1; }, micName);
+        // m_ThreadPool->push([this, micName](void *) {
+        //     std::cout << "Ok here : " << micName << std::endl;
+        //     this->_recorders[std::string(micName)]->run(nullptr);
+        // }, nullptr);
         return 1;
     }
 

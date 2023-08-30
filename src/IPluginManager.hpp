@@ -35,6 +35,11 @@ namespace es
         class AsioTcpServer;
     }
 
+    namespace transcript
+    {
+        class Transcriptor;
+    }
+
     namespace subtitles
     {
         class SubtitlesManager;
@@ -54,6 +59,8 @@ namespace es
         virtual thread::ThreadPool *GetThreadPool(void) = 0;
         virtual server::IServer *GetServer(void) = 0;
         virtual subtitles::SubtitlesManager *GetSubtitlesManager(void) = 0;
+        virtual transcript::Transcriptor *GetTranscriptor(void) = 0;
+
 
         //
         virtual int addRecorder(const std::string micName) = 0;
