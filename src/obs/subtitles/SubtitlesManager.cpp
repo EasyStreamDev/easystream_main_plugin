@@ -19,20 +19,23 @@ namespace es::subtitles
             while (1)
             {
                 {
-                    if (_TextFieldsTargets.empty() || _transcripts.empty())
-                    {
-                        this->thread_sleep_ms(2000);
-                        continue;
-                    }
+                    std::unique_lock lock(_mtx);
+                    _cVar.wait(lock, [this]() {
+                        return _TextFieldsTargets.empty() || _transcripts.empty();
+                    });
                 }
+                    // std::unique_lock 
+                // if (_TextFieldsTargets.empty() || _transcripts.empty())
+                // {
+                //     this->thread_sleep_ms(2000);
+                //     continue;
+                // }
                 // std::string subtitlesTranscript;
-                {
-                    while (!_transcripts.empty()) {
-                        // subtitlesTranscript += _transcripts.front()._transcript;
-                        auto tr = _transcripts.front();
-                        setTextSubtitle(tr._micName, tr._transcript);
-                        _transcripts.pop();
-                    }
+                while (!_transcripts.empty()) {
+                    // subtitlesTranscript += _transcripts.front()._transcript;
+                    auto tr = _transcripts.front();
+                    setTextSubtitle(tr._micName, tr._transcript);
+                    _transcripts.pop();
                 }
 
 
@@ -73,7 +76,7 @@ namespace es::subtitles
                 //     }
                 // }
 
-                this->thread_sleep_ms(2000);
+                // this->thread_sleep_ms(2000);
             }
         }
         catch (...)
@@ -82,7 +85,7 @@ namespace es::subtitles
         }
     }
 
-    void SubtitlesManager::setTextSubtitle(const char *micName, const std::string &tr)
+    void SubtitlesManager::setTextSubtitle(std::string micName, const std::string &tr)
     {
         for (const auto &tf : _TextFieldsTargets)
         {
@@ -139,9 +142,9 @@ namespace es::subtitles
         return json{};
     }
 
-    void SubtitlesManager::pushSubtitles(const char *micName, std::string tr)
+    void SubtitlesManager::pushSubtitles(std::string micName, std::string tr)
     {
-        std::unique_lock lock(_mtx);
+        std::unique_lock lock(_mtxP);
         _transcripts.push(transcriptInfo{micName, tr});
     }
 

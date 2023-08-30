@@ -125,15 +125,15 @@ void es::transcript::Transcriptor::enableMics(json req)
     std::string nameMic = req["mic_id"].get<std::string>();
 
     int i = req.at("port");
-    _recorders[nameMic]->_pusher->getPort();
+    // _recorders[nameMic]->_pusher->getPort();
     _recorders[nameMic]->_pusher->setPort(i);
-    _recorders[nameMic]->_recorder->setPushFunc([this] (const char *name, const std::string &audio) { 
+    _recorders[nameMic]->_recorder->setPushFunc([this] (std::string name, std::string audio) { 
         es::transcript::micsInfo *tmp = nullptr;
         {
             std::unique_lock lock(_mtxPush);
             tmp = _recorders[name];
         }
-        tmp->_pusher->sendMessage(audio.c_str());
+        tmp->_pusher->sendMessage(audio);
     });
     _recorders[nameMic]->_pusher->connectToTranscription();
     _recorders[nameMic]->_recorder->setActive(true);
@@ -148,7 +148,8 @@ void es::transcript::Transcriptor::publishTranscript(const json &req)
 {
     // const char *micId = req["mic_id"].get<std::string>().c_str();
     // std::string _transcription = req["transcript"];
-    _pluginManager->GetSubtitlesManager()->pushSubtitles(req["mic_id"].get<std::string>().c_str(), req["transcript"]);
+    _pluginManager->GetSubtitlesManager()->pushSubtitles(req["mic_id"].get<std::string>(), req["transcript"]);
+    std::cerr << "[ASIOCLIENT]: TRANSCRIPTION SUBMITTED" << std::endl;
 }
 
 void es::transcript::Transcriptor::disableSubtitlesOnMic(const char *micName)

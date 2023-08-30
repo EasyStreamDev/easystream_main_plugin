@@ -24,7 +24,7 @@ namespace es::subtitles
 
     struct transcriptInfo
     {
-        const char *_micName;
+        std::string _micName;
         std::string _transcript;
     };
 
@@ -34,10 +34,10 @@ namespace es::subtitles
         void run(void *) final;
         void updateSubtitlesSettings(const std::string &, const bool &, const std::string &);
         const std::vector<json> getSubtitlesSettings(void) const;
-        void pushSubtitles(const char *micName, std::string transcript);
-        void setSubtitles(const std::string &uuid, const std::vector<std::string> & lMics);
+        void pushSubtitles(std::string micName, std::string transcript);
+        void setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics);
     private:
-        void setTextSubtitle(const char *micName, const std::string &tr);
+        void setTextSubtitle(std::string micName, const std::string &tr);
 
 
         std::vector<text_field_data> m_TextFieldsTargets;
@@ -45,6 +45,9 @@ namespace es::subtitles
         PluginManager *m_PluginManager = nullptr;
         std::queue<transcriptInfo> _transcripts;
         std::mutex _mtx;
+        std::mutex _mtxP;
+        std::condition_variable _cVar;
+        
     };
 }
 
