@@ -2,5 +2,5 @@
 asio/1.24.0
 
 [generators]
-CMakeToolchain
-CMakeDeps
+cmake
+cmake_find_package

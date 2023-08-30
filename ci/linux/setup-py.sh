@@ -5,5 +5,4 @@ virtualenv -p python3 easyStreamEnv
 cd $easyStreamEnv
 source ./bin/activate
 cd ..
-pip install conan
-pip install tk
+pip install conan==1.59.0

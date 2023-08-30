@@ -23,7 +23,7 @@
 
 #include "IPluginManager.hpp"
 
-#ifdef linux
+#ifdef unix
     #include <string.h>
     #include <signal.h>
     #include <unistd.h>
@@ -64,7 +64,7 @@ namespace es
         static void RunPyProgram(void *);
 
     private:
-        #ifdef linux
+        #ifdef unix
             pid_t _pyProgramPid;
         #endif
         std::atomic<bool> m_Running = false;

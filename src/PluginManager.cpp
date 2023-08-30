@@ -26,7 +26,7 @@ namespace es
 
     PluginManager::~PluginManager()
     {
-        #ifdef linux
+        #ifdef unix
             kill(_pyProgramPid, SIGQUIT);
         #endif
         this->Stop();
@@ -187,7 +187,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        #ifdef linux
+        #ifdef unix
             pm->_pyProgramPid = fork();
 
             if (pm->_pyProgramPid == -1) {

@@ -5,7 +5,7 @@ on:
     branches: [main]
   push:
     branches:
-      # - "TestConan2"
+      - "TestConan2"
       - "dev"
 
 jobs:

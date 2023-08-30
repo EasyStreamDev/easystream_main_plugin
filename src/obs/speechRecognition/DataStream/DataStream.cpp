@@ -1,13 +1,13 @@
 #include "DataStream.hpp"
 
-es::transcript::DataStream::DataStream() : _port(0), _closed(true)
+es::transcript::DataStream::DataStream() : _port(0)
 {
     std::cerr << "opened DataStream" << std::endl;
 }
 
 es::transcript::DataStream::~DataStream()
 {
-#ifdef linux
+#ifdef unix
     close(_sock);
 #elif _WIN32
     if (!_closed)
@@ -39,7 +39,7 @@ bool es::transcript::DataStream::connectToTranscription()
     servAddr.sin_port = htons(_port);
     servAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-#ifdef linux
+#ifdef unix
     _sock = socket(AF_INET, SOCK_STREAM, 0);
     if (_sock == -1)
     {
@@ -84,6 +84,7 @@ bool es::transcript::DataStream::sendMessage(const char *message)
 {
     std::string mes(message);
     int toSendSize = 0;
+
     while (mes.size())
     {
         int size = mes.size() + _queue.size();
@@ -96,14 +97,14 @@ bool es::transcript::DataStream::sendMessage(const char *message)
         {
             std::string toSend = mes.substr(0, 1024 - _queue.size());
             toSendSize = toSend.size();
-            
+
             _queue += toSend;
-        #ifdef linux
+#ifdef unix
             // if (send(_sock, message, strlen(message), 0) == -1) {
             //     std::cerr << "[EASYTREAM]: could not send message to other socket" << std::endl;
             //     return false;
             // }
-        #elif _WIN32
+#elif _WIN32
             int value = send(_sock, _queue.c_str(), _queue.size(), 0);
             if (value == SOCKET_ERROR)
             {
@@ -120,7 +121,7 @@ bool es::transcript::DataStream::sendMessage(const char *message)
                 // sendMessage(mes.substr(1024 - oS).c_str());
             }
 
-        #endif
+#endif
         }
     }
     return true;
