@@ -80,30 +80,32 @@ bool es::transcript::DataStream::connectToTranscription()
     return true;
 }
 
-bool es::transcript::DataStream::sendMessage(const char *message)
+bool es::transcript::DataStream::sendMessage(std::string message)
 {
-    std::string mes(message);
     int toSendSize = 0;
 
-    while (mes.size())
+    while (message.size() != 0)
     {
-        int size = mes.size() + _queue.size();
+        int size = message.size() + _queue.size();
+
         if (size < 1024)
         {
-            _queue += mes;
+            _queue += message;
             break;
         }
         else
         {
-            std::string toSend = mes.substr(0, 1024 - _queue.size());
+            std::string toSend = message.substr(0, 1024 - _queue.size());
             toSendSize = toSend.size();
-
-            _queue += toSend;
+            _queue.append(toSend);
+            message = message.substr(toSendSize);
 #ifdef unix
-            // if (send(_sock, message, strlen(message), 0) == -1) {
-            //     std::cerr << "[EASYTREAM]: could not send message to other socket" << std::endl;
-            //     return false;
-            // }
+            size_t sentSize = send(_sock, _queue.c_str(), _queue.size(), 0);
+            if (sentSize == -1)
+            {
+                return false;
+            }
+            _queue.clear();
 #elif _WIN32
             int value = send(_sock, _queue.c_str(), _queue.size(), 0);
             if (value == SOCKET_ERROR)
@@ -113,12 +115,12 @@ bool es::transcript::DataStream::sendMessage(const char *message)
             }
             else
             {
-                std::cerr << " Message sent to socket python " << strlen(message) << " bytes against " << _queue.length() << " against " << _queue.size() << std::endl;
-                mes = mes.substr(toSendSize);
+                std::cerr << "Message sent to socket python " << strlen(message) << " bytes against " << _queue.length() << " against " << _queue.size() << std::endl;
+                message = message.substr(toSendSize);
                 // int oS = _queue.size();
                 _queue = "";
                 // std::cerr << _queue.size() <<
-                // sendMessage(mes.substr(1024 - oS).c_str());
+                // sendMessage(message.substr(1024 - oS).c_str());
             }
 
 #endif

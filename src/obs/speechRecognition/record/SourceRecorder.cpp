@@ -13,7 +13,6 @@ namespace es::obs
     SourceRecorder::SourceRecorder()
         : _headerWav(false), _isActive(false)
     {
-        std::cerr << "recorder" << std::endl;
     }
 
     SourceRecorder::~SourceRecorder()
@@ -41,7 +40,7 @@ namespace es::obs
         }
 
         // exit(84);
-        resample_info resample_to = {48000, AUDIO_FORMAT_16BIT, SPEAKERS_STEREO};
+        resample_info resample_to = {48000, AUDIO_FORMAT_16BIT, SPEAKERS_MONO};
 
         // blog(LOG_INFO, "### [MMMMMMMMMMMMMMMMMMMMMMMMMMM] %d, %d, %d", resample_to.samples_per_sec, resample_to.format, resample_to.speakers);
         if (obs_audio->samples_per_sec != resample_to.samples_per_sec || obs_audio->format != resample_to.format || obs_audio->speakers != resample_to.speakers)
@@ -60,7 +59,6 @@ namespace es::obs
         }
 
         obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
-        std::cerr << _micName << " STARTTTINNNNNNNNNNNNNNG        RECORDING            " << std::endl;
         blog(LOG_INFO, "### [SourceRecorder] - Recorder set for input: %s", obs_source_get_name(_source));
     }
 
@@ -77,21 +75,17 @@ namespace es::obs
 
     void SourceRecorder::InputAudioCaptureCallback(void *priv_data, obs_source_t *source, const struct audio_data *data, bool muted)
     {
-        // using namespace std::chrono_literals;
         SourceRecorder *self = static_cast<SourceRecorder *>(priv_data);
-        // std::cerr << "Storing data " << self->_micName << std::endl;
-        // std::cerr << "SourceRecorder Okay" << std::endl;
-        if (!self->_isActive) {
-            // std::cerr << "ACTIVE?: " << self->_isActive << " inactive" << std::endl;
+
+        if (!self->_isActive)
+        {
             return;
         }
 
         if (!data || !data->frames || !self)
         {
-            std::cerr << "no " << self->_micName << std::endl;
             return;
         }
-
 
         unsigned int size = 0;
         uint8_t *out[MAX_AV_PLANES];
@@ -117,68 +111,13 @@ namespace es::obs
             memset(out[0], 0, size);
         }
 
-        // blog(LOG_INFO, "### [SourceRecorder]--------- started");
-        // blog(LOG_INFO, "### [ts is] %ld", ts_offset);
-
-        if (!self->_headerWav)
+        for (uint32_t i = 0; i < size; ++i)
         {
-            self->_wavFile.subchunk2Size = size;
-            self->_wavFile.bytesPerSec = self->_wavFile.samplesPerSec * self->_wavFile.numOfChan * (self->_wavFile.bitsPerSample / 8);
-            self->_wavFile.blockAlign = self->_wavFile.numOfChan * (self->_wavFile.bitsPerSample / 8);
-            self->_wavFile.chunkSize = self->_wavFile.subchunk2Size + sizeof(wav_header_t) - 8;
-            self->_buffer.write(reinterpret_cast<const char *>(&self->_wavFile), sizeof(self->_wavFile));
-            self->_buffer.flush();
-            self->_headerWav = true;
-            // std::cerr << "Riff wavfile first " << self->_wavFile.chunkSize << std::endl;
-        }
-        // else
-        // {
-        //     self->_wavFile.subchunk2Size += size;
-        //     self->_wavFile.chunkSize = self->_wavFile.subchunk2Size + sizeof(wav_header_t) - 8;
-        //     auto tmp = self->_buffer.tellp();
-        //     self->_buffer.seekp(std::ios::beg);
-        //     self->_buffer.write(reinterpret_cast<const char *>(&self->_wavFile), sizeof(self->_wavFile));
-        //     self->_buffer.flush();
-        //     self->_buffer.seekp(tmp);
-        //     std::cerr << "Riff wavfile " << self->_wavFile.chunkSize << std::endl;
-        // }
-        // std::cerr << "size of the chuncks is " << size << " and frame is " << out_frames << std::endl;
-        for (uint8_t i = 0; i < size; ++i)
-        {
-            // self->_outFile.write(reinterpret_cast<const char *>(&out[0][i]), sizeof(uint8_t));
             self->_buffer.write(reinterpret_cast<const char *>(&out[0][i]), sizeof(uint8_t));
         }
 
-        // std::cerr << "Size of audio to send " << size << std::endl;
-        // self->_push(self->_micName.c_str(), self->_buffer.str());
-
-        // std::chrono::duration<float> timer = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - self->_checkPoint);
-        // if (timer.count() >= self->_timerRecord)
-        // {
-        //     // // for test
-        //     // self->_outFile.open(self->_temporaryPath.string() + "/output" + std::to_string(self->nbOutNb++) + ".wav", std::ios::binary);
-        //     // // self->_outFile.clear();
-        //     // self->_outFile << self->_buffer.str();
-        //     // self->_outFile.close();
-
-        //     // std::cout << "Storing data " << self->_temporaryPath.string() + "/" + self->_micNameClear << std::endl;
-
-        //     // for transcriptor
-            self->_outFile.open(self->_temporaryPath.string() + "/" + self->_micNameClear + ".wav", std::ios::binary);
-        //     // if (!self->_outFile.is_open())
-        //     //     std::cout << "cannot open" << std::endl;
-            // self->_outFile.clear();
-            self->_outFile << self->_buffer.str();
-            self->_outFile.close();
-            self->_buffer.str(std::string());
-        // self->_buffer.flush();
-
-        //     // self->_submitFile(self->_temporaryPath.string() + self->_micName);
-        //     // self->_buffer.clear();
-        //     self->_buffer.str(std::string());
-        //     self->_checkPoint = std::chrono::steady_clock::now();
-        // }
-        // blog(LOG_INFO, "### ---------[SourceRecorder] finished");
+        self->_push(self->_micName.c_str(), self->_buffer.str());
+        self->_buffer.str(std::string());
     }
 
     void SourceRecorder::updateTimerRecord(int newTimer)
@@ -209,7 +148,7 @@ namespace es::obs
 
     void SourceRecorder::setActive(bool act)
     {
-        std::cerr << "je desactive ou active " << act << std::endl; 
+        std::cerr << "Je desactive ou active " << act << std::endl;
         _isActive = act;
     }
 

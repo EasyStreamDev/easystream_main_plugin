@@ -33,7 +33,8 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
             {"uuid", obs_source_get_uuid(scene_item_source)},
             {"name", obs_source_get_name(scene_item_source)},
         });
-        std::cerr << "Text Field Created: UUID: " << obs_source_get_uuid(scene_item_source) << std::endl;
+        std::cerr << "Text Field Created: " << obs_source_get_name(scene_item_source) << std::endl;
+        std::cerr << "\tUUID: " << obs_source_get_uuid(scene_item_source) << std::endl;
     }
 }
 

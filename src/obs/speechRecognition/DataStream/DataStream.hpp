@@ -19,7 +19,7 @@ namespace es::transcript
         ~DataStream();
 
         bool connectToTranscription();
-        bool sendMessage(const char *);
+        bool sendMessage(std::string);
         // bool sendMessage(const uint);
         void setPort(int);
         int getPort() const;
