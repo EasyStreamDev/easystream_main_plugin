@@ -92,7 +92,6 @@ namespace es::subtitles
     {
         for (const auto &tf : _TextFieldsTargets)
         {
-            std::cerr << micName << "  " << tf.second.linkedMics << std::endl;
             if (tf.second.linkedMics.find(micName) == tf.second.linkedMics.npos)
                 continue;
             obs_source_t *tf_source = obs_get_source_by_uuid(tf.first.c_str());
@@ -133,19 +132,27 @@ namespace es::subtitles
     json SubtitlesManager::getSubtitlesSettings(void) const
     {
         json ret;
-
-        for (const text_field_data &tf : m_TextFieldsTargets)
+        std::vector<json> text_fields;
         {
-            // std::vector<std::string> linkedMics;
+            std::unique_lock lock(_mtxP);
+            for (const auto &tf : _TextFieldsTargets)
+            {
+                if (tf.second.linkedMicsVec.empty())
+                    continue;
+                // std::vector<std::string> linkedMics;
 
-            // for (std::size_t i = 0, j = tf.linkedMics.find(';'), )
-            ret += json{
-                {"uuid", tf.uuid},
-                {"name", tf.name},
-                {"linked_mics", tf.linkedMicsVec}
-                // {"language", "to_be_ignored_for_now"},
-            };
+                // for (std::size_t i = 0, j = tf.linkedMics.find(';'), )
+                text_fields.push_back(json{
+                    {"uuid", tf.second.uuid},
+                    {"name", tf.second.name},
+                    {"linked_mics", tf.second.linkedMicsVec}
+                    // {"language", "to_be_ignored_for_now"},
+                });
+                // ret["text_fields"] += ;
+            }
+            ret["length"] = _TextFieldsTargets.size();
         }
+        ret["text_fields"] = text_fields;
         return ret;
     }
 
@@ -169,19 +176,16 @@ namespace es::subtitles
             if (tField.linkedMics.find(m) == tField.linkedMics.npos)
                 tm->enableSubtitlesOnMic(m.c_str());
         }
-        tField.linkedMics = mics;
-        tField.linkedMicsVec = lMics;
         for (size_t i = 0, j = tField.linkedMics.find(';'); i < tField.linkedMics.size() && j != tField.linkedMics.npos; i = j + 1, j = tField.linkedMics.find(';', j + 1))
         {
             std::string m = tField.linkedMics.substr(i, j - i);
 
-            std::cerr << "new micName to add or to remove " << m << std::endl;
-            if (!tField.linkedMics.empty() && mics.find(m) == mics.npos) {
-                tm->disableSubtitlesOnMic(m.c_str());
+            if (mics.find(m) == mics.npos) {
+                tm->disableSubtitlesOnMic(m);
             }
         }
-
-        std::cerr << "Subtitles Manager: added succesfully mic" << std::endl;
+        tField.linkedMics = mics;
+        tField.linkedMicsVec = lMics;
         obs_source_release(source);
     }
 }

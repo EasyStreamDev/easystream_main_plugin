@@ -67,7 +67,6 @@ void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName)
         {"command", "createSTTStream"},
         {"params", {{"bit_depth", 16}, {"sample_rate", 48000}, {"stereo", true}, {"mic_id", it.first->first}}}};
     _tcpCli.writeMessage(message.dump().c_str());
-    std::cerr << "Transcriptor, succesfully created transcription for mic " << micName << std::endl;
     // TcpClient send message for new transcription
 }
 
@@ -143,15 +142,19 @@ void es::transcript::Transcriptor::publishTranscript(json req)
 {
     // const char *micId = req["mic_id"].get<std::string>().c_str();
     // std::string _transcription = req["transcript"];
-    std::cerr << "name is " << req << std::endl; 
     _pluginManager->GetSubtitlesManager()->pushSubtitles(req["mic_id"].get<std::string>(), req["transcript"]);
-    std::cerr << "[ASIOCLIENT]: TRANSCRIPTION SUBMITTED" << std::endl;
 }
 
-void es::transcript::Transcriptor::disableSubtitlesOnMic(const char *micName)
+void es::transcript::Transcriptor::disableSubtitlesOnMic(std::string micName)
 {
-    _recorders[micName]->_nbTextFieldLinked -= 1;
+    {
+        std::unique_lock lock(_mtxPush);
+        _recorders[micName]->_nbTextFieldLinked -= 1;
 
-    if (_recorders[micName]->_nbTextFieldLinked == 0 && _recorders[micName]->_isEnableWordDetection)
-        _recorders[micName]->_recorder->setActive(false);
+
+        if (_recorders[micName]->_nbTextFieldLinked <= 0 && !_recorders[micName]->_isEnableWordDetection) {
+            _recorders[micName]->_recorder->setActive(false);
+            _recorders[micName]->_pusher->disconnectSocket();
+        }
+    }
 }

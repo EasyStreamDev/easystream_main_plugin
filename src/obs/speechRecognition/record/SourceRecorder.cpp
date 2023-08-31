@@ -148,7 +148,6 @@ namespace es::obs
 
     void SourceRecorder::setActive(bool act)
     {
-        std::cerr << "Je desactive ou active " << act << std::endl;
         _isActive = act;
     }
 

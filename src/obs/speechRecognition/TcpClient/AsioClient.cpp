@@ -12,22 +12,18 @@ bool es::transcript::AsioClient::connectToServer()
         asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("127.0.0.1", "47921");
 
         asio::connect(_sock, endpoints);
-        std::cerr << "AsioClient Okay" << std::endl;
         return true;
     } catch (const asio::system_error &e) {
         std::cerr << "[EASYSTREAM TCP CLIENT]: could not connect to echostra" << std::endl;
-        // std::cerr << "AsioClient Okay" << std::endl;
         return false;
     }
 }
 
 void es::transcript::AsioClient::readMessage()
 {
-    std::cerr << "readMessage before" << std::endl;
     if (!_running)
         return;
 
-    std::cerr << "readMessage" << std::endl;
     std::memset(_read, 0, MSGMAX);
     asio::error_code ec;
 
@@ -44,7 +40,7 @@ void es::transcript::AsioClient::readMessage()
         }
     } else if (ec == asio::error::eof) {
         std::cerr << "[EASYSTREAM TCP CLIENT]: Server disconnected or has ended connection" << std::endl;
-        return readMessage();
+        // return readMessage();
     }
     std::cerr << "[EASYSTREAM TCP CLIENT]: error reading message: " << ec.message() << std::endl;
     return readMessage();

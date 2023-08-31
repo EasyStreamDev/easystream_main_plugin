@@ -46,7 +46,7 @@ namespace es::subtitles
         PluginManager *m_PluginManager = nullptr;
         std::queue<transcriptInfo> _transcripts;
         std::mutex _mtx;
-        std::mutex _mtxP;
+        mutable std::mutex _mtxP;
         std::condition_variable _cVar;
         
     };

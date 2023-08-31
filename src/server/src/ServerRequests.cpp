@@ -286,7 +286,6 @@ namespace es::server
         //     enable,               // enable/disable parameter
         //     tf->second.at("name") // text field name in obs
         // );
-        std::cerr << "Server request value name: " << _lMics[0] << std::endl;
         m_PluginManager->GetSubtitlesManager()->setSubtitles(target_uuid, _lMics);
 
         m_OutRequestQueue.ts_push(std::make_pair(

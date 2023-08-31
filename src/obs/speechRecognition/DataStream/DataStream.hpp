@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <mutex>
 
 #ifdef unix
 #include <unistd.h>
@@ -23,16 +24,18 @@ namespace es::transcript
         // bool sendMessage(const uint);
         void setPort(int);
         int getPort() const;
+        void disconnectSocket();
 
     private:
-        int _port;
+        std::atomic_int _port;
         std::string _queue;
+        std::mutex _mtx;
+        std::atomic_bool _closed = true;
 #ifdef unix
         int _sock = 0;
 #elif _WIN32
         SOCKET _sock;
         WSADATA _wsaData;
-        bool _closed = true;
 #endif
     };
 }
