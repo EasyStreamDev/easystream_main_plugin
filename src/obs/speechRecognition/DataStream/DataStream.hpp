@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <mutex>
+#include <atomic>
 
 #ifdef unix
 #include <unistd.h>
