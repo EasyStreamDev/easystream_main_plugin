@@ -130,20 +130,23 @@ namespace es::subtitles
         // }
     }
 
-    const std::vector<json> SubtitlesManager::getSubtitlesSettings(void) const
+    json SubtitlesManager::getSubtitlesSettings(void) const
     {
-        // std::vector<json> ret;
+        json ret;
 
-        // for (const text_field_data tf : m_TextFieldsTargets)
-        // {
-        //     ret.push_back({
-        //         {"uuid", tf.uuid},
-        //         {"name", tf.name},
-        //         // {"language", "to_be_ignored_for_now"},
-        //     });
-        // }
+        for (const text_field_data &tf : m_TextFieldsTargets)
+        {
+            // std::vector<std::string> linkedMics;
 
-        return json{};
+            // for (std::size_t i = 0, j = tf.linkedMics.find(';'), )
+            ret += json{
+                {"uuid", tf.uuid},
+                {"name", tf.name},
+                {"linked_mics", tf.linkedMicsVec}
+                // {"language", "to_be_ignored_for_now"},
+            };
+        }
+        return ret;
     }
 
     void SubtitlesManager::pushSubtitles(std::string micName, std::string tr)
@@ -156,10 +159,10 @@ namespace es::subtitles
     void SubtitlesManager::setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics)
     {
         std::string mics;
-        text_field_data &tField = _TextFieldsTargets.emplace(uuid, text_field_data{uuid, ""}).first->second;
+        obs_source_t *source = obs_get_source_by_uuid(uuid.c_str());
+        text_field_data &tField = _TextFieldsTargets.emplace(uuid, text_field_data{uuid, obs_source_get_name(source) , ""}).first->second;
         transcript::Transcriptor *tm = m_PluginManager->GetTranscriptor();
 
-        
         for (const auto &m : lMics)
         {
             mics += m + ";";
@@ -167,6 +170,7 @@ namespace es::subtitles
                 tm->enableSubtitlesOnMic(m.c_str());
         }
         tField.linkedMics = mics;
+        tField.linkedMicsVec = lMics;
         for (size_t i = 0, j = tField.linkedMics.find(';'); i < tField.linkedMics.size() && j != tField.linkedMics.npos; i = j + 1, j = tField.linkedMics.find(';', j + 1))
         {
             std::string m = tField.linkedMics.substr(i, j - i);
@@ -178,5 +182,6 @@ namespace es::subtitles
         }
 
         std::cerr << "Subtitles Manager: added succesfully mic" << std::endl;
+        obs_source_release(source);
     }
 }
