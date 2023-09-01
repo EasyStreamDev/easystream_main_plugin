@@ -14,7 +14,7 @@ es::transcript::DataStream::~DataStream()
         closesocket(_sock);
         WSACleanup();
 #endif
-}
+    }
 }
 
 int es::transcript::DataStream::getPort() const
@@ -83,12 +83,12 @@ bool es::transcript::DataStream::connectToTranscription()
 
 void es::transcript::DataStream::disconnectSocket()
 {
-    #ifdef unix
-        close(_sock);
-    #elif _WIN32
-        closesocket(_sock);
-        // WSACleanup();
-    #endif
+#ifdef unix
+    close(_sock);
+#elif _WIN32
+    closesocket(_sock);
+    // WSACleanup();
+#endif
     _closed = true;
 }
 
