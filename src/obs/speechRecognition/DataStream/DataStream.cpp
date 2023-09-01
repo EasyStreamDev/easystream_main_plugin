@@ -1,6 +1,6 @@
 #include "DataStream.hpp"
 
-es::transcript::DataStream::DataStream() : _port(0)
+es::transcript::DataStream::DataStream() : _port(0), _closed(true)
 {
 }
 
@@ -13,8 +13,8 @@ es::transcript::DataStream::~DataStream()
 #elif _WIN32
         closesocket(_sock);
         WSACleanup();
-    }
 #endif
+}
 }
 
 int es::transcript::DataStream::getPort() const

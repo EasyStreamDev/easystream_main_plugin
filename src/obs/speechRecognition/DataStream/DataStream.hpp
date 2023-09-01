@@ -31,7 +31,7 @@ namespace es::transcript
         std::atomic_int _port;
         std::string _queue;
         std::mutex _mtx;
-        std::atomic_bool _closed = true;
+        std::atomic_bool _closed;
 #ifdef unix
         int _sock = 0;
 #elif _WIN32
