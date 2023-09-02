@@ -135,7 +135,7 @@ void es::transcript::Transcriptor::enableMics(json req)
 
 void es::transcript::Transcriptor::pushAudio(const char *name, const std::string &audio)
 {
-    _recorders[name]->_pusher->sendMessage(audio.c_str());
+    _recorders[name]->_pusher->sendMessage(audio);
 }
 
 void es::transcript::Transcriptor::publishTranscript(json req)
@@ -143,6 +143,7 @@ void es::transcript::Transcriptor::publishTranscript(json req)
     // const char *micId = req["mic_id"].get<std::string>().c_str();
     // std::string _transcription = req["transcript"];
     _pluginManager->GetSubtitlesManager()->pushSubtitles(req["mic_id"].get<std::string>(), req["transcript"]);
+    _pluginManager->GetAreaMain()->AddWords(req["transcript"]);
 }
 
 void es::transcript::Transcriptor::disableSubtitlesOnMic(std::string micName)

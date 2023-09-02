@@ -44,6 +44,13 @@ namespace es::area
         //     }
         // }
 
+        for (const auto &w: _words) {
+            if (_sentence.find(w) != _sentence.npos) {
+                _isTrue = true;
+                return;
+            }
+        }
+
         // for (const std::string word : this->_words)
         // {
         //     if (str.find(word) != std::string::npos)
@@ -60,5 +67,10 @@ namespace es::area
             _id,
             ActionType::WORD_DETECT,
             {{"words", this->_words}}};
+    }
+
+    void ActionWordDetect::publishTranscription(const std::string &s)
+    {
+        _sentence = s;
     }
 }

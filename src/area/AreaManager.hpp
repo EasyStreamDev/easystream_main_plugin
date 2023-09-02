@@ -23,7 +23,9 @@
 #include "reactions/ReactionRecordingStop.hpp"
 #include "reactions/ReactionStreamStart.hpp"
 #include "reactions/ReactionStreamStop.hpp"
-#include <shared_mutex>
+// #include <shared_mutex>
+#include <mutex>
+#include <queue>
 
 namespace es::area
 {
@@ -63,7 +65,7 @@ namespace es::area
 
         void Update();
         void AddAction(Action *action);
-        void AddWords(std::vector<std::string>);
+        void AddWords(const std::string &);
         const bool RemoveAction(const size_t &id);
         const bool AreaExists(const size_t &id);
 
@@ -86,8 +88,9 @@ namespace es::area
     private:
         std::mutex _actions_mutex;
         std::unordered_map<size_t, Action *> _actions;
-        std::shared_mutex _wordMutex;
-        std::vector<std::string> _words;
+        std::mutex _mtx;
+        std::queue<std::string> _words;
+        // std::queue<std::strin
     };
 }
 

@@ -20,9 +20,11 @@ namespace es::area
 
         virtual void Solve() override;
         virtual es::area::action_t ToStruct() override;
+        void publishTranscription(const std::string &);
 
     protected:
     private:
+        std::string _sentence;
         std::vector<std::string> _words;
     };
 }

@@ -33,11 +33,23 @@ namespace es::area
 
     void AreaManager::Update()
     {
+        std::string sentence;
         this->_actions_mutex.lock();
+        {
+            if (!_words.empty()) {
+                std::lock_guard lock(_mtx);
+                sentence = _words.front();
+                _words.pop();
+            }
+        }
         for (auto it : _actions)
         {
             Action *action = it.second;
+            auto tmp = action->ToStruct();
 
+            if (tmp.type == area::ActionType::WORD_DETECT) {
+                static_cast<ActionWordDetect *>(action)->publishTranscription(sentence);
+            }
             action->Solve();
             if (action->IsTrue())
             {
@@ -45,14 +57,14 @@ namespace es::area
             }
             action->Reset();
         }
-        _words.clear();
+        // _words.clear();
         this->_actions_mutex.unlock();
     }
 
-    void AreaManager::AddWords(std::vector<std::string> words)
+    void AreaManager::AddWords(const std::string &w)
     {
-        std::unique_lock lock(_wordMutex);
-        _words = words;
+        std::unique_lock lock(_mtx);
+        _words.push(w);
     }
 
     void AreaManager::AddAction(Action *action)
