@@ -41,6 +41,7 @@ namespace es::user
         m_Inputs = es::utils::obs::listHelper::GetInputList();
         m_Outputs = es::utils::obs::listHelper::GetOutputList();
 
+        if (false)
         { /* DISPLAY PART */
 
             std::cout << "\n------------------------------" << std::endl;
@@ -102,5 +103,44 @@ namespace es::user
             //     std::cout << "############### " << v << std::endl;
             // }
         }
+    }
+
+    const json UserProfile::getData(void)
+    {
+        this->update();
+
+        return json{
+            {"video_settings",
+             {
+                 {"frame_rate",
+                  {
+                      {"numerator", m_VideoSettings.fps_numerator},
+                      {"denominator", m_VideoSettings.fps_denominator},
+                      {"frame_rate", (float)m_VideoSettings.fps_numerator / (float)m_VideoSettings.fps_denominator},
+                  }},
+                 {"output_dimensions",
+                  {
+                      {"width", m_VideoSettings.output_dimensions.x},
+                      {"height", m_VideoSettings.output_dimensions.y},
+                  }},
+                 {"colors",
+                  {
+                      {"colorspace", m_VideoSettings.colorspace},
+                      {"colorspace_index", m_VideoSettings.colorspace_index},
+                      {"color_range", m_VideoSettings.color_range},
+                      {"color_range_index", m_VideoSettings.color_range_index},
+                      {"color_format", m_VideoSettings.color_format},
+                      {"color_format_index", m_VideoSettings.color_format_index},
+                  }},
+             }},
+            {"audio_settings",
+             {
+                 {"format_index", m_AudioSettings.format_enum},
+                 {"sample_rate", m_AudioSettings.sample_rate},
+                 {"channels", m_AudioSettings.channels},
+             }},
+            {"inputs", m_Inputs},
+            {"outputs", m_Outputs},
+        };
     }
 }

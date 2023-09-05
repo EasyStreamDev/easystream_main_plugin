@@ -50,7 +50,7 @@ namespace es::testing
         while (1)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(5 * 1000));
-            up.update();
+            std::cerr << up.getData() << std::endl;
         }
     }
 }

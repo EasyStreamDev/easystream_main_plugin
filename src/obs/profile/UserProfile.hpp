@@ -46,6 +46,7 @@ namespace es::user
     public:
         UserProfile();
         void update(void);
+        const json getData(void);
 
     private:
         video_settings_t m_VideoSettings;
