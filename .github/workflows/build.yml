@@ -5,7 +5,7 @@ on:
     branches: [main]
   push:
     branches:
-      # - "testvcpkg"
+      - "TestConan2"
       - "dev"
 
 jobs:
@@ -53,14 +53,14 @@ jobs:
           vs-version: '['
       - name: "Checkout"
         uses: actions/checkout@v2.3.3
-      # - name: "Restore QT dependency from cache"
-      #   id: qt-cache
-      #   uses: actions/cache@v2.1.2
-      #   env:
-      #     CACHE_NAME: "windows-qt-cache"
-      #   with:
-      #     path: ${{ github.workspace }}/cmbuild/QT
-      #     key: ${{ runner.os }}-pr-${{ env.CACHE_NAME }}-${{ env.QT_VERSION }}
+      - name: "Restore QT dependency from cache"
+        id: qt-cache
+        uses: actions/cache@v2.1.2
+        env:
+          CACHE_NAME: "windows-qt-cache"
+        with:
+          path: ${{ github.workspace }}/cmbuild/QT
+          key: ${{ runner.os }}-pr-${{ env.CACHE_NAME }}-${{ env.QT_VERSION }}
       - name: "Build OBS"
         working-directory: ${{github.workspace}}
         run: |

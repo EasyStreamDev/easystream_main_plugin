@@ -49,24 +49,15 @@ function printUsage {
 function buildEasyStream {
     Set-Location $rootDir
 
-    Write-Output $rootDir
-    # Write-Output $rootDir
     if (Test-Path -Path "${rootDir}/build") {
         Get-ChildItem "build" -Recurse | Remove-Item -Force -Recurse
     } else {
         mkdir "${rootDir}/build"
     }
     Set-Location "${rootDir}/build"
-    Write-Output "===================================================================Location=========================================="
-    Get-Location
-    if (Test-Path -Path "${rootDir}/../utils/windows") {
-        Write-Output "It exits"
-    }
     if ($BuildType -eq "Release") {
-        conan.exe install ../utils/windows/cpprestsdk/ --profile ../utils/windows/windowsRelease --build=missing
         conan.exe install ../utils/windows/ --profile ../utils/windows/windowsRelease --build=missing
     } else {
-        conan.exe install ../utils/windows/cpprestsdk/ --profile ../utils/windows/windowsDebug --build=missing
         conan.exe install ../utils/windows/ --profile ../utils/windows/windowsDebug --build=missing
     }
     cmake -G "Visual Studio 17 2022" .. -DCMAKE_BUILD_TYPE="$BuildTypeObs"
@@ -85,12 +76,7 @@ function main {
         installConan
     }
     if ($CloneObs.IsPresent) {
-        if ($PSBoundParameters.ContainsKey('BuildArch')) {
-            getObs -obsFolder $obsFolder -Arch $BuildTypeObs
-        } else {
-            $arch = ('x86', 'x64')[[System.Environment]::Is64BitOperatingSystem]
-            getObs -obsFolder $obsFolder -Arch $arch -buildMode $BuildTypeObs
-        }
+        getObs -obsFolder $obsFolder -buildMode $BuildTypeObs
     }
     buildEasyStream
 

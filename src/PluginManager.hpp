@@ -18,13 +18,18 @@
 #include "obs/SourceTracker.hpp"
 #include "obs/sceneSwitcherAI/SceneSwitcherAI.hpp"
 #include "obs/subtitles/SubtitlesManager.hpp"
-#include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
+#include "obs/speechRecognition/Transcriptor.hpp"
 
 #include "obs/profile/UserProfile.hpp"
 
 #include "IPluginManager.hpp"
 
+#ifdef unix
+    #include <string.h>
+    #include <signal.h>
+    #include <unistd.h>
+#endif
 namespace es
 {
     class PluginManager : public IPluginManager
@@ -43,7 +48,8 @@ namespace es
         server::IServer *GetServer(void) final;
         obs::SourceTracker *GetSourceTracker(void) final;
         thread::ThreadPool *GetThreadPool(void) final;
-        transcription::TranscriptorManager *GetTranscriptorManager(void) final;
+        transcript::Transcriptor *GetTranscriptor(void) final;
+        // transcription::TranscriptorManager *GetTranscriptorManager(void) final;
         subtitles::SubtitlesManager *GetSubtitlesManager(void) final;
         int addRecorder(const std::string micName) final;
         bool changeTimer(std::string micName, int newTimer) final;
@@ -57,8 +63,12 @@ namespace es
         static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
         static void RunRecorder(void *);
+        static void RunPyProgram(void *);
 
     private:
+        #ifdef unix
+            pid_t _pyProgramPid;
+        #endif
         std::atomic<bool> m_Running = false;
 
         obs::SourceTracker *m_SourceTracker = nullptr; // @dev : should auto-leveler be separate runnable ?
@@ -68,10 +78,12 @@ namespace es
         // Runnable
         std::atomic<area::AreaManager *> m_AreaManager = nullptr;
         std::atomic<server::AsioTcpServer *> m_Server = nullptr;
-        std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
+        // std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
         std::atomic<subtitles::SubtitlesManager *> m_SubtitlesManager = nullptr;
         std::unordered_map<std::string, obs::SourceRecorder *> _recorders;
-        obs::SourceRecorder *_recorder = nullptr;
+        // obs::SourceRecorder *_recorder = nullptr;
+
+        transcript::Transcriptor *_transcriptor = nullptr;
     };
 } // namespace es
 

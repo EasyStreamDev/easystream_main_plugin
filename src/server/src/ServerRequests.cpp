@@ -17,7 +17,7 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", subtitlesSettings)));
     }
 
-    void AsioTcpServer::r_GetAllRecorders(const json &req, Shared<AsioTcpConnection> con)
+    void AsioTcpServer::r_GetCurrentMicsTranscription(const json &req, Shared<AsioTcpConnection> con)
     {
         const json response_data = m_PluginManager->getAllRecorders();
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
@@ -261,7 +261,8 @@ namespace es::server
     void AsioTcpServer::r_SetSubtitles(const json &j, Shared<AsioTcpConnection> con)
     {
         const json &params = j.at("params");
-        const bool &enable = params.at("enable");
+        // const bool &enable = params.at("enable");
+        const std::vector<std::string> _lMics = params.at("linked_mics");
         const std::string &target_uuid = params.at("uuid");
         const auto &tf_map = m_PluginManager->GetSourceTracker()->getTextFieldMap();
 
@@ -276,11 +277,12 @@ namespace es::server
             return;
         }
 
-        m_PluginManager->GetSubtitlesManager()->updateSubtitlesSettings(
-            target_uuid,          // text field uuid
-            enable,               // enable/disable parameter
-            tf->second.at("name") // text field name in obs
-        );
+        // m_PluginManager->GetSubtitlesManager()->updateSubtitlesSettings(
+        //     target_uuid,          // text field uuid
+        //     enable,               // enable/disable parameter
+        //     tf->second.at("name") // text field name in obs
+        // );
+        m_PluginManager->GetSubtitlesManager()->setSubtitles(target_uuid, _lMics);
 
         m_OutRequestQueue.ts_push(std::make_pair(
             con,

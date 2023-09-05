@@ -23,7 +23,9 @@
 #include "reactions/ReactionRecordingStop.hpp"
 #include "reactions/ReactionStreamStart.hpp"
 #include "reactions/ReactionStreamStop.hpp"
-#include <shared_mutex>
+// #include <shared_mutex>
+#include <mutex>
+#include <queue>
 
 namespace es::area
 {
@@ -37,10 +39,7 @@ namespace es::area
                 {area::ActionType::APP_LAUNCH, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action *
                  { return new ActionAppLaunch(reaction, area_id, param); }},
                 {area::ActionType::WORD_DETECT, [this] (Reaction *reaction, const size_t &area_id, const json &param) -> Action *
-                 { return new ActionWordDetect(reaction, area_id, param, [this] () -> std::vector<std::string> {
-                    std::shared_lock lock(_wordMutex);
-                    return _words;
-                 }); }},
+                 { return new ActionWordDetect(reaction, area_id, param); }},
             };
         const std::unordered_map<area::ReactionType, std::function<Reaction *(const size_t &, const std::string &, const json &)>>
             REACTION_TYPE_TO_CREATE_FUNC = {
@@ -66,7 +65,7 @@ namespace es::area
 
         void Update();
         void AddAction(Action *action);
-        void AddWords(std::vector<std::string>);
+        void AddWords(const std::string &);
         const bool RemoveAction(const size_t &id);
         const bool AreaExists(const size_t &id);
 
@@ -89,8 +88,9 @@ namespace es::area
     private:
         std::mutex _actions_mutex;
         std::unordered_map<size_t, Action *> _actions;
-        std::shared_mutex _wordMutex;
-        std::vector<std::string> _words;
+        std::mutex _mtx;
+        std::queue<std::string> _words;
+        // std::queue<std::strin
     };
 }
 

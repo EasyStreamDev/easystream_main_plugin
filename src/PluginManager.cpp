@@ -9,40 +9,6 @@
 
 namespace es::testing
 {
-    void test_transcription_submit(void *private_data)
-    {
-        PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
-
-        const std::string full_path_base = "/home/yem/delivery/Epitech/EIP/easystream_main_plugin/Tests/ressources/";
-        const std::vector<std::string> paths = {
-            full_path_base + "league.wav",
-            full_path_base + "sweden.wav",
-            full_path_base + "untitled.wav"};
-
-        while (1)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
-            std::string file_path = paths[rand() % paths.size()];
-
-            tm->submit(file_path);
-            std::cerr << "[TEST SUBMIT TRANSCRIPT]\n--- Submitted: " << file_path.substr(71, file_path.length()) << std::endl;
-        }
-    }
-
-    void test_transcription_results(void *private_data)
-    {
-        PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcription::TranscriptorManager *tm = pm->GetTranscriptorManager();
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(3 * 1000));
-        while (1)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(15 * 1000));
-            auto container = tm->getTranscription();
-        }
-    }
-
     void test_user_profile(void *private_data)
     {
         user::UserProfile up;
@@ -50,7 +16,7 @@ namespace es::testing
         while (1)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(5 * 1000));
-            std::cerr << up.getData() << std::endl;
+            std::cerr << up.getData().dump(4) << std::endl;
         }
     }
 }
@@ -61,16 +27,17 @@ namespace es
         : m_AreaManager(new es::area::AreaManager()),
           m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
-        this->m_TranscriptorManager = new es::transcription::TranscriptorManager(
-            [this](std::vector<std::string> words)
-            { this->GetAreaMain()->AddWords(words); });
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
         this->m_SubtitlesManager = new es::subtitles::SubtitlesManager();
+        _transcriptor = new es::transcript::Transcriptor();
     }
 
     PluginManager::~PluginManager()
     {
+#ifdef unix
+        kill(_pyProgramPid, SIGQUIT);
+#endif
         this->Stop();
     }
 
@@ -90,10 +57,11 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
+        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
 
         { // Testing functions
             m_ThreadPool->push(std::function(testing::test_user_profile), this);
@@ -158,9 +126,14 @@ namespace es
         return m_ThreadPool;
     }
 
-    transcription::TranscriptorManager *PluginManager::GetTranscriptorManager(void)
+    // transcription::TranscriptorManager *PluginManager::GetTranscriptorManager(void)
+    // {
+    //     return m_TranscriptorManager;
+    // }
+
+    transcript::Transcriptor *PluginManager::GetTranscriptor(void)
     {
-        return m_TranscriptorManager;
+        return _transcriptor;
     }
 
     subtitles::SubtitlesManager *PluginManager::GetSubtitlesManager(void)
@@ -201,40 +174,63 @@ namespace es
     void PluginManager::RunTranscriptor(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcription::TranscriptorManager *tm = pm->m_TranscriptorManager.load();
+        transcript::Transcriptor *tm = pm->_transcriptor;
+        // // transcription::TranscriptorManager *tm = pm->m_TranscriptorManager.load();
 
-        tm->init(pm);
-        tm->run(nullptr);
+        tm->run(pm);
+        // tm->init(pm);
+        // tm->run(nullptr);
     }
 
     void PluginManager::RunRecorder(void *private_data)
     {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(2s);
+        // using namespace std::chrono_literals;
+        // std::this_thread::sleep_for(2s);
+        // PluginManager *pm = static_cast<PluginManager *>(private_data);
+        // obs_source_t *source = obs_get_source_by_name("Mic/Aux");
+        // pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
+        //                                         { return 1; });
+        // pm->_recorders["Mic/Aux"]->run(nullptr);
+    }
+
+    void PluginManager::RunPyProgram(void *private_data)
+    {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
-        obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-        pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
-                                                            { return 1; });
-        pm->_recorders["Mic/Aux"]->run(nullptr);
+
+#ifdef unix
+        pm->_pyProgramPid = fork();
+
+        if (pm->_pyProgramPid == -1)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        else if (pm->_pyProgramPid > 0)
+        {
+            std::cout << "running obs (parent process)" << std::endl;
+        }
+        else
+        {
+            char *args[] = {strdup(TRANSCRIPTPATH), NULL};
+            execv(args[0], args);
+        }
+#endif
     }
 
     int PluginManager::addRecorder(const std::string micName)
     {
-        if (_recorders.find(micName) != _recorders.end())
-            return -1;
-        obs_source_t *source = obs_get_source_by_name(micName.c_str());
-        std::cout << "Add Recorder " << micName << std::endl;
-        if (!source)
-            return -2;
-        _recorders[micName] = new obs::SourceRecorder(
-            source, [this](const std::string &fp) -> uint
-            { return 1; },
-            micName);
-        m_ThreadPool->push([this, micName](void *)
-                           {
-            std::cout << "Ok here : " << micName << std::endl;
-            this->_recorders[std::string(micName)]->run(nullptr); },
-                           nullptr);
+        // if (_recorders.find(micName) != _recorders.end())
+        //     return -1;
+        // obs_source_t *source = obs_get_source_by_name(micName.c_str());
+        // std::cout << "Add Recorder " << micName << std::endl;
+        // if (!source)
+        //     return -2;
+        // _recorders[micName] = new obs::SourceRecorder(source, [this](const std::string &fp) -> uint
+        //                                         { return 1; }, micName);
+        // m_ThreadPool->push([this, micName](void *) {
+        //     std::cout << "Ok here : " << micName << std::endl;
+        //     this->_recorders[std::string(micName)]->run(nullptr);
+        // }, nullptr);
         return 1;
     }
 

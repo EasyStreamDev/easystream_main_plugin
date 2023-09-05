@@ -15,16 +15,17 @@ namespace es::area
     class ActionWordDetect : public Action
     {
     public:
-        ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param, const std::function<std::vector<std::string> ()> &);
+        ActionWordDetect(Reaction *reaction, const size_t &area_id, const json &param);
         ~ActionWordDetect();
 
         virtual void Solve() override;
         virtual es::area::action_t ToStruct() override;
+        void publishTranscription(const std::string &);
 
     protected:
     private:
+        std::string _sentence;
         std::vector<std::string> _words;
-        std::function<std::vector<std::string> ()> _getTranscriptWords;
     };
 }
 

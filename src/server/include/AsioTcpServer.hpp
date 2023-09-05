@@ -99,7 +99,9 @@ namespace es::server
         void r_GetAllScenes(const json &, Shared<AsioTcpConnection>);
         void r_GetAllTextFields(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
-        void r_GetAllRecorders(const json &, Shared<AsioTcpConnection>);
+        void r_GetCurrentMicsTranscription(const json &, Shared<AsioTcpConnection>);
+        // void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
+        // void r_GetAllRecorders(const json &, Shared<AsioTcpConnection>);
         void r_broadcastArea();
         // --- SET requests
         void r_SetNewRecorder(const json &, Shared<AsioTcpConnection>);
