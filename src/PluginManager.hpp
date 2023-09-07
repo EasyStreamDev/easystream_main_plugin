@@ -61,7 +61,7 @@ namespace es
         static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
         static void RunRecorder(void *);
-        static void RunPyProgram(void *);
+        static void RunEchostra(void *);
 
     private:
         #ifdef unix

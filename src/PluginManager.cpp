@@ -27,7 +27,7 @@ namespace es
     PluginManager::~PluginManager()
     {
 #ifdef unix
-        kill(_pyProgramPid, SIGQUIT);
+        kill(_pyProgramPid, 9);
 #endif
         this->Stop();
     }
@@ -52,7 +52,7 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunEchostra), this);
 
         { // Testing functions
           // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
@@ -183,7 +183,7 @@ namespace es
         // pm->_recorders["Mic/Aux"]->run(nullptr);
     }
 
-    void PluginManager::RunPyProgram(void *private_data)
+    void PluginManager::RunEchostra(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 

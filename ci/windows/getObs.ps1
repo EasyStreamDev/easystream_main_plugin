@@ -16,5 +16,5 @@ function getObs {
         Set-Location "obs-studio"
     }
     cmake --preset windows-x64 -DCMAKE_BUILD_TYPE=$buildMode
-    cmake --build --preset windows-x64
+    cmake --build --preset windows-x64 --config=$buildMode
 }
