@@ -19,7 +19,8 @@ namespace es::obs
     struct VolumesData
     {
         double StartTime;
-        std::vector<std::pair<double, float>> InputVolumes;
+        float Sum = 0;
+        float Number = 0;
     };
 
     class TopAudioMic
@@ -37,10 +38,9 @@ namespace es::obs
         void UpdateTopMic();
 
     private:
-        std::unordered_map<obs_source_t *, VolumesData> _sourcesVolumes;
-        obs_source_t *_actualTopSource = nullptr;
+        std::map<std::string, VolumesData> _sourcesVolumes;
 
-        std::vector<obs_source_t *> _sourcesVideo;
+        std::vector<std::string> _sourcesVideo;
     };
 }
 

@@ -55,6 +55,7 @@ namespace es
             { this->GetAreaMain()->AddWords(words); });
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
+        this->m_topAudioMicManager = new es::obs::TopAudioMic();
     }
 
     PluginManager::~PluginManager()

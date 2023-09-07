@@ -65,7 +65,7 @@ namespace es::area
                 3,
                 "test_area_move_up",
                 ReactionType::MOVE,
-                {{"translation_increase", 10.0}, {"direction", 0}}};
+                {{"translation_increase", 10.0}, {"direction", 1}}};
 
             this->CreateArea(a_, r_);
         }
@@ -79,7 +79,7 @@ namespace es::area
                 4,
                 "test_area_move_down",
                 ReactionType::MOVE,
-                {{"translation_increase", 10.0}, {"direction", 1}}};
+                {{"translation_increase", 10.0}, {"direction", 0}}};
 
             this->CreateArea(a_, r_);
         }
@@ -93,7 +93,7 @@ namespace es::area
                 5,
                 "test_area_move_left",
                 ReactionType::MOVE,
-                {{"translation_increase", 10.0}, {"direction", 2}}};
+                {{"translation_increase", 10.0}, {"direction", 3}}};
 
             this->CreateArea(a_, r_);
         }
@@ -107,7 +107,7 @@ namespace es::area
                 6,
                 "test_area_move_right",
                 ReactionType::MOVE,
-                {{"translation_increase", 10.0}, {"direction", 3}}};
+                {{"translation_increase", 10.0}, {"direction", 2}}};
 
             this->CreateArea(a_, r_);
         }

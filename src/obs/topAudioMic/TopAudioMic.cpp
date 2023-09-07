@@ -30,9 +30,10 @@ void es::obs::TopAudioMic::InputAudioCaptureCallback(void *priv_data, obs_source
     }
 
     float inputAudioLevel = topAudioMic->CalculateAudioLevel(data, false);
-    double elapsedTime = (std::clock() - topAudioMic->_sourcesVolumes[source].StartTime) / (double)CLOCKS_PER_SEC;
+    double elapsedTime = (std::clock() - topAudioMic->_sourcesVolumes[obs_source_get_name(source)].StartTime) / (double)CLOCKS_PER_SEC;
 
-    topAudioMic->_sourcesVolumes[source].InputVolumes.push_back(std::make_pair(elapsedTime, inputAudioLevel));
+    topAudioMic->_sourcesVolumes[obs_source_get_name(source)].Sum += inputAudioLevel;
+    topAudioMic->_sourcesVolumes[obs_source_get_name(source)].Number += 1;
 
     topAudioMic->UpdateTopMic();
 
@@ -67,9 +68,12 @@ float es::obs::TopAudioMic::CalculateAudioLevel(const struct audio_data *data, b
 
 void es::obs::TopAudioMic::AddNewAudioSource(obs_source_t *source)
 {
+    std::string name = obs_source_get_name(source);
+    if (!name.rfind("Audio", 0) == 0)
+        return;
     VolumesData Data;
     Data.StartTime = std::clock();
-    _sourcesVolumes[source] = Data;
+    _sourcesVolumes[name] = Data;
     
     obs_source_add_audio_capture_callback(source, InputAudioCaptureCallback, this);
 
@@ -78,46 +82,37 @@ void es::obs::TopAudioMic::AddNewAudioSource(obs_source_t *source)
 
 void es::obs::TopAudioMic::AddNewVideoSource(obs_source_t *source)
 {
-    _sourcesVideo.push_back(source);
+    _sourcesVideo.push_back(obs_source_get_name(source));
+
+    blog(LOG_INFO, "[es::Obs::topAudioMic] new input added to check top Mic: %s", obs_source_get_name(source));
 }
 
 void es::obs::TopAudioMic::UpdateTopMic()
 {
-    obs_source_t *topSource = _actualTopSource;
-    int topSourceID = 0;
     float TopVolumeMean = 0;
+    std::string TopAudioSource;
 
-    int i = 0;  
-    for (auto sourceVolumes : _sourcesVolumes)
+    for (auto [name, data] : _sourcesVolumes)
     {
-        float LastTime = sourceVolumes.second.InputVolumes.back().first;
-        float sum = 0;
-        int valueNum = 0;
-        for (auto [elapsedTime, volume] : sourceVolumes.second.InputVolumes)
+        float ActualSum = data.Sum;
+        if (data.Number > 0)
+            ActualSum /= data.Number;
+        if (ActualSum > TopVolumeMean)
         {
-            if (LastTime - elapsedTime < 3)
-            {
-                sum += volume;
-                valueNum += 1;
-            }
+            TopVolumeMean = ActualSum;
+            TopAudioSource = name;
+            blog(LOG_INFO, "[es::Obs::topAudioMic] top Mic is: %s", TopAudioSource.c_str());
         }
-        if (valueNum > 1)
-            sum /= valueNum;
-        if (sum > TopVolumeMean)
-        {
-            TopVolumeMean = sum;
-            _actualTopSource = sourceVolumes.first;
-            topSourceID = i;
-        }
-        i++;
     }
 
-    if (_actualTopSource == topSource)
-        return;
-    for (auto source : _sourcesVideo)
+    for (auto name : _sourcesVideo)
     {
-        obs_source_set_enabled(source, false);
+        obs_source_set_enabled(obs_get_source_by_name(name.c_str()), false);
     }
-    if (_sourcesVideo[topSourceID])
-        obs_source_set_enabled(_sourcesVideo[topSourceID], true);
+    std::string name = "Video";
+    name += TopAudioSource.back();
+    if (std::find(_sourcesVideo.begin(), _sourcesVideo.end(), name) != _sourcesVideo.end())
+    {
+        obs_source_set_enabled(obs_get_source_by_name(name.c_str()), true);
+    }
 }
