@@ -47,8 +47,8 @@ namespace es::testing
 namespace es
 {
     PluginManager::PluginManager()
-        : m_AreaMain(new es::area::AreaManager()),
-          m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
+        : m_AreaMain(new es::area::AreaManager())
+          // m_Server(new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this))
     {
         this->m_TranscriptorManager = new es::transcription::TranscriptorManager(
             [this](std::vector<std::string> words)
@@ -76,11 +76,11 @@ namespace es
     void PluginManager::Start(void)
     {
         // Start asynchrounous routines
-        m_ThreadPool->push(std::function(PluginManager::RunServer), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
-        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
-        m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
+        // m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         // m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
 
@@ -133,7 +133,7 @@ namespace es
 
     server::IServer *PluginManager::GetServer(void)
     {
-        return m_Server;
+        return nullptr;
     }
 
     obs::SourceTracker *PluginManager::GetSourceTracker(void)
@@ -151,6 +151,11 @@ namespace es
         return m_TranscriptorManager;
     }
 
+    obs::TopAudioMic *PluginManager::GetTopAudioMicManager(void)
+    {
+        return m_topAudioMicManager;
+    }
+
     /**************************/
     /* ASYNCHROUNOUS ROUTINES */
     /**************************/
@@ -159,7 +164,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_Server.load()->run(nullptr);
+        // pm->m_Server.load()->run(nullptr);
     }
 
     void PluginManager::RunArea(void *private_data)

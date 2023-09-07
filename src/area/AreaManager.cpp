@@ -28,39 +28,95 @@ namespace es::area
     {
         this->thread_sleep_ms(2000);
 
-        {   // Test reaction start stream
+        {   // Test reaction dezoom
             action_t a_ = {
                 1,
                 ActionType::KEY_PRESSED,
                 {{"key", "u"}}};
             reaction_t r_ = {
                 1,
-                "test_area_start_recording",
-                ReactionType::START_RECORDING,
-                {}};
+                "test_area_zoom_0.96",
+                ReactionType::ZOOM,
+                {{"zoom_ratio", {{"x", 0.96}, {"y", 0.96}}}}};
 
             this->CreateArea(a_, r_);
         }
 
-        {   // Test reaction stop stream
-            // action_t a_ = {
-            //     87429876,
-            //     ActionType::APP_LAUNCH,
-            //     {{"app_name", "Mahjongg"}}};
-            // reaction_t r_ = {
-            //     87429876,
-            //     "test_area_stop_stream",
-            //     ReactionType::STOP_STREAMING,
-            //     {}};
+        {   // Test reaction zoom
+            action_t a_ = {
+                2,
+                ActionType::KEY_PRESSED,
+                {{"key", "y"}}};
+            reaction_t r_ = {
+                2,
+                "test_area_zoom_1.04",
+                ReactionType::ZOOM,
+                {{"zoom_ratio", {{"x", 1.04}, {"y", 1.04}}}}};
 
-            // this->CreateArea(a_, r_);
+            this->CreateArea(a_, r_);
+        }
+
+        {   // Test reaction move up
+            action_t a_ = {
+                3,
+                ActionType::KEY_PRESSED,
+                {{"key", "z"}}};
+            reaction_t r_ = {
+                3,
+                "test_area_move_up",
+                ReactionType::MOVE,
+                {{"translation_increase", 10.0}, {"direction", 0}}};
+
+            this->CreateArea(a_, r_);
+        }
+
+        {   // Test reaction move down
+            action_t a_ = {
+                4,
+                ActionType::KEY_PRESSED,
+                {{"key", "s"}}};
+            reaction_t r_ = {
+                4,
+                "test_area_move_down",
+                ReactionType::MOVE,
+                {{"translation_increase", 10.0}, {"direction", 1}}};
+
+            this->CreateArea(a_, r_);
+        }
+
+        {   // Test reaction move left
+            action_t a_ = {
+                5,
+                ActionType::KEY_PRESSED,
+                {{"key", "q"}}};
+            reaction_t r_ = {
+                5,
+                "test_area_move_left",
+                ReactionType::MOVE,
+                {{"translation_increase", 10.0}, {"direction", 2}}};
+
+            this->CreateArea(a_, r_);
+        }
+
+        {   // Test reaction move right
+            action_t a_ = {
+                6,
+                ActionType::KEY_PRESSED,
+                {{"key", "d"}}};
+            reaction_t r_ = {
+                6,
+                "test_area_move_right",
+                ReactionType::MOVE,
+                {{"translation_increase", 10.0}, {"direction", 3}}};
+
+            this->CreateArea(a_, r_);
         }
 
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
         {
             this->Update();
-            this->thread_sleep_ms(100);
+            this->thread_sleep_ms(10);
         }
         blog(LOG_INFO, "###  - AREA system has stopped.");
     }
@@ -192,7 +248,6 @@ namespace es::area
                     {"message", "Unknown action"},
                 };
             }
-            blog(LOG_INFO, "ACTIONNNNNNNNNNNNNNNN?????????????????????");
 
             // Add action to AREA system.
             this->AddAction(act);

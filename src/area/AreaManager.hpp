@@ -23,6 +23,9 @@
 #include "reactions/ReactionRecordingStop.hpp"
 #include "reactions/ReactionStreamStart.hpp"
 #include "reactions/ReactionStreamStop.hpp"
+#include "reactions/ReactionZoom.hpp"
+#include "reactions/ReactionMove.hpp"
+
 #include <shared_mutex>
 
 namespace es::area
@@ -56,6 +59,10 @@ namespace es::area
                  { return new ReactionStreamStart(area_id, name, param); }},
                 {area::ReactionType::STOP_STREAMING, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
                  { return new ReactionStreamStop(area_id, name, param); }},
+                {area::ReactionType::ZOOM, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
+                 { return new ReactionZoom(area_id, name, param); }},
+                {area::ReactionType::MOVE, [](const size_t &area_id, const std::string &name, const json &param) -> Reaction *
+                 { return new ReactionMove(area_id, name, param); }},
             };
 
     public:

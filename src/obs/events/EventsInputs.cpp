@@ -7,6 +7,7 @@
 
 #include "../SourceTracker.hpp"
 #include "../autoAudioLeveler/AutoAudioLeveler.hpp"
+#include "../topAudioMic/TopAudioMic.hpp"
 
 void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
 {
@@ -23,6 +24,13 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
                 name,
                 std::make_shared<AutoAudioLeveler>(source)));
         blog(LOG_INFO, "### Instancing Audio Leveler for %s", name.c_str());
+        m_PluginManager->GetTopAudioMicManager()->AddNewAudioSource(source);
+
+    }
+
+    if (!filterVideoSources("video_input", source))
+    {
+        m_PluginManager->GetTopAudioMicManager()->AddNewVideoSource(source);
     }
 
     // blog(LOG_INFO, "### [SourceTracker::handleInputCreated]: %s:%s:%s", name.c_str(), kind.c_str(), uuid.c_str());

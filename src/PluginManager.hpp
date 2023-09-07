@@ -20,6 +20,7 @@
 #include "utils/Thread.hpp"
 #include "obs/speechRecognition/transcript/TranscriptorManager.hpp"
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
+#include "obs/topAudioMic/TopAudioMic.hpp"
 
 #include "IPluginManager.hpp"
 
@@ -42,6 +43,7 @@ namespace es
         obs::SourceTracker *GetSourceTracker(void);
         thread::ThreadPool *GetThreadPool(void);
         transcription::TranscriptorManager *GetTranscriptorManager(void);
+        obs::TopAudioMic *GetTopAudioMicManager(void);
 
     private:
         // Asynchrounous routines (run in separate threads)
@@ -61,9 +63,10 @@ namespace es
 
         // Runnable
         std::atomic<area::AreaManager *> m_AreaMain = nullptr;
-        std::atomic<server::AsioTcpServer *> m_Server = nullptr;
+        // std::atomic<server::AsioTcpServer *> m_Server = nullptr;
         std::atomic<transcription::TranscriptorManager *> m_TranscriptorManager = nullptr;
         obs::SourceRecorder *_recorder = nullptr;
+        obs::TopAudioMic *m_topAudioMicManager = nullptr;
     };
 } // namespace es
 

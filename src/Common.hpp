@@ -103,6 +103,8 @@ namespace es
             STOP_RECORDING,
             START_STREAMING,
             STOP_STREAMING,
+            ZOOM,
+            MOVE,
         };
 
         static const std::string ReactionTypeToString(const ReactionType &t_)
@@ -121,6 +123,10 @@ namespace es
                 return "START_STREAMING";
             case ReactionType::STOP_STREAMING:
                 return "START_STREAMING";
+            case ReactionType::ZOOM:
+                return "ZOOM";
+            case ReactionType::MOVE:
+                return "MOVE";
             default:
                 break;
             }
