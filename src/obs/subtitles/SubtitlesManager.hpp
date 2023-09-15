@@ -37,9 +37,9 @@ namespace es::subtitles
         json getSubtitlesSettings(void) const;
         void pushSubtitles(std::string micName, std::string transcript);
         void setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics);
+
     private:
         void setTextSubtitle(std::string micName, const std::string &tr);
-
 
         std::vector<text_field_data> m_TextFieldsTargets;
         std::unordered_map<std::string, text_field_data> _TextFieldsTargets;
@@ -48,7 +48,6 @@ namespace es::subtitles
         std::mutex _mtx;
         mutable std::mutex _mtxP;
         std::condition_variable _cVar;
-        
     };
 }
 

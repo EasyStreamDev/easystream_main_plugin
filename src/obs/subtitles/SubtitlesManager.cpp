@@ -1,6 +1,6 @@
 #include "SubtitlesManager.hpp"
 #include "../../PluginManager.hpp"
-// #include 
+// #include
 // #include "../speechRecognition/Transcriptor.hpp"
 // #include "../speechRecognition/transcript/TranscriptorManager.hpp"
 
@@ -20,11 +20,10 @@ namespace es::subtitles
             {
                 {
                     std::unique_lock lock(_mtx);
-                    _cVar.wait(lock, [this]() {
-                        return !_TextFieldsTargets.empty() && !_transcripts.empty();
-                    });
+                    _cVar.wait(lock, [this]()
+                               { return !_TextFieldsTargets.empty() && !_transcripts.empty(); });
                 }
-                    // std::unique_lock 
+                // std::unique_lock
                 // if (_TextFieldsTargets.empty() || _transcripts.empty())
                 // {
                 //     this->thread_sleep_ms(2000);
@@ -33,14 +32,14 @@ namespace es::subtitles
                 // std::string subtitlesTranscript;
                 {
                     std::unique_lock lock(_mtxP);
-                    while (!_transcripts.empty()) {
+                    while (!_transcripts.empty())
+                    {
                         // subtitlesTranscript += _transcripts.front()._transcript;
                         auto tr = _transcripts.front();
                         setTextSubtitle(tr._micName, tr._transcript);
                         _transcripts.pop();
                     }
                 }
-
 
                 // if (!transcriptor_manager || m_TextFieldsTargets.empty())
                 // {
@@ -167,7 +166,7 @@ namespace es::subtitles
     {
         std::string mics;
         obs_source_t *source = obs_get_source_by_uuid(uuid.c_str());
-        text_field_data &tField = _TextFieldsTargets.emplace(uuid, text_field_data{uuid, obs_source_get_name(source) , ""}).first->second;
+        text_field_data &tField = _TextFieldsTargets.emplace(uuid, text_field_data{uuid, obs_source_get_name(source), ""}).first->second;
         transcript::Transcriptor *tm = m_PluginManager->GetTranscriptor();
 
         for (const auto &m : lMics)
@@ -180,7 +179,8 @@ namespace es::subtitles
         {
             std::string m = tField.linkedMics.substr(i, j - i);
 
-            if (mics.find(m) == mics.npos) {
+            if (mics.find(m) == mics.npos)
+            {
                 tm->disableSubtitlesOnMic(m);
             }
         }

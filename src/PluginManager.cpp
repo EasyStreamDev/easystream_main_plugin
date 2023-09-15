@@ -9,7 +9,16 @@
 
 namespace es::testing
 {
+    void test_user_profile(void *private_data)
+    {
+        user::UserProfile up;
 
+        while (1)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5 * 1000));
+            std::cerr << up.getData().dump(4) << std::endl;
+        }
+    }
 }
 
 namespace es
@@ -55,8 +64,9 @@ namespace es
         // m_ThreadPool->push(std::function(PluginManager::RunEchostra), this);
 
         { // Testing functions
-          // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
-          // m_ThreadPool->push(std::function(testing::test_transcription_results), this);
+            m_ThreadPool->push(std::function(testing::test_user_profile), this);
+            // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
+            // m_ThreadPool->push(std::function(testing::test_transcription_results), this);
         }
     }
 

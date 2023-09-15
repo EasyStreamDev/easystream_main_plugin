@@ -7,9 +7,13 @@
 
 #include "Obs.hpp"
 
-#define CASE(x) case x: return #x;
+#define CASE(x) \
+	case x:     \
+		return #x;
 
-#define RET_COMPARE(str, x) if (str == #x) return x;
+#define RET_COMPARE(str, x) \
+	if (str == #x)          \
+		return x;
 
 std::vector<std::string> ConvertStringArray(char **array)
 {
@@ -18,8 +22,9 @@ std::vector<std::string> ConvertStringArray(char **array)
 		return ret;
 
 	size_t index = 0;
-	char* value = nullptr;
-	do {
+	char *value = nullptr;
+	do
+	{
 		value = array[index];
 		if (value)
 			ret.push_back(value);
@@ -38,7 +43,7 @@ std::string es::utils::obs::stringHelper::GetObsVersion()
 	minor = (version >> 16) & 0xFF;
 	patch = version & 0xFF;
 
-    return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(patch);
+	return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(patch);
 }
 
 std::string es::utils::obs::stringHelper::GetCurrentSceneCollection()
@@ -59,20 +64,20 @@ std::string es::utils::obs::stringHelper::GetCurrentProfile()
 
 std::string es::utils::obs::stringHelper::GetCurrentProfilePath()
 {
-	//char *profilePath = obs_frontend_get_current_profile_path();
-	//std::string ret = profilePath;
-	//bfree(profilePath);
-	//return ret;
+	// char *profilePath = obs_frontend_get_current_profile_path();
+	// std::string ret = profilePath;
+	// bfree(profilePath);
+	// return ret;
 
 	return "";
 }
 
 std::string es::utils::obs::stringHelper::GetCurrentRecordOutputPath()
 {
-	//char *recordOutputPath = obs_frontend_get_current_record_output_path();
-	//std::string ret = recordOutputPath;
-	//bfree(recordOutputPath);
-	//return ret;
+	// char *recordOutputPath = obs_frontend_get_current_record_output_path();
+	// std::string ret = recordOutputPath;
+	// bfree(recordOutputPath);
+	// return ret;
 
 	return "";
 }
@@ -81,8 +86,9 @@ std::string es::utils::obs::stringHelper::GetSourceType(obs_source_t *source)
 {
 	obs_source_type sourceType = obs_source_get_type(source);
 
-	switch (sourceType) {
-		default:
+	switch (sourceType)
+	{
+	default:
 		CASE(OBS_SOURCE_TYPE_INPUT)
 		CASE(OBS_SOURCE_TYPE_FILTER)
 		CASE(OBS_SOURCE_TYPE_TRANSITION)
@@ -94,8 +100,9 @@ std::string es::utils::obs::stringHelper::GetInputMonitorType(obs_source_t *inpu
 {
 	obs_monitoring_type monitorType = obs_source_get_monitoring_type(input);
 
-	switch (monitorType) {
-		default:
+	switch (monitorType)
+	{
+	default:
 		CASE(OBS_MONITORING_TYPE_NONE)
 		CASE(OBS_MONITORING_TYPE_MONITOR_ONLY)
 		CASE(OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT)
@@ -106,8 +113,9 @@ std::string es::utils::obs::stringHelper::GetMediaInputState(obs_source_t *input
 {
 	obs_media_state mediaState = obs_source_media_get_state(input);
 
-	switch (mediaState) {
-		default:
+	switch (mediaState)
+	{
+	default:
 		CASE(OBS_MEDIA_STATE_NONE)
 		CASE(OBS_MEDIA_STATE_PLAYING)
 		CASE(OBS_MEDIA_STATE_OPENING)
@@ -132,8 +140,9 @@ std::string es::utils::obs::stringHelper::GetLastReplayBufferFilePath()
 
 std::string es::utils::obs::stringHelper::GetSceneItemBoundsType(enum obs_bounds_type type)
 {
-	switch (type) {
-		default:
+	switch (type)
+	{
+	default:
 		CASE(OBS_BOUNDS_NONE)
 		CASE(OBS_BOUNDS_STRETCH)
 		CASE(OBS_BOUNDS_SCALE_INNER)
@@ -175,7 +184,7 @@ uint64_t es::utils::obs::numberHelper::GetOutputDuration(obs_output_t *output)
 	if (!output || !obs_output_active(output))
 		return 0;
 
-	video_t* video = obs_output_video(output);
+	video_t *video = obs_output_video(output);
 	uint64_t frameTimeNs = video_output_get_frame_time(video);
 	int totalFrames = obs_output_get_total_frames(output);
 
@@ -185,8 +194,9 @@ uint64_t es::utils::obs::numberHelper::GetOutputDuration(obs_output_t *output)
 size_t es::utils::obs::numberHelper::GetSceneCount()
 {
 	size_t ret = 0;
-	auto sceneEnumProc = [](void *param, obs_source_t *scene) {
-		auto ret = reinterpret_cast<size_t*>(param);
+	auto sceneEnumProc = [](void *param, obs_source_t *scene)
+	{
+		auto ret = reinterpret_cast<size_t *>(param);
 
 		if (obs_source_is_group(scene))
 			return true;
@@ -202,7 +212,7 @@ size_t es::utils::obs::numberHelper::GetSceneCount()
 
 std::vector<std::string> es::utils::obs::listHelper::GetSceneCollectionList()
 {
-	char** sceneCollections = obs_frontend_get_scene_collections();
+	char **sceneCollections = obs_frontend_get_scene_collections();
 	auto ret = ConvertStringArray(sceneCollections);
 	bfree(sceneCollections);
 	return ret;
@@ -210,7 +220,7 @@ std::vector<std::string> es::utils::obs::listHelper::GetSceneCollectionList()
 
 std::vector<std::string> es::utils::obs::listHelper::GetProfileList()
 {
-	char** profiles = obs_frontend_get_profiles();
+	char **profiles = obs_frontend_get_profiles();
 	auto ret = ConvertStringArray(profiles);
 	bfree(profiles);
 	return ret;
@@ -220,13 +230,14 @@ std::vector<obs_hotkey_t *> es::utils::obs::listHelper::GetHotkeyList()
 {
 	std::vector<obs_hotkey_t *> ret;
 
-	obs_enum_hotkeys([](void* data, obs_hotkey_id, obs_hotkey_t* hotkey) {
+	obs_enum_hotkeys([](void *data, obs_hotkey_id, obs_hotkey_t *hotkey)
+					 {
 		auto ret = reinterpret_cast<std::vector<obs_hotkey_t *> *>(data);
 
 		ret->push_back(hotkey);
 
-		return true;
-	}, &ret);
+		return true; },
+					 &ret);
 
 	return ret;
 }
@@ -236,7 +247,8 @@ std::vector<std::string> es::utils::obs::listHelper::GetHotkeyNameList()
 	auto hotkeys = GetHotkeyList();
 
 	std::vector<std::string> ret;
-	for (auto hotkey : hotkeys) {
+	for (auto hotkey : hotkeys)
+	{
 		ret.emplace_back(obs_hotkey_get_name(hotkey));
 	}
 
@@ -246,8 +258,9 @@ std::vector<std::string> es::utils::obs::listHelper::GetHotkeyNameList()
 std::vector<json> es::utils::obs::listHelper::GetSceneList()
 {
 	std::vector<json> ret;
-	auto sceneEnumProc = [](void *param, obs_source_t *scene) {
-		auto ret = reinterpret_cast<std::vector<json>*>(param);
+	auto sceneEnumProc = [](void *param, obs_source_t *scene)
+	{
+		auto ret = reinterpret_cast<std::vector<json> *>(param);
 
 		json sceneJson;
 		sceneJson["sceneName"] = obs_source_get_name(scene);
@@ -267,7 +280,9 @@ std::vector<json> es::utils::obs::listHelper::GetSceneItemList(obs_scene_t *scen
 	std::pair<std::vector<json>, bool> enumData;
 	enumData.second = basic;
 
-	obs_scene_enum_items(scene, [](obs_scene_t*, obs_sceneitem_t* sceneItem, void* param) {
+	obs_scene_enum_items(
+		scene, [](obs_scene_t *, obs_sceneitem_t *sceneItem, void *param)
+		{
 		auto enumData = reinterpret_cast<std::pair<std::vector<json>, bool>*>(param);
 
 		json item;
@@ -290,8 +305,8 @@ std::vector<json> es::utils::obs::listHelper::GetSceneItemList(obs_scene_t *scen
 
 		enumData->first.push_back(item);
 
-		return true;
-	}, &enumData);
+		return true; },
+		&enumData);
 
 	return enumData.first;
 }
@@ -302,7 +317,8 @@ std::vector<json> es::utils::obs::listHelper::GetTransitionList()
 	obs_frontend_get_transitions(&transitionList);
 
 	std::vector<json> ret;
-	for (size_t i = 0; i < transitionList.sources.num; i++) {
+	for (size_t i = 0; i < transitionList.sources.num; i++)
+	{
 		obs_source_t *transition = transitionList.sources.array[i];
 		json transitionJson;
 		transitionJson["transitionName"] = obs_source_get_name(transition);
@@ -316,7 +332,8 @@ std::vector<json> es::utils::obs::listHelper::GetTransitionList()
 	return ret;
 }
 
-struct EnumInputInfo {
+struct EnumInputInfo
+{
 	std::string inputKind; // For searching by input kind
 	std::vector<json> inputs;
 };
@@ -325,7 +342,8 @@ std::vector<json> es::utils::obs::listHelper::GetInputList()
 {
 	std::vector<json> inputInfo;
 
-	auto inputEnumProc = [](void *param, obs_source_t *input) {
+	auto inputEnumProc = [](void *param, obs_source_t *input)
+	{
 		// Sanity check in case the API changes
 		if (obs_source_get_type(input) != OBS_SOURCE_TYPE_INPUT)
 			return true;
@@ -352,7 +370,8 @@ std::vector<json> es::utils::obs::listHelper::GetOutputList()
 {
 	std::vector<json> outputInfo;
 
-	auto outputEnumProc = [](void *param, obs_output_t *output) {
+	auto outputEnumProc = [](void *param, obs_output_t *output)
+	{
 		auto outputInfo = reinterpret_cast<std::vector<json> *>(param);
 
 		std::string outputKind = obs_output_get_id(output);
@@ -375,12 +394,13 @@ std::vector<json> es::utils::obs::listHelper::GetInputByKindList(std::string inp
 	EnumInputInfo inputInfo;
 	inputInfo.inputKind = inputKind;
 
-	auto inputEnumProc = [](void *param, obs_source_t *input) {
+	auto inputEnumProc = [](void *param, obs_source_t *input)
+	{
 		// Sanity check in case the API changes
 		if (obs_source_get_type(input) != OBS_SOURCE_TYPE_INPUT)
 			return true;
 
-		auto inputInfo = reinterpret_cast<EnumInputInfo*>(param);
+		auto inputInfo = reinterpret_cast<EnumInputInfo *>(param);
 
 		std::string inputKind = obs_source_get_id(input);
 
@@ -408,7 +428,8 @@ std::vector<std::string> es::utils::obs::listHelper::GetInputKindList(bool unver
 	size_t idx = 0;
 	const char *kind;
 	const char *unversioned_kind;
-	while (obs_enum_input_types2(idx++, &kind, &unversioned_kind)) {
+	while (obs_enum_input_types2(idx++, &kind, &unversioned_kind))
+	{
 		uint32_t caps = obs_get_source_output_flags(kind);
 
 		if (!includeDisabled && (caps & OBS_SOURCE_CAP_DISABLED) != 0)
@@ -427,7 +448,8 @@ std::vector<json> es::utils::obs::listHelper::GetMicsList()
 {
 	std::vector<json> inputInfo;
 
-	auto inputEnumProc = [](void *param, obs_source_t *input) {
+	auto inputEnumProc = [](void *param, obs_source_t *input)
+	{
 		// Sanity check in case the API changes
 		if (obs_source_get_type(input) != OBS_SOURCE_TYPE_INPUT)
 			return true;
@@ -457,11 +479,11 @@ json es::utils::obs::dataHelper::GetStats()
 {
 	json ret;
 
-	config_t* currentProfile = obs_frontend_get_profile_config();
-	const char* outputMode = config_get_string(currentProfile, "Output", "Mode");
-	const char* recordPath = strcmp(outputMode, "Advanced") ? config_get_string(currentProfile, "SimpleOutput", "FilePath") : config_get_string(currentProfile, "AdvOut", "RecFilePath");
+	config_t *currentProfile = obs_frontend_get_profile_config();
+	const char *outputMode = config_get_string(currentProfile, "Output", "Mode");
+	const char *recordPath = strcmp(outputMode, "Advanced") ? config_get_string(currentProfile, "SimpleOutput", "FilePath") : config_get_string(currentProfile, "AdvOut", "RecFilePath");
 
-	video_t* video = obs_get_video();
+	video_t *video = obs_get_video();
 
 	ret["cpuUsage"] = os_cpu_usage_info_query(GetCpuUsageInfo());
 	ret["memoryUsage"] = (double)os_get_proc_resident_size() / (1024.0 * 1024.0);
@@ -525,7 +547,8 @@ obs_hotkey_t *es::utils::obs::searchHelper::GetHotkeyByName(std::string name)
 
 	auto hotkeys = es::utils::obs::listHelper::GetHotkeyList();
 
-	for (auto hotkey : hotkeys) {
+	for (auto hotkey : hotkeys)
+	{
 		if (obs_hotkey_get_name(hotkey) == name)
 			return hotkey;
 	}
@@ -546,17 +569,18 @@ obs_sceneitem_t *es::utils::obs::searchHelper::GetSceneItemByName(obs_scene_t *s
 	return ret;
 }
 
-struct CreateSceneItemData {
-	obs_source_t *source; // In
-	bool sceneItemEnabled; // In
+struct CreateSceneItemData
+{
+	obs_source_t *source;							  // In
+	bool sceneItemEnabled;							  // In
 	obs_transform_info *sceneItemTransform = nullptr; // In
-	obs_sceneitem_crop *sceneItemCrop = nullptr; // In
-	OBSSceneItem sceneItem; // Out
+	obs_sceneitem_crop *sceneItemCrop = nullptr;	  // In
+	OBSSceneItem sceneItem;							  // Out
 };
 
 void CreateSceneItemHelper(void *_data, obs_scene_t *scene)
 {
-	auto *data = reinterpret_cast<CreateSceneItemData*>(_data);
+	auto *data = reinterpret_cast<CreateSceneItemData *>(_data);
 	data->sceneItem = obs_scene_add(scene, data->source);
 
 	if (data->sceneItemTransform)

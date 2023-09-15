@@ -21,6 +21,8 @@
 #include "obs/speechRecognition/record/SourceRecorder.hpp"
 #include "obs/speechRecognition/Transcriptor.hpp"
 
+#include "obs/profile/UserProfile.hpp"
+
 #include "IPluginManager.hpp"
 
 #ifdef unix
