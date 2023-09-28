@@ -33,8 +33,8 @@ git pull
 # chmod +x build-linux
 # ./build-linux -c "$1"  -t "linux-x86_64"
 # cd $buildDir
-cmake --preset linux-ci-x86_64 -DCMAKE_BUILD_TYPE=$1 -DENABLE_BROWSER=OFF -DENABLE_AJA=OFF -DENABLE_WEBRTC=OFF -DENABLE_NEW_MPEGTS_OUTPUT=OFF
-cmake --build --preset linux-ci-x86_64
+cmake --preset linux-x86_64 -DCMAKE_BUILD_TYPE=$1 -DENABLE_BROWSER=OFF -DENABLE_AJA=OFF -DENABLE_WEBRTC=OFF -DENABLE_NEW_MPEGTS_OUTPUT=OFF
+cmake --build --preset linux-x86_64
 
 cd "build_x86_64"
 sudo cmake -P cmake_install.cmake
