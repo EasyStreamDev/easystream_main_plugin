@@ -23,6 +23,7 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
     // Gather data about created scene item.
     std::string unv_kind(obs_source_get_unversioned_id(scene_item_source));
 
+    std::cerr << "Elem: " << unv_kind << std::endl;
     // Check if item is a text field
     // @note : "text_ft2_source" kind is soon going to be deprecated.
     if (unv_kind == "text_ft2_source" || unv_kind == "text_gdiplus")

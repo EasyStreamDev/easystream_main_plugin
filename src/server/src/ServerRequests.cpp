@@ -11,21 +11,18 @@ namespace es::server
     /****************/
     /* GET REQUESTS */
     /****************/
-    void AsioTcpServer::r_GetSubtitlesSettings(const json &req, Shared<AsioTcpConnection> con)
-    {
-        const json subtitlesSettings = m_PluginManager->GetSubtitlesManager()->getSubtitlesSettings();
-        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", subtitlesSettings)));
-    }
 
-    void AsioTcpServer::r_GetCurrentMicsTranscription(const json &req, Shared<AsioTcpConnection> con)
-    {
-        const json response_data = m_PluginManager->getAllRecorders();
-        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
-    }
+    // void AsioTcpServer::r_GetCurrentMicsTranscription(const json &req, Shared<AsioTcpConnection> con)
+    // {
+    //     const json response_data = m_PluginManager->getAllRecorders();
+
+    //     // Submit response to outgoing requests queue.
+    //     m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+    // }
 
     void AsioTcpServer::r_GetAllMics(const json &j, Shared<AsioTcpConnection> con)
     {
-        const json response_data = get_mics_data(m_PluginManager->GetSourceTracker());
+        const json response_data = m_PluginManager->GetUserProfile()->getCompressorSettings();
 
         // Submit response to outgoing requests queue.
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
@@ -76,36 +73,33 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
     }
 
+    void AsioTcpServer::r_GetAllVideoSources(const json &j, Shared<AsioTcpConnection> con)
+    {
+    }
+
     void AsioTcpServer::r_GetActReactCouples(const json &j, Shared<AsioTcpConnection> con)
     {
-        std::vector<json> areas_vec;
+        const json areas = m_PluginManager->GetUserProfile()->getAreasSettings();
 
-        for (const auto &area : m_PluginManager->GetAreaMain()->GetAreas())
-        {
-            json area_data = {
-                {"actReactId", area.id},
-                {"isActive", area.is_active},
-                {"action", {
-                               //  {"actionId", area.action_data.id},
-                               {"type", area::ActionTypeToString(area.action_data.type)},
-                               {"params", area.action_data.params},
-                           }},
-                {"reaction", {
-                                 //  {"reactionId", area.reaction_data.id},
-                                 {"name", area.reaction_data.name},
-                                 {"type", area::ReactionTypeToString(area.reaction_data.type)},
-                                 {"params", area.reaction_data.params},
-                             }},
-            };
-            areas_vec.push_back(std::move(area_data));
-        }
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", areas)));
+    }
 
-        const json response_data = {
-            {"length", areas_vec.size()},
-            {"actReacts", areas_vec},
+    void AsioTcpServer::r_GetProfileSettings(const json &j, Shared<AsioTcpConnection> con)
+    {
+        const json settings = json{
+            {"easystream", m_PluginManager->GetUserProfile()->getEeasystreamSettings()},
+            {"obs", m_PluginManager->GetUserProfile()->getObsSettings()},
         };
+
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", settings)));
+    }
+
+    void AsioTcpServer::r_GetSubtitlesSettings(const json &req, Shared<AsioTcpConnection> con)
+    {
+        const json subtitlesSettings = m_PluginManager->GetSubtitlesManager()->getSubtitlesSettings();
+
         // Submit response to outgoing requests queue.
-        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", subtitlesSettings)));
     }
 
     void AsioTcpServer::r_broadcastArea()
@@ -142,42 +136,6 @@ namespace es::server
     /****************/
     /* SET REQUESTS */
     /****************/
-    void AsioTcpServer::r_SetNewRecorder(const json &req, Shared<AsioTcpConnection> con)
-    {
-        std::string micName = req["params"]["micName"];
-        int result = m_PluginManager->addRecorder(micName);
-
-        if (result == -1)
-            m_OutRequestQueue.ts_push(std::make_pair(
-                con,
-                ResponseGenerator::BadRequest("There is already a recorder for this mic")));
-        else if (result == -2)
-            m_OutRequestQueue.ts_push(std::make_pair(
-                con,
-                ResponseGenerator::NotFound("There is no mic named " + micName)));
-        else
-            m_OutRequestQueue.ts_push(std::make_pair(
-                con,
-                ResponseGenerator::Success()));
-
-        json broadcastData = m_PluginManager->getAllRecorders();
-        broadcastData["type"] = "recorderUpdate";
-        submitBroadcast(broadcastData);
-    }
-
-    void AsioTcpServer::r_SetNewOffset(const json &req, Shared<AsioTcpConnection> con)
-    {
-        if (!m_PluginManager->changeTimer(req["params"]["micName"], req["params"]["offset"]))
-            m_OutRequestQueue.ts_push(std::make_pair(
-                con,
-                ResponseGenerator::NotFound("There is no mic named " + req["params"]["micName"].get<std::string>())));
-
-        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
-
-        json broadcastData = m_PluginManager->getAllRecorders();
-        broadcastData["type"] = "recorderUpdate";
-        submitBroadcast(broadcastData);
-    }
 
     void AsioTcpServer::r_SetCompressorLevel(const json &j, Shared<AsioTcpConnection> con)
     {
@@ -208,7 +166,7 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
 
         { // Broadcast new compressors settings to all client.
-            json broadcast_request = get_mics_data(m_PluginManager->GetSourceTracker());
+            json broadcast_request = m_PluginManager->GetUserProfile()->getCompressorSettings();
 
             broadcast_request["type"] = "compressorSettingsChanged";
             this->submitBroadcast(broadcast_request);
@@ -408,32 +366,5 @@ namespace es::server
         con->setBroadcastSubscription(value);
 
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
-    }
-
-    /********************/
-    /* USEFUL FUNCTIONS */
-    /********************/
-
-    const json get_mics_data(es::obs::SourceTracker *source_tracker)
-    {
-        json toSend;
-        std::vector<json> mics = es::utils::obs::listHelper::GetMicsList();
-
-        auto autoLevelerMap_ = source_tracker->getAudioMap();
-
-        for (auto &m : mics)
-        {
-            std::shared_ptr<es::obs::AutoAudioLeveler> micAudioLeveler_ = autoLevelerMap_.find(m["micName"])->second;
-
-            float tmpValue = micAudioLeveler_->getDesiredLevel() + 60;
-
-            m["level"] = 100.0 - floor((tmpValue * 100) / 60);
-            m["isActive"] = micAudioLeveler_->isActive();
-        }
-
-        return {
-            {"length", mics.size()},
-            {"mics", mics},
-        };
     }
 }

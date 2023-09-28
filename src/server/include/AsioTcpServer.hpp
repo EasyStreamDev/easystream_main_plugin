@@ -15,12 +15,13 @@
 
 // Global
 #include "../../Runnable.hpp"
+#include "../../IPluginManager.hpp"
 #include "../../utils/Obs.hpp"
 #include "../../utils/types/ThreadSafeQueue.hpp"
 #include "../../area/AreaManager.hpp"
 #include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
 #include "../../obs/subtitles/SubtitlesManager.hpp"
-#include "../../IPluginManager.hpp"
+#include "../../obs/profile/UserProfile.hpp"
 
 // Local
 #include "interface/IServer.hpp"
@@ -94,14 +95,14 @@ namespace es::server
 
         /* REQUESTS */
         // --- GET requests
-        void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
         void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
         void r_GetAllScenes(const json &, Shared<AsioTcpConnection>);
         void r_GetAllTextFields(const json &, Shared<AsioTcpConnection>);
+        void r_GetAllVideoSources(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
         void r_GetCurrentMicsTranscription(const json &, Shared<AsioTcpConnection>);
-        // void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
-        // void r_GetAllRecorders(const json &, Shared<AsioTcpConnection>);
+        void r_GetProfileSettings(const json &, Shared<AsioTcpConnection>);
+        void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
         void r_broadcastArea();
         // --- SET requests
         void r_SetNewRecorder(const json &, Shared<AsioTcpConnection>);
@@ -144,8 +145,6 @@ namespace es::server
         ThreadSafeQueue<json> m_BroadcastQueue;
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection>)> m_Handler;
     };
-
-    const json get_mics_data(es::obs::SourceTracker *source_tracker);
 }
 
 #endif /* !ASIOTCPSERVER_HPP_ */

@@ -9,16 +9,6 @@
 
 namespace es::testing
 {
-    void test_user_profile(void *private_data)
-    {
-        user::UserProfile up;
-
-        while (1)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(5 * 1000));
-            std::cerr << up.getData().dump(4) << std::endl;
-        }
-    }
 }
 
 namespace es
@@ -30,7 +20,7 @@ namespace es
         this->m_SourceTracker = new es::obs::SourceTracker();
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
         this->m_SubtitlesManager = new es::subtitles::SubtitlesManager();
-        _transcriptor = new es::transcript::Transcriptor();
+        this->m_Transcriptor = new es::transcript::Transcriptor();
     }
 
     PluginManager::~PluginManager()
@@ -43,13 +33,8 @@ namespace es
 
     void PluginManager::Init(void)
     {
-        m_Running = true;
-
+        this->m_Running = true;
         this->m_SourceTracker->init(this);
-
-        // this->m_TranscriptorManager = new es::transcription::TranscriptorManager();
-        // this->m_AreaManager = new es::area::AreaManager();
-        // this->m_Server = new es::server::AsioTcpServer(SERVER_HOST, SERVER_PORT, this);
     }
 
     void PluginManager::Start(void)
@@ -57,17 +42,12 @@ namespace es
         // Start asynchrounous routines
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunRecorder), this);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
         // m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
 
-        { // Testing functions
-            m_ThreadPool->push(std::function(testing::test_user_profile), this);
-            // m_ThreadPool->push(std::function(testing::test_transcription_submit), this);
-            // m_ThreadPool->push(std::function(testing::test_transcription_results), this);
-        }
+        this->m_UserProfile = new es::user::UserProfile(this);
     }
 
     void PluginManager::Stop(void)
@@ -126,14 +106,14 @@ namespace es
         return m_ThreadPool;
     }
 
-    // transcription::TranscriptorManager *PluginManager::GetTranscriptorManager(void)
-    // {
-    //     return m_TranscriptorManager;
-    // }
+    user::UserProfile *PluginManager::GetUserProfile(void)
+    {
+        return m_UserProfile;
+    }
 
     transcript::Transcriptor *PluginManager::GetTranscriptor(void)
     {
-        return _transcriptor;
+        return m_Transcriptor;
     }
 
     subtitles::SubtitlesManager *PluginManager::GetSubtitlesManager(void)
@@ -174,23 +154,9 @@ namespace es
     void PluginManager::RunTranscriptor(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
-        transcript::Transcriptor *tm = pm->_transcriptor;
-        // // transcription::TranscriptorManager *tm = pm->m_TranscriptorManager.load();
+        transcript::Transcriptor *tm = pm->m_Transcriptor;
 
         tm->run(pm);
-        // tm->init(pm);
-        // tm->run(nullptr);
-    }
-
-    void PluginManager::RunRecorder(void *private_data)
-    {
-        // using namespace std::chrono_literals;
-        // std::this_thread::sleep_for(2s);
-        // PluginManager *pm = static_cast<PluginManager *>(private_data);
-        // obs_source_t *source = obs_get_source_by_name("Mic/Aux");
-        // pm->_recorders["Mic/Aux"] = new obs::SourceRecorder(source, [pm](const std::string &fp) -> uint
-        //                                         { return 1; });
-        // pm->_recorders["Mic/Aux"]->run(nullptr);
     }
 
     void PluginManager::RunPyProgram(void *private_data)
@@ -215,45 +181,5 @@ namespace es
             execv(args[0], args);
         }
 #endif
-    }
-
-    int PluginManager::addRecorder(const std::string micName)
-    {
-        // if (_recorders.find(micName) != _recorders.end())
-        //     return -1;
-        // obs_source_t *source = obs_get_source_by_name(micName.c_str());
-        // std::cout << "Add Recorder " << micName << std::endl;
-        // if (!source)
-        //     return -2;
-        // _recorders[micName] = new obs::SourceRecorder(source, [this](const std::string &fp) -> uint
-        //                                         { return 1; }, micName);
-        // m_ThreadPool->push([this, micName](void *) {
-        //     std::cout << "Ok here : " << micName << std::endl;
-        //     this->_recorders[std::string(micName)]->run(nullptr);
-        // }, nullptr);
-        return 1;
-    }
-
-    bool PluginManager::changeTimer(std::string micName, int newTimer)
-    {
-        if (_recorders.find(micName) != _recorders.end())
-        {
-            _recorders[micName]->updateTimerRecord(newTimer);
-            return true;
-        }
-        return false;
-    }
-
-    json PluginManager::getAllRecorders()
-    {
-        json result;
-        result["data"] = {};
-        for (const auto &rec : _recorders)
-        {
-            result["data"] += json{
-                {"micName", rec.first},
-                {"offset", rec.second->getTimerRecord()}};
-        }
-        return result;
     }
 }

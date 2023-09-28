@@ -45,6 +45,11 @@ namespace es
         class SubtitlesManager;
     }
 
+    namespace user
+    {
+        class UserProfile;
+    }
+
     class IPluginManager
     {
     public:
@@ -60,12 +65,7 @@ namespace es
         virtual server::IServer *GetServer(void) = 0;
         virtual subtitles::SubtitlesManager *GetSubtitlesManager(void) = 0;
         virtual transcript::Transcriptor *GetTranscriptor(void) = 0;
-
-
-        //
-        virtual int addRecorder(const std::string micName) = 0;
-        virtual bool changeTimer(std::string micName, int newTimer) = 0;
-        virtual json getAllRecorders() = 0;
+        virtual user::UserProfile *GetUserProfile(void) = 0;
     };
 } // namespace es
 

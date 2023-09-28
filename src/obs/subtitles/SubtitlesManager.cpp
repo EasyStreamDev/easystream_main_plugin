@@ -128,31 +128,36 @@ namespace es::subtitles
         // }
     }
 
-    json SubtitlesManager::getSubtitlesSettings(void) const
+    const json SubtitlesManager::getSubtitlesSettings(void) const
     {
-        json ret;
+        // json ret;
         std::vector<json> text_fields;
+
         {
             std::unique_lock lock(_mtxP);
+
             for (const auto &tf : _TextFieldsTargets)
             {
                 if (tf.second.linkedMicsVec.empty())
+                {
                     continue;
-                // std::vector<std::string> linkedMics;
+                }
 
-                // for (std::size_t i = 0, j = tf.linkedMics.find(';'), )
                 text_fields.push_back(json{
                     {"uuid", tf.second.uuid},
                     {"name", tf.second.name},
                     {"linked_mics", tf.second.linkedMicsVec}
                     // {"language", "to_be_ignored_for_now"},
                 });
-                // ret["text_fields"] += ;
             }
-            ret["length"] = _TextFieldsTargets.size();
         }
-        ret["text_fields"] = text_fields;
-        return ret;
+        // ret["length"] = text_fields.size();
+        // ret["text_fields"] = text_fields;
+
+        return json{
+            {"length", text_fields.size()},
+            {"text_fields", text_fields},
+        };
     }
 
     void SubtitlesManager::pushSubtitles(std::string micName, std::string tr)
