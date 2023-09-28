@@ -227,22 +227,20 @@ Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone sp�
 
 * **Request**
 ```json
-setSubtitles
+{
+  'command': "setSubtitles",
   'params': {
         "uuid": "string", uuid of textField,
         "length": int,
-        "linked_mics": "array string" list of micNames
+        "linked_mics": "array string" liste des micros
+    }
 }
-
-
-response:
-    "OK" if success with code 200, or false 400
 ```
 
 * **Response**
 ```json
 {
-    "statusCode": "integer",
+    "statusCode": "integer", 200 si succes ou 400
     "message": "string",
 }
 ```
