@@ -20,7 +20,7 @@ namespace es::server
         m_Handler["getAllMics"] = &AsioTcpServer::r_GetAllMics;
         m_Handler["getAllScenes"] = &AsioTcpServer::r_GetAllScenes;
         m_Handler["getAllTextFields"] = &AsioTcpServer::r_GetAllTextFields;
-        m_Handler["getAllVideoSources"] = &AsioTcpServer::r_GetAllVideoSources;
+        m_Handler["getAllDisplaySources"] = &AsioTcpServer::r_GetAllDisplaySources;
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
         m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
         m_Handler["getProfileSettings"] = &AsioTcpServer::r_GetProfileSettings;

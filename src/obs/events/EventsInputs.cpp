@@ -51,10 +51,7 @@ void es::obs::SourceTracker::handleInputRemoved(obs_source_t *source)
     const std::string unv_kind = obs_source_get_unversioned_id(source); // @warning : depends on hardware
 
     // Check if source is an audio input/output
-    if (
-        unv_kind == "pulse_input_capture" ||
-        unv_kind == "pulse_output_capture" ||
-        unv_kind == "alsa_input_capture")
+    if (vector_contains(UNV_KINDS_AUDIO_IO, unv_kind))
     {
         const json broadcastRequestData = {
             {"type", "audioSourceRemoved"},
@@ -73,10 +70,7 @@ void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::s
     const std::string unv_kind = obs_source_get_unversioned_id(source); // @warning : depends on device hardware/OS
 
     // Check if source is an audio input/output
-    if (
-        unv_kind == "pulse_input_capture" ||
-        unv_kind == "pulse_output_capture" ||
-        unv_kind == "alsa_input_capture")
+    if (vector_contains(UNV_KINDS_AUDIO_IO, unv_kind))
     {
         const json broadcastRequestData = {
             {"type", "audioSourceNameChanged"},
@@ -87,9 +81,14 @@ void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::s
         this->submitToBroadcast(broadcastRequestData);
     }
     // Check if source is an text field
-    else if (unv_kind == "text_ft2_source" || unv_kind == "text_gdiplus")
+    else if (vector_contains(UNV_KINDS_TEXT_FIELDS, unv_kind))
     {
         this->_textfields[uuid].at("name") = name;
+    }
+    // Check if source is an display source
+    else if (vector_contains(UNV_KINDS_DISPLAY_SOURCES, unv_kind))
+    {
+        this->_displaySources[uuid].at("name") = name;
     }
 }
 

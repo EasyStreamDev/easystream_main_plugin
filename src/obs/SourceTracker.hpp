@@ -22,6 +22,21 @@
 
 namespace es::obs
 {
+    static const std::vector<std::string> UNV_KINDS_AUDIO_IO = {"pulse_input_capture", "pulse_output_capture", "alsa_input_capture"};
+    static const std::vector<std::string> UNV_KINDS_TEXT_FIELDS = {"text_ft2_source", "text_gdiplus"};
+    static const std::vector<std::string> UNV_KINDS_DISPLAY_SOURCES = {
+        "v4l2_input",
+        "pipewire-desktop-capture-source",
+        "xshm_input",
+        "scene",
+    };
+
+    template <typename T>
+    const bool vector_contains(const std::vector<T> &vec, const T &elem)
+    {
+        return bool(std::find(vec.begin(), vec.end(), elem) != vec.end());
+    }
+
     class SourceTracker
     {
     public:
@@ -37,6 +52,7 @@ namespace es::obs
         const std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> &getAudioMap() const;
         const std::unordered_map<std::string, std::string> &getSceneMap() const;
         const std::unordered_map<std::string, json> &getTextFieldMap() const;
+        const std::unordered_map<std::string, json> &getDisplaySourcesMap() const;
 
     private:
         static void onFrontendEvent(enum obs_frontend_event event, void *private_data);
@@ -121,6 +137,7 @@ namespace es::obs
         std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> _audioLevelers;
         std::unordered_map<std::string, std::string> _scenes;
         std::unordered_map<std::string, json> _textfields;
+        std::unordered_map<std::string, json> _displaySources;
     };
 }
 

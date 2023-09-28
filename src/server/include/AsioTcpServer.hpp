@@ -98,7 +98,7 @@ namespace es::server
         void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
         void r_GetAllScenes(const json &, Shared<AsioTcpConnection>);
         void r_GetAllTextFields(const json &, Shared<AsioTcpConnection>);
-        void r_GetAllVideoSources(const json &, Shared<AsioTcpConnection>);
+        void r_GetAllDisplaySources(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
         void r_GetCurrentMicsTranscription(const json &, Shared<AsioTcpConnection>);
         void r_GetProfileSettings(const json &, Shared<AsioTcpConnection>);

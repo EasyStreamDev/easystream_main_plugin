@@ -457,6 +457,11 @@ namespace es::obs
         return (_textfields);
     }
 
+    const std::unordered_map<std::string, json> &SourceTracker::getDisplaySourcesMap() const
+    {
+        return (_displaySources);
+    }
+
     void SourceTracker::submitToBroadcast(const json &broad_request)
     {
         if (m_PluginManager)

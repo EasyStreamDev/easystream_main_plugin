@@ -73,8 +73,26 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
     }
 
-    void AsioTcpServer::r_GetAllVideoSources(const json &j, Shared<AsioTcpConnection> con)
+    void AsioTcpServer::r_GetAllDisplaySources(const json &j, Shared<AsioTcpConnection> con)
     {
+        const auto &ds_map = m_PluginManager->GetSourceTracker()->getDisplaySourcesMap();
+        std::vector<json> ds_vec;
+
+        for (const auto &ds : ds_map)
+        {
+            json tmp = ds.second;
+
+            tmp.merge_patch({{"uuid", ds.first}});
+            ds_vec.push_back(tmp);
+        }
+
+        json response_data = {
+            {"length", ds_vec.size()},
+            {"display_sources", ds_vec},
+        };
+
+        // Submit response to outgoing requests queue.
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
     }
 
     void AsioTcpServer::r_GetActReactCouples(const json &j, Shared<AsioTcpConnection> con)

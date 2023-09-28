@@ -23,10 +23,9 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
     // Gather data about created scene item.
     std::string unv_kind(obs_source_get_unversioned_id(scene_item_source));
 
-    std::cerr << "Elem: " << unv_kind << std::endl;
     // Check if item is a text field
     // @note : "text_ft2_source" kind is soon going to be deprecated.
-    if (unv_kind == "text_ft2_source" || unv_kind == "text_gdiplus")
+    if (vector_contains(UNV_KINDS_TEXT_FIELDS, unv_kind))
     {
         // Add text field to the corresponding map in the source tracker.
         source_tracker->_textfields[obs_source_get_uuid(scene_item_source)] = json({
@@ -34,7 +33,18 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
             {"uuid", obs_source_get_uuid(scene_item_source)},
             {"name", obs_source_get_name(scene_item_source)},
         });
-        std::cerr << "Text Field Created: " << obs_source_get_name(scene_item_source) << std::endl;
+        // std::cerr << "Text Field Created: " << obs_source_get_name(scene_item_source) << std::endl;
+        // std::cerr << "\tUUID: " << obs_source_get_uuid(scene_item_source) << std::endl;
+    }
+    // Check if item is a display source
+    else if (vector_contains(UNV_KINDS_DISPLAY_SOURCES, unv_kind))
+    {
+        source_tracker->_displaySources[obs_source_get_uuid(scene_item_source)] = json({
+            {"parent_scene", obs_source_get_name(obs_scene_get_source(scene))},
+            {"uuid", obs_source_get_uuid(scene_item_source)},
+            {"name", obs_source_get_name(scene_item_source)},
+        });
+        std::cerr << "Display source Created: " << obs_source_get_name(scene_item_source) << std::endl;
         std::cerr << "\tUUID: " << obs_source_get_uuid(scene_item_source) << std::endl;
     }
 }
@@ -43,6 +53,7 @@ void es::obs::SourceTracker::handleSceneItemRemoved(void *param, calldata_t *dat
 {
     obs_scene_t *scene = GetCalldataPointer<obs_scene_t>(data, "scene");
     obs_sceneitem_t *scene_item = GetCalldataPointer<obs_sceneitem_t>(data, "item");
+
     if (!scene || !scene_item)
     {
         return;
@@ -57,10 +68,15 @@ void es::obs::SourceTracker::handleSceneItemRemoved(void *param, calldata_t *dat
 
     // Check if item is a text field
     // @note : "text_ft2_source" kind is soon going to be deprecated.
-    if (unv_kind == "text_ft2_source" || unv_kind == "text_gdiplus")
+    if (vector_contains(UNV_KINDS_TEXT_FIELDS, unv_kind))
     {
         // Erase text field corresponding to the uuid in the map.
         source_tracker->_textfields.erase(obs_source_get_uuid(scene_item_source));
+    }
+    else if (vector_contains(UNV_KINDS_DISPLAY_SOURCES, unv_kind))
+    {
+        // Erase display source corresponding to the uuid in the map.
+        source_tracker->_displaySources.erase(obs_source_get_uuid(scene_item_source));
     }
 }
 
