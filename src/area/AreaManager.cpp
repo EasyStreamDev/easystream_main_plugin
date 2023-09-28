@@ -22,6 +22,44 @@ namespace es::area
     {
         this->thread_sleep_ms(2000);
 
+        {   // Test reaction move right
+            action_t a = {
+                1,
+                ActionType::KEY_PRESSED,
+                {
+                    {"key", "u"},
+                    {"ctrl_modifier", true},
+                    {"alt_modifier", false},
+                    {"shift_modifier", true}
+                }};
+            reaction_t r = {
+                1,
+                "test_area_start_record",
+                ReactionType::START_RECORDING,
+                {}};
+
+            this->CreateArea(a, r);
+        }
+
+        {   // Test reaction move right
+            action_t a = {
+                2,
+                ActionType::KEY_PRESSED,
+                {
+                    {"key", "i"},
+                    {"ctrl_modifier", true},
+                    {"alt_modifier", true},
+                    {"shift_modifier", false}
+                }};
+            reaction_t r = {
+                2,
+                "test_area_stop_record",
+                ReactionType::STOP_RECORDING,
+                {}};
+
+            this->CreateArea(a, r);
+        }
+
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
         {

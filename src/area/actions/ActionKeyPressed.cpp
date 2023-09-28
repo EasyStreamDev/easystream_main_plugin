@@ -59,9 +59,12 @@ namespace es::area
         : Action(reaction, area_id, param)
     {
         _key = param["key"].get<std::string>();
-        
         std::transform(_key.begin(), _key.end(), _key.begin(),
             [](unsigned char c){ return std::tolower(c); });
+
+        _CTRL_modifier = param["ctrl_modifier"].get<bool>();
+        _ALT_modifier = param["alt_modifier"].get<bool>();
+        _SHIFT_modifier = param["shift_modifier"].get<bool>();
     }
 
     ActionKeyPressed::~ActionKeyPressed()
@@ -70,6 +73,10 @@ namespace es::area
 
     void ActionKeyPressed::Solve()
     {
+        blog(LOG_INFO, "### CTRL: %d", _CTRL_modifier);
+        blog(LOG_INFO, "### ALT: %d", _ALT_modifier);
+        blog(LOG_INFO, "### SHIFT: %d", _SHIFT_modifier);
+        blog(LOG_INFO, "######################");
         if (IsKeyPressed(_key))
         {
             this->_isTrue = true;
@@ -81,14 +88,25 @@ namespace es::area
         return {
             _id,
             ActionType::KEY_PRESSED,
-            {{"key", _key}}};
+            {
+                {"key", _key},
+                {"ctrl_modifier", _CTRL_modifier},
+                {"alt_modifier", _ALT_modifier},
+                {"shift_modifier", _SHIFT_modifier}
+            }};
     }
 
     bool ActionKeyPressed::IsKeyPressed(std::string KeyStr) {
         #ifdef _WIN32 // Windows
             // Windows implementation
+            if (_CTRL_modifier && !(GetAsyncKeyState(VK_CONTROL) & 0x8000))
+                return false;
+            if (_ALT_modifier && !(GetAsyncKeyState(VK_MENU) & 0x8000))
+                return false;
+            if (_SHIFT_modifier && !(GetAsyncKeyState(VK_SHIFT) & 0x8000))
+                return false;
 
-            return ((GetAsyncKeyState(KeyStrToKeyCode[KeyStr]) & 0x8000) && (GetAsyncKeyState(VK_SHIFT) & 0x8000)) != 0;
+            return (GetAsyncKeyState(KeyStrToKeyCode[KeyStr]) & 0x8000) != 0;
         #elif __linux__ // Linux
             // Linux implementation
             Display* display = XOpenDisplay(nullptr);

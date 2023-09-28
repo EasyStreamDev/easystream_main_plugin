@@ -211,8 +211,8 @@ namespace es
         }
         else
         {
-            char *args[] = {strdup(TRANSCRIPTPATH), NULL};
-            execv(args[0], args);
+            // char *args[] = {strdup(TRANSCRIPTPATH), NULL};
+            // execv(args[0], args);
         }
 #endif
     }

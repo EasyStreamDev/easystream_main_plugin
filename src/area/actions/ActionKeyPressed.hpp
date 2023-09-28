@@ -26,6 +26,9 @@ namespace es::area
     protected:
     private:
         std::string _key = "";
+        bool _CTRL_modifier = false;
+        bool _ALT_modifier = false;
+        bool _SHIFT_modifier = false;
     };
 }
 
