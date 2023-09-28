@@ -224,18 +224,19 @@ Mise à jour de la force d'un compresseur (lié à une entrée audio spécifique
 ### **Enabling / Disabling subtitles**
 * **Description**  
 Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone spécifique.  
-Le paramètre `language` n'est pris en compte que si la transciption est activée.  
 
 * **Request**
 ```json
-{
-    "command": "setSubtitles",
-    "params": {
-        "enable": "boolean",
-        "uuid": "string",
-        // "language": "string", // IETF language tag
-    }
+setSubtitles
+  'params': {
+        "uuid": "string", uuid of textField,
+        "length": int,
+        "linked_mics": "array string" list of micNames
 }
+
+
+response:
+    "OK" if success with code 200, or false 400
 ```
 
 * **Response**
