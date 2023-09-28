@@ -181,6 +181,7 @@ Récupération des paramètres de sous-titrage enregistrés au niveau du serveur
             {
                 "uuid": "string",
                 "name": "string",
+                "linked_mics": ["MicA", "MicB"]
             },
             ... // Next element
         ]
