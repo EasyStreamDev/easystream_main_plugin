@@ -230,7 +230,7 @@ Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone sp�
 {
   "command": "setSubtitles",
   "params": {
-        "uuid": "string", // uuid of textField,
+        "uuid": "string", // uuid des textFields,
         "length": "integer",
         "linked_mics": ["MicA", "MicB"] // liste des micros
     }
@@ -240,7 +240,7 @@ Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone sp�
 * **Response**
 ```json
 {
-    "statusCode": "integer", // 200 si succes ou 400
+    "statusCode": "integer",
     "message": "string",
 }
 ```
