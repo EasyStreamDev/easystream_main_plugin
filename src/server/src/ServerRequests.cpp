@@ -253,11 +253,6 @@ namespace es::server
             return;
         }
 
-        // m_PluginManager->GetSubtitlesManager()->updateSubtitlesSettings(
-        //     target_uuid,          // text field uuid
-        //     enable,               // enable/disable parameter
-        //     tf->second.at("name") // text field name in obs
-        // );
         m_PluginManager->GetSubtitlesManager()->setSubtitles(target_uuid, _lMics);
 
         m_OutRequestQueue.ts_push(std::make_pair(

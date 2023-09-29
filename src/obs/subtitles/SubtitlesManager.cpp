@@ -1,8 +1,5 @@
 #include "SubtitlesManager.hpp"
 #include "../../PluginManager.hpp"
-// #include
-// #include "../speechRecognition/Transcriptor.hpp"
-// #include "../speechRecognition/transcript/TranscriptorManager.hpp"
 
 namespace es::subtitles
 {
@@ -105,27 +102,6 @@ namespace es::subtitles
             obs_data_release(text_settings);
             obs_source_release(tf_source);
         }
-    }
-
-    void SubtitlesManager::updateSubtitlesSettings(const std::string &uuid, const bool &enable, const std::string &name)
-    {
-        // if (enable)
-        // {
-        //     this->m_TextFieldsTargets.push_back({uuid, name});
-        // }
-        // else
-        // {
-        //     // To modify
-        //     m_TextFieldsTargets.erase(
-        //         std::remove_if(
-        //             m_TextFieldsTargets.begin(),
-        //             m_TextFieldsTargets.end(),
-        //             [uuid](const text_field_data &tf)
-        //             {
-        //                 return tf.uuid == uuid;
-        //             }),
-        //         m_TextFieldsTargets.end());
-        // }
     }
 
     const json SubtitlesManager::getSubtitlesSettings(void) const
