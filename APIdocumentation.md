@@ -1,22 +1,24 @@
 # Server endpoint documentation
 
-
 ## **Get requests**
+
 <br>
 
 ### **Getting all microphones data**
 
-* **Description**  
-Le client demande la liste de tous les micros ainsi que des données disponibles à leurs sujet.  
+- **Description**  
+  Le client demande la liste de tous les micros ainsi que des données disponibles à leurs sujet.
 
-* **Request**  
+- **Request**
+
 ```json
 {
-    "command": "getAllMics",
+  "command": "getAllMics"
 }
 ```
 
-* **Response**  
+- **Response**
+
 ```json
 {
     "statusCode": "integer",
@@ -41,17 +43,19 @@ Le client demande la liste de tous les micros ainsi que des données disponibles
 
 ### **Getting all scenes basic data**
 
-* **Description**  
-Le client demande la liste de toutes les scenes ainsi que des données disponibles à leurs sujet.  
+- **Description**  
+  Le client demande la liste de toutes les scenes ainsi que des données disponibles à leurs sujet.
 
-* **Request**  
+- **Request**
+
 ```json
 {
-    "command": "getAllScenes",
+  "command": "getAllScenes"
 }
 ```
 
-* **Response**  
+- **Response**
+
 ```json
 {
     "statusCode": "integer",
@@ -75,22 +79,22 @@ Le client demande la liste de toutes les scenes ainsi que des données disponibl
 
 ### **Getting all text fields basic data**
 
-* **Description**  
-Le client demande la liste de tous les champs texte ainsi que certaines données à leurs sujet.  
-Les données renvoyées à leur sujet sont les suivantes:  
-    - Le nom du champ texte (`name`)
-    - Le nom de la scène à laquelle le champ texte appartient (`parent_scene`)
-    - L'identifiant unique du champ texte (`uuid`)
+- **Description**  
+  Le client demande la liste de tous les champs texte ainsi que certaines données à leurs sujet.  
+  Les données renvoyées à leur sujet sont les suivantes:
 
+  - Le nom du champ texte (`name`) - Le nom de la scène à laquelle le champ texte appartient (`parent_scene`) - L'identifiant unique du champ texte (`uuid`)
 
-* **Request**  
+- **Request**
+
 ```json
 {
-    "command": "getAllTextFields",
+  "command": "getAllTextFields"
 }
 ```
 
-* **Response**  
+- **Response**
+
 ```json
 {
     "statusCode": "integer",
@@ -112,19 +116,62 @@ Les données renvoyées à leur sujet sont les suivantes:
 <br>
 
 ---
-### **Getting action / reaction couples**
 
-* **Description**  
-Récupération des données de toutes les couples actions / réaction enregistrés au niveau du serveur (plugin).  
+### **Getting all display sources basic data**
 
-* **Request**
+- **Description**  
+  Le client demande la liste de toutes les sources affichant un flux d'image ainsi que certaines données à leurs sujet.  
+  Les données renvoyées à leur sujet sont les suivantes:
+
+  - Le nom de la source d'affichage de flux vidéo (`name`) - Le nom de la scène à laquelle l'élément (`parent_scene`) - L'identifiant unique de l'élément (`uuid`)
+
+- **Request**
+
 ```json
 {
-    "command": "getActReactCouples",
+  "command": "getAllDisplaySources"
 }
 ```
 
-* **Response**
+- **Response**
+
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "length": "integer",
+        "display_sources": [
+            {
+                "name": "string",
+                "parent_scene": "string",
+                "uuid": "string",
+            },
+            ...
+        ]
+    }
+}
+```
+
+<br>
+
+---
+
+### **Getting action / reaction couples**
+
+- **Description**  
+  Récupération des données de toutes les couples actions / réaction enregistrés au niveau du serveur (plugin).
+
+- **Request**
+
+```json
+{
+  "command": "getActReactCouples"
+}
+```
+
+- **Response**
+
 ```json
 {
     "statusCode": "integer",
@@ -158,19 +205,22 @@ Récupération des données de toutes les couples actions / réaction enregistr�
 ```
 
 ---
+
 ### **Getting subtitles settings**
 
-* **Description**  
-Récupération des paramètres de sous-titrage enregistrés au niveau du serveur (plugin).  
+- **Description**  
+  Récupération des paramètres de sous-titrage enregistrés au niveau du serveur (plugin).
 
-* **Request**
+- **Request**
+
 ```json
 {
-    "command": "getSubtitlesSettings",
+  "command": "getSubtitlesSettings"
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
     "statusCode": "integer",
@@ -188,17 +238,96 @@ Récupération des paramètres de sous-titrage enregistrés au niveau du serveur
 }
 ```
 
+---
+
+### **Getting Easystream settings**
+
+- **Description**  
+  Récupération des paramètres effectifs du plugin.
+
+- **Request**
+
+```json
+{
+  "command": "getProfileSettings"
+}
+```
+
+- **Response**
+
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "easystream": {
+            "areas": {
+                "length": "integer",
+                "actReacts": [
+                    {
+                        "actReactId": "integer",
+                        "isActive": "boolean",
+                        "action": {
+                            "actionId": "integer",
+                            "type": "action_type",
+                            "params": {
+                                ... // Depends on action type
+                            }
+                        },
+                        "reaction": {
+                            "name": "string",
+                            "reactionId": "integer",
+                            "type": "reaction_type",
+                            "params": {
+                                ... // Depends on reaction type
+                            }
+                        }
+                    },
+                    ... // Next element
+                ]
+            },
+            "subtitles": {
+                "length": "integer",
+                "text_fields": [
+                    {
+                        "uuid": "string",
+                        "name": "string",
+                    },
+                    ... // Next element
+                ]
+            },
+            "compressors": {
+                "length": "integer",
+                "mics": [
+                    {
+                        "micName": "string",
+                        "level": "integer",
+                        "isActive": "boolean",
+                    },
+                    ... // Next element
+                ]
+            }
+        },
+        "obs": {
+            // Coming soon
+        }
+    }
+}
+```
 
 <br>
 
 ## **Set requests**
 
 ---
-### **Setting compressor strength**
-* **Description**  
-Mise à jour de la force d'un compresseur (lié à une entrée audio spécifique).  
 
-* **Request**  
+### **Setting compressor strength**
+
+- **Description**  
+  Mise à jour de la force d'un compresseur (lié à une entrée audio spécifique).
+
+- **Request**
+
 ```json
 {
     "command": "setCompressorLevel",
@@ -210,52 +339,59 @@ Mise à jour de la force d'un compresseur (lié à une entrée audio spécifique
 },
 ```
 
-* **Response**  
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string",
+  "statusCode": "integer",
+  "message": "string"
 }
 ```
 
 <br>
 
 ---
+
 ### **Enabling / Disabling subtitles**
-* **Description**  
-Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone spécifique.  
-Le paramètre `language` n'est pris en compte que si la transciption est activée.  
 
-* **Request**
+- **Description**  
+  Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone spécifique.  
+  Le paramètre `language` n'est pris en compte que si la transciption est activée.
+
+- **Request**
+
 ```json
 {
-    "command": "setSubtitles",
-    "params": {
-        "enable": "boolean",
-        "uuid": "string",
-        // "language": "string", // IETF language tag
-    }
+  "command": "setSubtitles",
+  "params": {
+    "enable": "boolean",
+    "uuid": "string"
+    // "language": "string", // IETF language tag
+  }
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string",
+  "statusCode": "integer",
+  "message": "string"
 }
 ```
 
 <br>
 
 ---
-### **Setting an action / reaction couple**  
 
-* **Description**  
-Mise en place d'un couple action/reaction au niveau du plugin.  
-Lorsque l'action est détectée, la réaction est déclenchée automatiquement.  
+### **Setting an action / reaction couple**
 
-* **Request**
+- **Description**  
+  Mise en place d'un couple action/reaction au niveau du plugin.  
+  Lorsque l'action est détectée, la réaction est déclenchée automatiquement.
+
+- **Request**
+
 ```json
 {
     "command": "setActionReaction",
@@ -277,61 +413,66 @@ Lorsque l'action est détectée, la réaction est déclenchée automatiquement.
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string",
-    "data": {
-        "actionId": "integer",
-        "reactionId": "integer",
-        "actReactId": "integer",
-    }
+  "statusCode": "integer",
+  "message": "string",
+  "data": {
+    "actionId": "integer",
+    "reactionId": "integer",
+    "actReactId": "integer"
+  }
 }
 ```
- 
+
 <br>
 
 ## **Remove and Update requests**
 
-### **Remove an action / reaction couple**  
+### **Remove an action / reaction couple**
 
-* **Description**  
-Suppression d'un couple action/reaction au niveau du plugin.  
+- **Description**  
+  Suppression d'un couple action/reaction au niveau du plugin.
 
-* **Request**
+- **Request**
+
 ```json
 {
-    "command": "removeActReact",
-    "params": {
-        "actReactId": "integer",
-    }
+  "command": "removeActReact",
+  "params": {
+    "actReactId": "integer"
+  }
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string",
-    "data": {
-        "actReactId": "integer"
-    }
+  "statusCode": "integer",
+  "message": "string",
+  "data": {
+    "actReactId": "integer"
+  }
 }
 ```
 
 <br>
 
 ---
-### **Updating an action**  
 
-* **Description**  
-Mise à jour d'une action côté plugin.  
-L'action peut changer de type et / ou de paramètres.  
-Une fois mise à jour, l'action reste reliée à sa/ses réaction(s).  
-Si la requête est invalide, l'action reste inchangée.
+### **Updating an action**
 
-* **Request**
+- **Description**  
+  Mise à jour d'une action côté plugin.  
+  L'action peut changer de type et / ou de paramètres.  
+  Une fois mise à jour, l'action reste reliée à sa/ses réaction(s).  
+  Si la requête est invalide, l'action reste inchangée.
+
+- **Request**
+
 ```json
 {
     "command": "updateAction",
@@ -345,29 +486,32 @@ Si la requête est invalide, l'action reste inchangée.
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string",
-    "data": {
-        "actionId": "integer"
-    }
+  "statusCode": "integer",
+  "message": "string",
+  "data": {
+    "actionId": "integer"
+  }
 }
 ```
 
 <br>
 
 ---
-### **Update reaction**  
 
-* **Description**  
-Mise à jour d'une réaction côté plugin.  
-La réaction peut changer de type et / ou de paramètres.  
-Une fois mise à jour, la réaction reste reliée à son/ses action(s).  
-Si la requête est invalide, l'action reste inchangée.
+### **Update reaction**
 
-* **Request**
+- **Description**  
+  Mise à jour d'une réaction côté plugin.  
+  La réaction peut changer de type et / ou de paramètres.  
+  Une fois mise à jour, la réaction reste reliée à son/ses action(s).  
+  Si la requête est invalide, l'action reste inchangée.
+
+- **Request**
+
 ```json
 {
     "command": "updateReaction",
@@ -382,14 +526,15 @@ Si la requête est invalide, l'action reste inchangée.
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string",
-    "data": {
-        "reactionId": "integer"
-    }
+  "statusCode": "integer",
+  "message": "string",
+  "data": {
+    "reactionId": "integer"
+  }
 }
 ```
 
@@ -398,29 +543,32 @@ Si la requête est invalide, l'action reste inchangée.
 
 # **Broadcast**
 
-## *Subscribe to broadcast*
+## _Subscribe to broadcast_
 
-* **Request**
+- **Request**
+
 ```json
 {
-    "command": "subscribeBroadcast",
-    "params": {
-        "enable": "bool"
-    }
+  "command": "subscribeBroadcast",
+  "params": {
+    "enable": "bool"
+  }
 }
 ```
 
-* **Response**
+- **Response**
+
 ```json
 {
-    "statusCode": "integer",
-    "message": "string"
+  "statusCode": "integer",
+  "message": "string"
 }
 ```
 
-## *Remote changes*
+## _Remote changes_
 
 **Areas Update**
+
 ```json
 {
     "statusCode": 201,
@@ -455,6 +603,7 @@ Si la requête est invalide, l'action reste inchangée.
 ```
 
 **Compressors Update**
+
 ```json
 {
     "statusCode": 201,
@@ -475,104 +624,110 @@ Si la requête est invalide, l'action reste inchangée.
 ```
 
 **Subtitles Update**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "subtitlesSettingsChanged",
-        "enable": "boolean",
-        "language": "string", // IETF language tag
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "subtitlesSettingsChanged",
+    "enable": "boolean",
+    "language": "string" // IETF language tag
+  }
 }
 ```
 
-
-## *OBS: Scene updates*
+## _OBS: Scene updates_
 
 **Scene Created**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "sceneCreated",
-        "name": "string",
-        "uuid": "string"
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "sceneCreated",
+    "name": "string",
+    "uuid": "string"
+  }
 }
 ```
 
 **Scene Removed**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "sceneRemoved",
-        "name": "string",
-        "uuid": "string"
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "sceneRemoved",
+    "name": "string",
+    "uuid": "string"
+  }
 }
 ```
 
 **Scene Name Changed**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "sceneNameChanged",
-        "name": "string",
-        "oldName": "string",
-        "uuid": "string"
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "sceneNameChanged",
+    "name": "string",
+    "oldName": "string",
+    "uuid": "string"
+  }
 }
 ```
 
-## *OBS: Audio source updates*
+## _OBS: Audio source updates_
 
 **Audio Source Created**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "audioSourceCreated",
-        "name": "string",
-        "uuid": "string",
-        "kind": "string",
-        "unversioned_kind": "string",
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "audioSourceCreated",
+    "name": "string",
+    "uuid": "string",
+    "kind": "string",
+    "unversioned_kind": "string"
+  }
 }
 ```
 
 **Audio Source Removed**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "audioSourceRemoved",
-        "name": "string",
-        "uuid": "string",
-        "kind": "string",
-        "unversioned_kind": "string",
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "audioSourceRemoved",
+    "name": "string",
+    "uuid": "string",
+    "kind": "string",
+    "unversioned_kind": "string"
+  }
 }
 ```
 
 **Audio Source Name Changed**
+
 ```json
 {
-    "statusCode": 201,
-    "message": "BROADCAST",
-    "data": {
-        "type": "audioSourceNameChanged",
-        "name": "string",
-        "oldName": "string",
-        "uuid": "string"
-    },
+  "statusCode": 201,
+  "message": "BROADCAST",
+  "data": {
+    "type": "audioSourceNameChanged",
+    "name": "string",
+    "oldName": "string",
+    "uuid": "string"
+  }
 }
 ```
 
@@ -581,79 +736,87 @@ Si la requête est invalide, l'action reste inchangée.
 
 # **Actions / Reactions**
 
-## *Actions*
+## _Actions_
 
 **Word detection**
+
 ```json
 {
-    "type": "WORD_DETECT",
-    "params": {
-        "words": ["word1", "word2", "..."]
-    },
+  "type": "WORD_DETECT",
+  "params": {
+    "words": ["word1", "word2", "..."]
+  }
 }
 ```
 
 **Application launch**
+
 ```json
 {
-    "type": "APP_LAUNCH",
-    "params": {
-        "app_name": "app_identifier"
-    },
+  "type": "APP_LAUNCH",
+  "params": {
+    "app_name": "app_identifier"
+  }
 }
 ```
 
 **Key pressed**
+
 ```json
 {
-    "type": "KEY_PRESSED",
-    "params": {
-        "key": "key_identifier"
-    },
+  "type": "KEY_PRESSED",
+  "params": {
+    "key": "key_identifier"
+  }
 }
 ```
 
 ---
-## *Reactions*
+
+## _Reactions_
 
 **Scene switch**
+
 ```json
 {
-    "type": "SCENE_SWITCH",
-    "params": {
-        "name": "scene_name", // Not necessary for SET or UPDATE requests
-        "uuid": "scene_unique_identifier"
-    }
+  "type": "SCENE_SWITCH",
+  "params": {
+    "name": "scene_name", // Not necessary for SET or UPDATE requests
+    "uuid": "scene_unique_identifier"
+  }
 }
 ```
 
 **Toggle audio compressor**
+
 ```json
 {
-    "type": "TOGGLE_AUDIO_COMPRESSOR",
-    "params": {
-        "audio-source": "audio_source_identifier",
-        "toggle": "bool"
-    }
+  "type": "TOGGLE_AUDIO_COMPRESSOR",
+  "params": {
+    "audio-source": "audio_source_identifier",
+    "toggle": "bool"
+  }
 }
 ```
 
 **Start/Stop recording**
+
 ```json
 {
-    "type": ["START_REC", "STOP_REC"], // One of ...
-    "params": {
-        "delay": "int" // In seconds
-    }
+  "type": ["START_REC", "STOP_REC"], // One of ...
+  "params": {
+    "delay": "int" // In seconds
+  }
 }
 ```
 
 **Start/Stop streaming**
+
 ```json
 {
-    "type": ["START_STREAM", "STOP_STREAM"], // One of ...
-    "params": {
-        "delay": "int" // In seconds
-    }
+  "type": ["START_STREAM", "STOP_STREAM"], // One of ...
+  "params": {
+    "delay": "int" // In seconds
+  }
 }
 ```
