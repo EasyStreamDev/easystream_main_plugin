@@ -34,12 +34,12 @@ namespace es::server
         const auto &scene_map = m_PluginManager->GetSourceTracker()->getSceneMap();
         std::vector<json> scene_vec;
 
+        std::cerr << "--------------- Gathering scene data ---------------" << std::endl;
         for (const auto &scene : scene_map)
         {
-            scene_vec.push_back({
-                {"uuid", scene.first},
-                {"name", scene.second},
-            });
+            scene_vec.push_back({{"uuid", scene.first},
+                                 {"name", scene.second->getName()},
+                                 {"arch", scene.second->getArchitecture()}});
         }
 
         json response_data = {

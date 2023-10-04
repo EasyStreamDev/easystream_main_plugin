@@ -13,7 +13,7 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
     std::string name(obs_source_get_name(source));
     std::string uuid(obs_source_get_uuid(source));
 
-    // blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());*
+    // blog(LOG_INFO, "### [SourceTracker::handleSceneCreated] %s:%s", name.c_str(), uuid.c_str());
 
     // OBSSourceAutoRelease captExample = obs_get_source_by_name("testCapture");
 
@@ -25,15 +25,13 @@ void es::obs::SourceTracker::handleSceneCreated(obs_source_t *source)
     // }
 
     // Add scene to map.
-    this->_scenes[uuid] = name;
-
-    // @todo: submit to server
-    const json broadcastRequestData = {
+    this->_scenes[uuid] = new Scene(source);
+    // Notify server
+    this->submitToBroadcast(json{
         {"type", "sceneCreated"},
         {"name", name},
         {"uuid", uuid},
-    };
-    this->submitToBroadcast(broadcastRequestData);
+    });
 }
 
 void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
@@ -46,14 +44,12 @@ void es::obs::SourceTracker::handleSceneRemoved(obs_source_t *source)
 
     // Remove scene from map.
     this->_scenes.erase(uuid);
-
-    // @todo: submit to server
-    const json broadcastRequestData = {
+    // Notify server
+    this->submitToBroadcast(json{
         {"type", "sceneRemoved"},
         {"name", name},
         {"uuid", uuid},
-    };
-    this->submitToBroadcast(broadcastRequestData);
+    });
 }
 
 void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::string oldName, std::string name)
@@ -63,16 +59,14 @@ void es::obs::SourceTracker::handleSceneNameChanged(obs_source_t *source, std::s
     // blog(LOG_INFO, "### [SourceTracker::handleSceneNameChanged]: %s:%s", name.c_str(), uuid.c_str());
 
     // Changes name of scene in map or adds scene to map.
-    this->_scenes[uuid] = name;
-
-    // @todo: submit to server
-    const json broadcastRequestData = {
+    this->_scenes[uuid]->setName(name);
+    // Notify server
+    this->submitToBroadcast(json{
         {"type", "sceneNameChanged"},
         {"name", name},
         {"oldName", oldName},
         {"uuid", uuid},
-    };
-    this->submitToBroadcast(broadcastRequestData);
+    });
 }
 
 void es::obs::SourceTracker::handleCurrentSceneChanged()

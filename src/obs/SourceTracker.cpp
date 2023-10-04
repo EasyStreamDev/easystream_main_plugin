@@ -447,7 +447,7 @@ namespace es::obs
         return (_audioLevelers);
     }
 
-    const std::unordered_map<std::string, std::string> &SourceTracker::getSceneMap() const
+    const std::unordered_map<std::string, Scene *> &SourceTracker::getSceneMap() const
     {
         return (_scenes);
     }

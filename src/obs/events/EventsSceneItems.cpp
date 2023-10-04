@@ -15,9 +15,10 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
     {
         return;
     }
-
+    // Get source from scene item parent scene
+    obs_source_t *scene_source = obs_scene_get_source(scene);
     // Get source from obs_sceneitem_t to gather data from it.
-    const obs_source_t *scene_item_source = obs_sceneitem_get_source(scene_item);
+    obs_source_t *scene_item_source = obs_sceneitem_get_source(scene_item);
     // Reinstantiate source tracker from param.
     SourceTracker *source_tracker = (SourceTracker *)param;
     // Gather data about created scene item.
@@ -29,23 +30,19 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
     {
         // Add text field to the corresponding map in the source tracker.
         source_tracker->_textfields[obs_source_get_uuid(scene_item_source)] = json({
-            {"parent_scene", obs_source_get_name(obs_scene_get_source(scene))},
+            {"parent_scene", obs_source_get_name(scene_source)},
             {"uuid", obs_source_get_uuid(scene_item_source)},
             {"name", obs_source_get_name(scene_item_source)},
         });
-        // std::cerr << "Text Field Created: " << obs_source_get_name(scene_item_source) << std::endl;
-        // std::cerr << "\tUUID: " << obs_source_get_uuid(scene_item_source) << std::endl;
     }
     // Check if item is a display source
     else if (vector_contains(UNV_KINDS_DISPLAY_SOURCES, unv_kind))
     {
         source_tracker->_displaySources[obs_source_get_uuid(scene_item_source)] = json({
-            {"parent_scene", obs_source_get_name(obs_scene_get_source(scene))},
+            {"parent_scene", obs_source_get_name(scene_source)},
             {"uuid", obs_source_get_uuid(scene_item_source)},
             {"name", obs_source_get_name(scene_item_source)},
         });
-        std::cerr << "Display source Created: " << obs_source_get_name(scene_item_source) << std::endl;
-        std::cerr << "\tUUID: " << obs_source_get_uuid(scene_item_source) << std::endl;
     }
 }
 
@@ -53,14 +50,12 @@ void es::obs::SourceTracker::handleSceneItemRemoved(void *param, calldata_t *dat
 {
     obs_scene_t *scene = GetCalldataPointer<obs_scene_t>(data, "scene");
     obs_sceneitem_t *scene_item = GetCalldataPointer<obs_sceneitem_t>(data, "item");
-
     if (!scene || !scene_item)
     {
         return;
     }
-
     // Get source from obs_sceneitem_t to gather data from it.
-    const obs_source_t *scene_item_source = obs_sceneitem_get_source(scene_item);
+    obs_source_t *scene_item_source = obs_sceneitem_get_source(scene_item);
     // Reinstantiate source tracker from param.
     SourceTracker *source_tracker = (SourceTracker *)param;
     // Gather data about created scene item.
@@ -83,12 +78,8 @@ void es::obs::SourceTracker::handleSceneItemRemoved(void *param, calldata_t *dat
 void es::obs::SourceTracker::handleSceneItemListReindexed(void *param, calldata_t *data)
 {
     obs_scene_t *scene = GetCalldataPointer<obs_scene_t>(data, "scene");
-    if (!scene)
-    {
-        return;
-    }
     obs_sceneitem_t *sceneItem = GetCalldataPointer<obs_sceneitem_t>(data, "item");
-    if (!sceneItem)
+    if (!scene || !sceneItem)
     {
         return;
     }
@@ -101,12 +92,8 @@ void es::obs::SourceTracker::handleSceneItemListReindexed(void *param, calldata_
 void es::obs::SourceTracker::handleSceneItemEnableStateChanged(void *param, calldata_t *data)
 {
     obs_scene_t *scene = GetCalldataPointer<obs_scene_t>(data, "scene");
-    if (!scene)
-    {
-        return;
-    }
     obs_sceneitem_t *sceneItem = GetCalldataPointer<obs_sceneitem_t>(data, "item");
-    if (!sceneItem)
+    if (!scene || !sceneItem)
     {
         return;
     }
@@ -121,12 +108,11 @@ void es::obs::SourceTracker::handleSceneItemEnableStateChanged(void *param, call
 void es::obs::SourceTracker::handleSceneItemLockStateChanged(void *param, calldata_t *data)
 {
     obs_scene_t *scene = GetCalldataPointer<obs_scene_t>(data, "scene");
-    if (!scene)
-        return;
-
     obs_sceneitem_t *sceneItem = GetCalldataPointer<obs_sceneitem_t>(data, "item");
-    if (!sceneItem)
+    if (!scene || !sceneItem)
+    {
         return;
+    }
 
     bool sceneItemLocked = calldata_bool(data, "locked");
 
@@ -138,12 +124,11 @@ void es::obs::SourceTracker::handleSceneItemLockStateChanged(void *param, callda
 void es::obs::SourceTracker::handleSceneItemTransformChanged(void *param, calldata_t *data)
 {
     obs_scene_t *scene = GetCalldataPointer<obs_scene_t>(data, "scene");
-    if (!scene)
-        return;
-
     obs_sceneitem_t *sceneItem = GetCalldataPointer<obs_sceneitem_t>(data, "item");
-    if (!sceneItem)
+    if (!scene || !sceneItem)
+    {
         return;
+    }
 
     std::string name(obs_source_get_name(obs_scene_get_source(scene)));
     int64_t sceneItemId = obs_sceneitem_get_id(sceneItem);

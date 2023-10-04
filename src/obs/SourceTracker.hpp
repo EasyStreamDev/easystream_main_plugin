@@ -15,6 +15,7 @@
 
 // Local
 #include "autoAudioLeveler/AutoAudioLeveler.hpp"
+#include "types/Scene.hpp"
 
 // Linked
 #include <unordered_map>
@@ -22,6 +23,8 @@
 
 namespace es::obs
 {
+    using Scene = types::Scene;
+
     static const std::vector<std::string> UNV_KINDS_AUDIO_IO = {"pulse_input_capture", "pulse_output_capture", "alsa_input_capture"};
     static const std::vector<std::string> UNV_KINDS_TEXT_FIELDS = {"text_ft2_source", "text_gdiplus"};
     static const std::vector<std::string> UNV_KINDS_DISPLAY_SOURCES = {
@@ -50,7 +53,7 @@ namespace es::obs
         static bool filterTransitions(std::string name, obs_source_t *source);
         static bool filterScenes(std::string name, obs_source_t *source);
         const std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> &getAudioMap() const;
-        const std::unordered_map<std::string, std::string> &getSceneMap() const;
+        const std::unordered_map<std::string, Scene *> &getSceneMap() const;
         const std::unordered_map<std::string, json> &getTextFieldMap() const;
         const std::unordered_map<std::string, json> &getDisplaySourcesMap() const;
 
@@ -135,7 +138,7 @@ namespace es::obs
         bool _obsLoaded;
         // std::vector<AutoAudioLeveler> _audioSource;
         std::unordered_map<std::string, std::shared_ptr<AutoAudioLeveler>> _audioLevelers;
-        std::unordered_map<std::string, std::string> _scenes;
+        std::unordered_map<std::string, Scene *> _scenes;
         std::unordered_map<std::string, json> _textfields;
         std::unordered_map<std::string, json> _displaySources;
     };
