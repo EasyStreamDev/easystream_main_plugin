@@ -127,6 +127,15 @@ const float &es::obs::AutoAudioLeveler::getDesiredLevel() const
     return (_desiredAudioLevel);
 }
 
+const std::string es::obs::AutoAudioLeveler::GetUuid(void) const
+{
+    if (!this->_source)
+    {
+        return "";
+    }
+    return obs_source_get_uuid(this->_source);
+}
+
 void es::obs::AutoAudioLeveler::setDesiredLevel(const float &v)
 {
     // std::cout << "_desiredAudioLevel before " << _desiredAudioLevel << std::endl;

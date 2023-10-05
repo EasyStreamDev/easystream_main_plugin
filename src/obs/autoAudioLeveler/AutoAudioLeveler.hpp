@@ -43,6 +43,7 @@ namespace es::obs
         void setDesiredLevel(const float &);
         bool isActive() const;
         void SetActive(bool);
+        const std::string GetUuid() const;
     };
 }
 

@@ -56,6 +56,14 @@ namespace es::user
 
     const json UserProfile::getObsSettings(const bool &update)
     {
+        std::vector<json> scenes_architectures = {};
+        const auto scenes = m_PluginManager->GetSourceTracker()->getSceneMap();
+
+        for (const auto &it : scenes)
+        {
+            scenes_architectures.push_back(it.second->getArchitecture());
+        }
+
         if (update)
         {
             this->update();
@@ -93,7 +101,13 @@ namespace es::user
              }},
             {"inputs", m_Inputs},
             {"outputs", m_Outputs},
-        };
+            {
+                "architecture",
+                {
+                    {"length", scenes_architectures.size()},
+                    {"scenes", scenes_architectures},
+                },
+            }};
     }
 
     const json UserProfile::getEeasystreamSettings(const bool &update)
@@ -149,6 +163,7 @@ namespace es::user
             // Adding compressor level related to microphone
             m["level"] = 100.0 - floor((tmpValue * 100) / 60);
             m["isActive"] = micAudioLeveler_->isActive();
+            m["uuid"] = micAudioLeveler_->GetUuid();
         }
 
         return json{

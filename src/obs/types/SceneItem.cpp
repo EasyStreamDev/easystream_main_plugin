@@ -19,14 +19,12 @@ namespace es::obs::types
      */
     obs_scene_t *SceneItem::get_scene_from_uuid(const std::string &uuid)
     {
-        obs_source_t *source = obs_get_source_by_uuid(uuid.c_str());
+        OBSSourceAutoRelease source = obs_get_source_by_uuid(uuid.c_str());
         if (!source)
         {
             return nullptr;
         }
         obs_scene_t *scene = obs_get_scene_by_name(obs_source_get_name(source));
-
-        obs_source_release(source);
 
         return scene;
     }

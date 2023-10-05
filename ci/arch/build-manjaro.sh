@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-cd $easyStreamEnv
-echo "Entering env folder"
-echo $PWD
-source ./bin/activate
-echo "Environment activated"
 cd $rootProject
+source $easyStreamEnv/bin/activate
+echo "Environment activated"
 
 if [ $# -eq 0 ]; then
     echo "No arguments given"
@@ -13,7 +10,7 @@ fi
 
 # set -ex
 if [[ $2 == true ]]; then
-    rm -rf build && mkdir build && cd build
+    sudo rm -rf build && mkdir build && cd build
     if [ "$1" = "Debug" ]; then
         conan install "$rootProject/utils/ubuntu/" --build=missing --profile "$rootProject/utils/ubuntu/ubuntuDebug"
     else

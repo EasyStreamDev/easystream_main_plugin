@@ -10,8 +10,8 @@ namespace es::obs::types
 
     void Scene::update(void)
     {
-        obs_source_t *source = obs_get_source_by_uuid(m_UUID.c_str());
-        obs_scene_t *scene = nullptr;
+        OBSSourceAutoRelease source = obs_get_source_by_uuid(m_UUID.c_str());
+        OBSSceneAutoRelease scene = nullptr;
 
         if (!source)
         {
@@ -23,7 +23,6 @@ namespace es::obs::types
 
         if (!scene)
         {
-            obs_source_release(source);
             return;
         }
 
@@ -31,18 +30,15 @@ namespace es::obs::types
         if (m_ParentUUID.has_value())
         {
             std::cerr << "Child scene detected: updating - " << m_Name << std::endl;
-            obs_scene_t *parent_scene = Scene::get_scene_from_uuid(m_ParentUUID.value());
-            obs_sceneitem_t *scene_item = obs_scene_sceneitem_from_source(parent_scene, source);
-            obs_scene_release(parent_scene);
+            OBSSceneAutoRelease parent_scene = Scene::get_scene_from_uuid(m_ParentUUID.value());
+            OBSSceneItemAutoRelease scene_item = obs_scene_sceneitem_from_source(parent_scene.Get(), source);
 
-            if (scene_item)
+            if (scene_item.Get())
             {
                 obs_transform_info transform_info;
 
-                obs_sceneitem_get_info(scene_item, &transform_info);
+                obs_sceneitem_get_info(scene_item.Get(), &transform_info);
                 m_transformData = SceneItem::transform_to_json(&transform_info);
-
-                obs_sceneitem_release(scene_item);
             }
         }
         // Otherwise it is a parent/root scene
@@ -61,9 +57,6 @@ namespace es::obs::types
             m_Children.clear();
             obs_scene_enum_items(scene, Scene::retrieve_and_add_item, this);
         }
-
-        obs_scene_release(scene);
-        obs_source_release(source);
     }
 
     const json Scene::getArchitecture(void)
@@ -100,7 +93,7 @@ namespace es::obs::types
     bool Scene::retrieve_and_add_item(obs_scene_t *scene, obs_sceneitem_t *scene_item, void *private_data)
     {
         Scene *parent = static_cast<Scene *>(private_data);
-        obs_source_t *source = obs_sceneitem_get_source(scene_item);
+        obs_source_t *source = obs_sceneitem_get_source(scene_item); // Does not need to be released
         const std::string unv_kind = obs_source_get_unversioned_id(source);
 
         std::cerr << "--- --- Child detected with kind: " << unv_kind << std::endl;
@@ -113,7 +106,6 @@ namespace es::obs::types
             parent->m_Children.push_back(new TextField(source, parent->m_UUID));
         }
 
-        // parent->m_Children.push_back(SceneItem(source));
         return true;
     }
 }

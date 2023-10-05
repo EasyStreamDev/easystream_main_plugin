@@ -37,9 +37,10 @@ namespace es::server
         std::cerr << "--------------- Gathering scene data ---------------" << std::endl;
         for (const auto &scene : scene_map)
         {
-            scene_vec.push_back({{"uuid", scene.first},
-                                 {"name", scene.second->getName()},
-                                 {"arch", scene.second->getArchitecture()}});
+            scene_vec.push_back({
+                {"uuid", scene.first},
+                {"name", scene.second->getName()},
+            });
         }
 
         json response_data = {
@@ -105,7 +106,7 @@ namespace es::server
     void AsioTcpServer::r_GetProfileSettings(const json &j, Shared<AsioTcpConnection> con)
     {
         const json settings = json{
-            {"easystream", m_PluginManager->GetUserProfile()->getEeasystreamSettings()},
+            // {"easystream", m_PluginManager->GetUserProfile()->getEeasystreamSettings()},
             {"obs", m_PluginManager->GetUserProfile()->getObsSettings()},
         };
 

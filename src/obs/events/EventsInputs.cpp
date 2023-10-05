@@ -16,8 +16,8 @@ void es::obs::SourceTracker::handleInputCreated(obs_source_t *source)
     const std::string unv_kind = obs_source_get_unversioned_id(source); // @warning : depends on hardware
 
     { // @note : Unused for now
-        OBSDataAutoRelease inputSettings = obs_source_get_settings(source);
-        OBSDataAutoRelease defaultInputSettings = obs_get_source_defaults(kind.c_str());
+      // OBSDataAutoRelease inputSettings = obs_source_get_settings(source);
+      // OBSDataAutoRelease defaultInputSettings = obs_get_source_defaults(kind.c_str());
     }
 
     if (!filterAudioSources("audio_input", source))
