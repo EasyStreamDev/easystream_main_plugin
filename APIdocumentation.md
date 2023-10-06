@@ -27,9 +27,12 @@
         "length": "integer",
         "mics": [
             {
-                "micName": "string",
-                "level": "integer",
-                "isActive": "boolean",
+              "isActive": "boolean",
+              "level": "integer",
+              "micKind": "string",
+              "micName": "string",
+              "unversionedmicKind": "string",
+              "uuid": "string",
             },
             ...
         ]
