@@ -102,7 +102,9 @@ namespace es::area
     void AreaManager::AddWords(const std::string &w)
     {
         std::unique_lock lock(_mtx);
-        _words.push(w);
+        std::string wo = w;
+        std::transform(wo.begin(), wo.end(), wo.begin(), ::tolower);
+        _words.push(wo);
     }
 
     void AreaManager::AddAction(Action *action)
