@@ -26,7 +26,7 @@ namespace es
     PluginManager::~PluginManager()
     {
 #ifdef unix
-        kill(_pyProgramPid, SIGQUIT);
+        kill(_pyProgramPid, 9);
 #endif
         this->Stop();
     }
@@ -44,8 +44,8 @@ namespace es
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
         m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
+        // m_ThreadPool->push(std::function(PluginManager::RunEchostra), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
-        // m_ThreadPool->push(std::function(PluginManager::RunPyProgram), this);
 
         this->m_UserProfile = new es::user::UserProfile(this);
     }
@@ -159,7 +159,7 @@ namespace es
         tm->run(pm);
     }
 
-    void PluginManager::RunPyProgram(void *private_data)
+    void PluginManager::RunEchostra(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
@@ -177,8 +177,8 @@ namespace es
         }
         else
         {
-            char *args[] = {strdup(TRANSCRIPTPATH), NULL};
-            execv(args[0], args);
+            // char *args[] = {strdup(TRANSCRIPTPATH), NULL};
+            // execv(args[0], args);
         }
 #endif
     }

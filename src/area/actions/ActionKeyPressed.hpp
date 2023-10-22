@@ -1,12 +1,12 @@
 /*
-** EPITECH PROJECT, 2022
-** easystream_main_plugin
-** File description:
-** ActionKeyPressed
+ EPITECH PROJECT, 2022
+ easystream_main_plugin
+ File description:
+ ActionKeyPressed
 */
 
-#ifndef ACTIONKEYPRESSED_HPP_
-#define ACTIONKEYPRESSED_HPP_
+#ifndef ACTIONKEYPRESSEDHPP
+#define ACTIONKEYPRESSEDHPP
 
 #include "../Action.hpp"
 
@@ -21,12 +21,15 @@ namespace es::area
         virtual void Solve() override;
         virtual es::area::action_t ToStruct() override;
 
-        bool IsKeyPressed(int KeyCode);
+        bool IsKeyPressed(std::string KeyStr);
 
     protected:
     private:
         std::string _key = "";
+        bool _CTRL_modifier = false;
+        bool _ALT_modifier = false;
+        bool _SHIFT_modifier = false;
     };
 }
 
-#endif /* !ACTIONKEYPRESSED_HPP_ */
+#endif /* !ACTIONKEYPRESSEDHPP */

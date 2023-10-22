@@ -57,7 +57,8 @@ namespace es
         static void RunSceneSwitcherAI(void *);
         static void RunSubTitles(void *);
         static void RunTranscriptor(void *);
-        static void RunPyProgram(void *);
+        static void RunRecorder(void *);
+        static void RunEchostra(void *);
 
     private:
 #ifdef unix

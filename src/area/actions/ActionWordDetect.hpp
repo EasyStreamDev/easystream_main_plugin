@@ -9,6 +9,7 @@
 #define ACTIONWORDDETECT_HPP_
 
 #include "../Action.hpp"
+#include <algorithm>
 
 namespace es::area
 {
