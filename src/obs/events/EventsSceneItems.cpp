@@ -42,7 +42,10 @@ void es::obs::SourceTracker::handleSceneItemCreated(void *param, calldata_t *dat
             {"parent_scene", obs_source_get_name(scene_source)},
             {"uuid", obs_source_get_uuid(scene_item_source)},
             {"name", obs_source_get_name(scene_item_source)},
+            {"type", unv_kind},
         });
+
+        blog(LOG_INFO, "\n%s", source_tracker->_displaySources[obs_source_get_uuid(scene_item_source)].dump(4).c_str());
     }
 }
 
