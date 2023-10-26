@@ -106,7 +106,7 @@ namespace es::server
     void AsioTcpServer::r_GetProfileSettings(const json &j, Shared<AsioTcpConnection> con)
     {
         const json settings = json{
-            // {"easystream", m_PluginManager->GetUserProfile()->getEeasystreamSettings()},
+            {"easystream", m_PluginManager->GetUserProfile()->getEeasystreamSettings()},
             {"obs", m_PluginManager->GetUserProfile()->getObsSettings()},
         };
 

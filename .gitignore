@@ -78,6 +78,7 @@ test2
 waveform2.wav
 tmp.txt
 out.log
+out.json
 compileResource
 
 # Auto generated CMake files
