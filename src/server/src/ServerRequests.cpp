@@ -121,6 +121,19 @@ namespace es::server
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", subtitlesSettings)));
     }
 
+    void AsioTcpServer::r_GetAllLinksMicsToDisplaySources(const json &req, Shared<AsioTcpConnection> con)
+    {
+        // request: {
+        //     length: uint
+        //     data: [
+        //         {
+        //             mic_ids: uuid,
+        //             display_source_id: [uuid, …],
+        //         },
+        //     ]
+        // }
+    }
+
     void AsioTcpServer::r_broadcastArea()
     {
         std::vector<json> areas_vec;
@@ -268,6 +281,14 @@ namespace es::server
         }
     }
 
+    void AsioTcpServer::r_LinkMicToDisplaySources(const json &j, Shared<AsioTcpConnection> con)
+    {
+        // request: {
+        //     mic_id: uuid,
+        //     display_source_id: [uuid, …],
+        // }
+    }
+
     /*******************/
     /* UPDATE REQUESTS */
     /*******************/
@@ -366,6 +387,13 @@ namespace es::server
             std::make_pair(
                 con,
                 ResponseGenerator::Success(msg, json({{"actReactId", result.at("area_id")}}))));
+    }
+
+    void AsioTcpServer::r_UnlinkMicToDisplaySources(const json &j, Shared<AsioTcpConnection> con)
+    {
+        // request: {
+        //     mic_id: uuid,
+        // }
     }
 
     /*************************/

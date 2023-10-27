@@ -22,16 +22,19 @@ namespace es::server
         m_Handler["getAllTextFields"] = &AsioTcpServer::r_GetAllTextFields;
         m_Handler["getAllDisplaySources"] = &AsioTcpServer::r_GetAllDisplaySources;
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
-        m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
         m_Handler["getProfileSettings"] = &AsioTcpServer::r_GetProfileSettings;
+        m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
+        m_Handler["getAllLinksMicsToVideoSource"] = &AsioTcpServer::r_GetAllLinksMicsToDisplaySources;
 
         /* Setters */
         m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;
         m_Handler["setActionReaction"] = &AsioTcpServer::r_SetNewARea;
         m_Handler["setSubtitles"] = &AsioTcpServer::r_SetSubtitles;
+        m_Handler["linkMicToDisplaySources"] = &AsioTcpServer::r_LinkMicToDisplaySources;
 
         /* Removers */
         m_Handler["removeActReact"] = &AsioTcpServer::r_RemoveActReact;
+        m_Handler["unlinkMicToDisplaySources"] = &AsioTcpServer::r_UnlinkMicToDisplaySources;
 
         /* Updaters */
         m_Handler["updateAction"] = &AsioTcpServer::r_UpdateAction;

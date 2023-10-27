@@ -103,6 +103,7 @@ namespace es::server
         void r_GetCurrentMicsTranscription(const json &, Shared<AsioTcpConnection>);
         void r_GetProfileSettings(const json &, Shared<AsioTcpConnection>);
         void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
+        void r_GetAllLinksMicsToDisplaySources(const json &, Shared<AsioTcpConnection>);
         void r_broadcastArea();
         // --- SET requests
         void r_SetNewRecorder(const json &, Shared<AsioTcpConnection>);
@@ -110,11 +111,13 @@ namespace es::server
         void r_SetCompressorLevel(const json &, Shared<AsioTcpConnection>);
         void r_SetNewARea(const json &, Shared<AsioTcpConnection>);
         void r_SetSubtitles(const json &, Shared<AsioTcpConnection>);
+        void r_LinkMicToDisplaySources(const json &, Shared<AsioTcpConnection>);
         // --- UPDATE requests
         void r_UpdateAction(const json &, Shared<AsioTcpConnection>);
         void r_UpdateReaction(const json &j, Shared<AsioTcpConnection> con);
         // --- REMOVE requests
         void r_RemoveActReact(const json &, Shared<AsioTcpConnection>);
+        void r_UnlinkMicToDisplaySources(const json &, Shared<AsioTcpConnection>);
         // --- SUBSCRIPTION requests
         void r_SubscribeToBroadcast(const json &, Shared<AsioTcpConnection>);
 
