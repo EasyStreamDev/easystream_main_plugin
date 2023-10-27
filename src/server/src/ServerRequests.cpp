@@ -132,6 +132,7 @@ namespace es::server
         //         },
         //     ]
         // }
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", {})));
     }
 
     void AsioTcpServer::r_broadcastArea()
@@ -283,10 +284,14 @@ namespace es::server
 
     void AsioTcpServer::r_LinkMicToDisplaySources(const json &j, Shared<AsioTcpConnection> con)
     {
+        const json &params = j.at("params");
+        const std::string &mic_target_uuid = params.at("mic_id");
+        const std::vector<std::string> &mic_target_uuid = params.at("display_sources_ids");
         // request: {
         //     mic_id: uuid,
-        //     display_source_id: [uuid, …],
+        //     display_sources_id: [uuid, …],
         // }
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
     }
 
     /*******************/
@@ -391,9 +396,11 @@ namespace es::server
 
     void AsioTcpServer::r_UnlinkMicToDisplaySources(const json &j, Shared<AsioTcpConnection> con)
     {
-        // request: {
+        const std::string &mic_target_uuid = j.at("params").at("mic_id");
+        // request: {const json &params = j.at("params");
         //     mic_id: uuid,
         // }
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
     }
 
     /*************************/
