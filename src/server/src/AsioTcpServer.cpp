@@ -24,7 +24,7 @@ namespace es::server
         m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
         m_Handler["getProfileSettings"] = &AsioTcpServer::r_GetProfileSettings;
         m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
-        m_Handler["getAllLinksMicsToVideoSource"] = &AsioTcpServer::r_GetAllLinksMicsToDisplaySources;
+        m_Handler["getAllLinksMicToDisplaySources"] = &AsioTcpServer::r_GetAllLinksMicsToDisplaySources;
 
         /* Setters */
         m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;
