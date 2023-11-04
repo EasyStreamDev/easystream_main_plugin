@@ -286,7 +286,7 @@ namespace es::server
     {
         const json &params = j.at("params");
         const std::string &mic_target_uuid = params.at("mic_id");
-        const std::vector<std::string> &mic_target_uuid = params.at("display_sources_ids");
+        const std::vector<std::string> &display_sources_uuids = params.at("display_sources_ids");
         // request: {
         //     mic_id: uuid,
         //     display_sources_id: [uuid, …],
