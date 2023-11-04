@@ -13,7 +13,7 @@
 
 ```json
 {
-  "command": "getAllMics"
+  "command": "/microphones/get"
 }
 ```
 
@@ -53,7 +53,7 @@
 
 ```json
 {
-  "command": "getAllScenes"
+  "command": "/scenes/get"
 }
 ```
 
@@ -92,7 +92,7 @@
 
 ```json
 {
-  "command": "getAllTextFields"
+  "command": "/text-fields/get"
 }
 ```
 
@@ -134,7 +134,7 @@
 
 ```json
 {
-  "command": "getAllDisplaySources"
+  "command": "/display-sources/get"
 }
 ```
 
@@ -175,7 +175,7 @@
 
 ```json
 {
-  "command": "getAllLinksMicToDisplaySources"
+  "command": "/mtdsis/get"
 }
 ```
 
@@ -211,7 +211,7 @@
 
 ```json
 {
-  "command": "getActReactCouples"
+  "command": "/areas/get"
 }
 ```
 
@@ -260,7 +260,7 @@
 
 ```json
 {
-  "command": "getSubtitlesSettings"
+  "command": "/subtitles/get"
 }
 ```
 
@@ -294,7 +294,7 @@
 
 ```json
 {
-  "command": "getProfileSettings"
+  "command": "/profile/get"
 }
 ```
 
@@ -375,7 +375,7 @@
 
 ```json
 {
-    "command": "setCompressorLevel",
+    "command": "/microphones/auto-leveler/set",
     "params": {
         "micName": "string",
         "level": "integer",
@@ -407,7 +407,7 @@
 
 ```json
 {
-  "command": "setSubtitles",
+  "command": "/subtitles/set",
   "params": {
     "enable": "boolean",
     "uuid": "string"
@@ -438,7 +438,7 @@
 
 ```json
 {
-    "command": "linkMicToDisplaySources",
+    "command": "/mtdsis/create",
     "params": {
         "mic_id": "uuid",
         "display_sources_ids": ["uuid", ...],
@@ -469,7 +469,7 @@
 
 ```json
 {
-    "command": "setActionReaction",
+    "command": "/areas/create",
     "params": {
         "action": {
             "type": "action_type",
@@ -515,7 +515,7 @@
 
 ```json
 {
-  "command": "unlinkMicToDisplaySources",
+  "command": "/mtdsis/remove",
   "params": {
     "mic_id": "uuid"
   }
@@ -531,7 +531,7 @@
 
 ```json
 {
-  "command": "removeActReact",
+  "command": "/areas/remove",
   "params": {
     "actReactId": "integer"
   }
@@ -566,7 +566,7 @@
 
 ```json
 {
-    "command": "updateAction",
+    "command": "/areas/action-update",
     "params": {
         "actionId": "integer",
         "type": "action_type",
@@ -605,7 +605,7 @@
 
 ```json
 {
-    "command": "updateReaction",
+    "command": "/areas/reaction-update",
     "params": {
         "name": "string",
         "reactionId": "integer",
@@ -640,7 +640,7 @@
 
 ```json
 {
-  "command": "subscribeBroadcast",
+  "command": "/broadcast/subscribe",
   "params": {
     "enable": "bool"
   }
