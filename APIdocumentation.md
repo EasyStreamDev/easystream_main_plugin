@@ -13,7 +13,7 @@
 
 ```json
 {
-  "command": "getAllMics"
+  "command": "/microphones/get"
 }
 ```
 
@@ -53,7 +53,7 @@
 
 ```json
 {
-  "command": "getAllScenes"
+  "command": "/scenes/get"
 }
 ```
 
@@ -92,7 +92,7 @@
 
 ```json
 {
-  "command": "getAllTextFields"
+  "command": "/text-fields/get"
 }
 ```
 
@@ -126,13 +126,15 @@
   Le client demande la liste de toutes les sources affichant un flux d'image ainsi que certaines données à leurs sujet.  
   Les données renvoyées à leur sujet sont les suivantes:
 
-  - Le nom de la source d'affichage de flux vidéo (`name`) - Le nom de la scène à laquelle l'élément (`parent_scene`) - L'identifiant unique de l'élément (`uuid`)
+  - Le nom de la source d'affichage de flux vidéo (`name`)
+  - Le nom de la scène à laquelle l'élément (`parent_scene`)
+  - L'identifiant unique de l'élément (`uuid`)
 
 - **Request**
 
 ```json
 {
-  "command": "getAllDisplaySources"
+  "command": "/display-sources/get"
 }
 ```
 
@@ -160,6 +162,46 @@
 
 ---
 
+### **Getting all links between mics and display sources**
+
+- **Description**  
+  Le client demande la liste de tous les liens entre microphones et sources visuelles.  
+  Les données renvoyées à leur sujet sont les suivantes:
+
+  - L'identifiant unique (UUID) du microphone concerné (`mic_id`)
+  - La liste contenant les identifiants uniques des sources visuelles reliées au microphone correspondant au champ `mic_id` (`display_sources_ids`)
+
+- **Request**
+
+```json
+{
+  "command": "/mtdsis/get"
+}
+```
+
+- **Response**
+
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "length": "integer",
+        "links": [
+            {
+                "mic_id": "uuid",
+                "display_sources_ids": ["uuid", ...],
+            },
+            ...
+        ]
+    }
+}
+```
+
+<br>
+
+---
+
 ### **Getting action / reaction couples**
 
 - **Description**  
@@ -169,7 +211,7 @@
 
 ```json
 {
-  "command": "getActReactCouples"
+  "command": "/areas/get"
 }
 ```
 
@@ -218,7 +260,7 @@
 
 ```json
 {
-  "command": "getSubtitlesSettings"
+  "command": "/subtitles/get"
 }
 ```
 
@@ -252,7 +294,7 @@
 
 ```json
 {
-  "command": "getProfileSettings"
+  "command": "/profile/get"
 }
 ```
 
@@ -333,7 +375,7 @@
 
 ```json
 {
-    "command": "setCompressorLevel",
+    "command": "/microphones/auto-leveler/set",
     "params": {
         "micName": "string",
         "level": "integer",
@@ -365,12 +407,42 @@
 
 ```json
 {
-  "command": "setSubtitles",
+  "command": "/subtitles/set",
   "params": {
     "enable": "boolean",
     "uuid": "string"
     // "language": "string", // IETF language tag
   }
+}
+```
+
+- **Response**
+
+```json
+{
+  "statusCode": "integer",
+  "message": "string"
+}
+```
+
+<br>
+
+---
+
+### **Link a microphone to several display sources**
+
+- **Description**  
+   Créer un lien [MTDSIS](#mtdsis) entre un microphone et une liste de sources visuelles.
+
+- **Request**
+
+```json
+{
+    "command": "/mtdsis/create",
+    "params": {
+        "mic_id": "uuid",
+        "display_sources_ids": ["uuid", ...],
+    }
 }
 ```
 
@@ -397,7 +469,7 @@
 
 ```json
 {
-    "command": "setActionReaction",
+    "command": "/areas/create",
     "params": {
         "action": {
             "type": "action_type",
@@ -434,6 +506,22 @@
 
 ## **Remove and Update requests**
 
+### **Remove link between a microphone and several display sources**
+
+- **Description**  
+   Suppression d'un lien [MTDSIS](#mtdsis) entre un microphone et une liste de sources visuelles.
+
+- **Request**
+
+```json
+{
+  "command": "/mtdsis/remove",
+  "params": {
+    "mic_id": "uuid"
+  }
+}
+```
+
 ### **Remove an action / reaction couple**
 
 - **Description**  
@@ -443,7 +531,7 @@
 
 ```json
 {
-  "command": "removeActReact",
+  "command": "/areas/remove",
   "params": {
     "actReactId": "integer"
   }
@@ -478,7 +566,7 @@
 
 ```json
 {
-    "command": "updateAction",
+    "command": "/areas/action-update",
     "params": {
         "actionId": "integer",
         "type": "action_type",
@@ -517,7 +605,7 @@
 
 ```json
 {
-    "command": "updateReaction",
+    "command": "/areas/reaction-update",
     "params": {
         "name": "string",
         "reactionId": "integer",
@@ -552,7 +640,7 @@
 
 ```json
 {
-  "command": "subscribeBroadcast",
+  "command": "/broadcast/subscribe",
   "params": {
     "enable": "bool"
   }
@@ -823,3 +911,15 @@
   }
 }
 ```
+
+<br>
+<br>
+
+---
+
+# Lexique
+
+### MTDSIS
+
+Acronyme de "Mic To Display Sources Intelligent Switch".<br>
+Méchanisme de changement d'affichage des sources visuelles en fonction du microphone le plus actif.

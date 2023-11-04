@@ -16,32 +16,33 @@ namespace es::server
           /*_endPoint(boost::asio::ip::make_address(host), port),*/
           m_Acceptor(m_IoContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
     {
-        /* Getters */
-        m_Handler["getAllMics"] = &AsioTcpServer::r_GetAllMics;
-        m_Handler["getAllScenes"] = &AsioTcpServer::r_GetAllScenes;
-        m_Handler["getAllTextFields"] = &AsioTcpServer::r_GetAllTextFields;
-        m_Handler["getAllDisplaySources"] = &AsioTcpServer::r_GetAllDisplaySources;
-        m_Handler["getActReactCouples"] = &AsioTcpServer::r_GetActReactCouples;
-        m_Handler["getProfileSettings"] = &AsioTcpServer::r_GetProfileSettings;
-        m_Handler["getSubtitlesSettings"] = &AsioTcpServer::r_GetSubtitlesSettings;
-        m_Handler["getAllLinksMicsToVideoSource"] = &AsioTcpServer::r_GetAllLinksMicsToDisplaySources;
+        /* Easystream routes */
+        // --- Microphones / Auto leveler
+        m_Handler["/microphones/get"] = &AsioTcpServer::r_GetAllMics;
+        m_Handler["/microphones/auto-leveler/set"] = &AsioTcpServer::r_SetCompressorLevel;
+        // --- Action -> Reaction couples
+        m_Handler["/areas/get"] = &AsioTcpServer::r_GetActReactCouples;
+        m_Handler["/areas/create"] = &AsioTcpServer::r_SetNewARea;
+        m_Handler["/areas/remove"] = &AsioTcpServer::r_RemoveActReact;
+        m_Handler["/areas/action-update"] = &AsioTcpServer::r_UpdateAction;
+        m_Handler["/areas/reaction-update"] = &AsioTcpServer::r_UpdateReaction;
+        // --- Subtitles
+        m_Handler["/subtitles/get"] = &AsioTcpServer::r_GetSubtitlesSettings;
+        m_Handler["/subtitles/set"] = &AsioTcpServer::r_SetSubtitles;
+        // --- MTDSIS (Microphone To Display Sources Intelligent Switch)
+        m_Handler["/mtdsis/get"] = &AsioTcpServer::r_GetAllLinksMicsToDisplaySources;
+        m_Handler["/mtdsis/create"] = &AsioTcpServer::r_LinkMicToDisplaySources;
+        m_Handler["/mtdsis/remove"] = &AsioTcpServer::r_UnlinkMicToDisplaySources;
+        // --- User Profile (Easystream and OBS parameters)
+        m_Handler["/profile/get"] = &AsioTcpServer::r_GetProfileSettings;
 
-        /* Setters */
-        m_Handler["setCompressorLevel"] = &AsioTcpServer::r_SetCompressorLevel;
-        m_Handler["setActionReaction"] = &AsioTcpServer::r_SetNewARea;
-        m_Handler["setSubtitles"] = &AsioTcpServer::r_SetSubtitles;
-        m_Handler["linkMicToDisplaySources"] = &AsioTcpServer::r_LinkMicToDisplaySources;
+        /* OBS Resources routes */
+        m_Handler["/scenes/get"] = &AsioTcpServer::r_GetAllScenes;
+        m_Handler["/text-fields/get"] = &AsioTcpServer::r_GetAllTextFields;
+        m_Handler["/display-sources/get"] = &AsioTcpServer::r_GetAllDisplaySources;
 
-        /* Removers */
-        m_Handler["removeActReact"] = &AsioTcpServer::r_RemoveActReact;
-        m_Handler["unlinkMicToDisplaySources"] = &AsioTcpServer::r_UnlinkMicToDisplaySources;
-
-        /* Updaters */
-        m_Handler["updateAction"] = &AsioTcpServer::r_UpdateAction;
-        m_Handler["updateReaction"] = &AsioTcpServer::r_UpdateReaction;
-
-        /* Subscribers */
-        m_Handler["subscribeBroadcast"] = &AsioTcpServer::r_SubscribeToBroadcast;
+        /* Subscribers / Hooks routes */
+        m_Handler["/broadcast/subscribe"] = &AsioTcpServer::r_SubscribeToBroadcast;
     }
 
     AsioTcpServer::~AsioTcpServer()

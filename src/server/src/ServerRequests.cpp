@@ -12,14 +12,6 @@ namespace es::server
     /* GET REQUESTS */
     /****************/
 
-    // void AsioTcpServer::r_GetCurrentMicsTranscription(const json &req, Shared<AsioTcpConnection> con)
-    // {
-    //     const json response_data = m_PluginManager->getAllRecorders();
-
-    //     // Submit response to outgoing requests queue.
-    //     m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", response_data)));
-    // }
-
     void AsioTcpServer::r_GetAllMics(const json &j, Shared<AsioTcpConnection> con)
     {
         const json response_data = m_PluginManager->GetUserProfile()->getCompressorSettings();
@@ -123,7 +115,7 @@ namespace es::server
 
     void AsioTcpServer::r_GetAllLinksMicsToDisplaySources(const json &req, Shared<AsioTcpConnection> con)
     {
-        // request: {
+        // response shoud be: {
         //     length: uint
         //     data: [
         //         {
@@ -287,10 +279,7 @@ namespace es::server
         const json &params = j.at("params");
         const std::string &mic_target_uuid = params.at("mic_id");
         const std::vector<std::string> &display_sources_uuids = params.at("display_sources_ids");
-        // request: {
-        //     mic_id: uuid,
-        //     display_sources_id: [uuid, …],
-        // }
+
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
     }
 
