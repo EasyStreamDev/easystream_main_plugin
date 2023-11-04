@@ -126,7 +126,9 @@
   Le client demande la liste de toutes les sources affichant un flux d'image ainsi que certaines données à leurs sujet.  
   Les données renvoyées à leur sujet sont les suivantes:
 
-  - Le nom de la source d'affichage de flux vidéo (`name`) - Le nom de la scène à laquelle l'élément (`parent_scene`) - L'identifiant unique de l'élément (`uuid`)
+  - Le nom de la source d'affichage de flux vidéo (`name`)
+  - Le nom de la scène à laquelle l'élément (`parent_scene`)
+  - L'identifiant unique de l'élément (`uuid`)
 
 - **Request**
 
@@ -149,6 +151,46 @@
                 "name": "string",
                 "parent_scene": "string",
                 "uuid": "string",
+            },
+            ...
+        ]
+    }
+}
+```
+
+<br>
+
+---
+
+### **Getting all links between mics and display sources**
+
+- **Description**  
+  Le client demande la liste de tous les liens entre microphones et sources visuelles.  
+  Les données renvoyées à leur sujet sont les suivantes:
+
+  - L'identifiant unique (UUID) du microphone concerné (`mic_id`)
+  - La liste contenant les identifiants uniques des sources visuelles reliées au microphone correspondant au champ `mic_id` (`display_sources_ids`)
+
+- **Request**
+
+```json
+{
+  "command": "getAllLinksMicToDisplaySources"
+}
+```
+
+- **Response**
+
+```json
+{
+    "statusCode": "integer",
+    "message": "string",
+    "data": {
+        "length": "integer",
+        "links": [
+            {
+                "mic_id": "uuid",
+                "display_sources_ids": ["uuid", ...],
             },
             ...
         ]
@@ -387,6 +429,36 @@
 
 ---
 
+### **Link a microphone to several display sources**
+
+- **Description**  
+   Créer un lien [MTDSIS](https://youtu.be/dQw4w9WgXcQ?si=VVmGyItOkeLRbRyd) entre un microphone et une liste de sources visuelles.
+
+- **Request**
+
+```json
+{
+    "command": "linkMicToDisplaySources",
+    "params": {
+        "mic_id": "uuid",
+        "display_sources_ids": ["uuid", ...],
+    }
+}
+```
+
+- **Response**
+
+```json
+{
+  "statusCode": "integer",
+  "message": "string"
+}
+```
+
+<br>
+
+---
+
 ### **Setting an action / reaction couple**
 
 - **Description**  
@@ -433,6 +505,22 @@
 <br>
 
 ## **Remove and Update requests**
+
+### **Remove link between a microphone and several display sources**
+
+- **Description**  
+   Suppression d'un lien [MTDSIS](https://youtu.be/dQw4w9WgXcQ?si=VVmGyItOkeLRbRyd) entre un microphone et une liste de sources visuelles.
+
+- **Request**
+
+```json
+{
+  "command": "unlinkMicToDisplaySources",
+  "params": {
+    "mic_id": "uuid"
+  }
+}
+```
 
 ### **Remove an action / reaction couple**
 
