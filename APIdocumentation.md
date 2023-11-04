@@ -432,7 +432,7 @@
 ### **Link a microphone to several display sources**
 
 - **Description**  
-   Créer un lien [MTDSIS](https://youtu.be/dQw4w9WgXcQ?si=VVmGyItOkeLRbRyd) entre un microphone et une liste de sources visuelles.
+   Créer un lien [MTDSIS](#mtdsis) entre un microphone et une liste de sources visuelles.
 
 - **Request**
 
@@ -509,7 +509,7 @@
 ### **Remove link between a microphone and several display sources**
 
 - **Description**  
-   Suppression d'un lien [MTDSIS](https://youtu.be/dQw4w9WgXcQ?si=VVmGyItOkeLRbRyd) entre un microphone et une liste de sources visuelles.
+   Suppression d'un lien [MTDSIS](#mtdsis) entre un microphone et une liste de sources visuelles.
 
 - **Request**
 
@@ -911,3 +911,15 @@
   }
 }
 ```
+
+<br>
+<br>
+
+---
+
+# Lexique
+
+### MTDSIS
+
+Acronyme de "Mic To Display Sources Intelligent Switch".<br>
+Méchanisme de changement d'affichage des sources visuelles en fonction du microphone le plus actif.
