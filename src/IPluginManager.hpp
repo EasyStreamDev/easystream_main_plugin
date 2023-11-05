@@ -22,6 +22,7 @@ namespace es
     namespace obs
     {
         class SourceTracker;
+        class TopAudioMic;
     }
 
     namespace thread
@@ -66,6 +67,7 @@ namespace es
         virtual subtitles::SubtitlesManager *GetSubtitlesManager(void) = 0;
         virtual transcript::Transcriptor *GetTranscriptor(void) = 0;
         virtual user::UserProfile *GetUserProfile(void) = 0;
+        virtual obs::TopAudioMic *GetTopAudioMicManager(void) = 0;
     };
 } // namespace es
 

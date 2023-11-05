@@ -21,6 +21,7 @@ namespace es
         this->m_ThreadPool = new es::thread::ThreadPool(MAX_THREAD_NUMBER);
         this->m_SubtitlesManager = new es::subtitles::SubtitlesManager();
         this->m_Transcriptor = new es::transcript::Transcriptor();
+        this->m_topAudioMicManager = new es::obs::TopAudioMic();
     }
 
     PluginManager::~PluginManager()
@@ -119,6 +120,11 @@ namespace es
     subtitles::SubtitlesManager *PluginManager::GetSubtitlesManager(void)
     {
         return m_SubtitlesManager;
+    }
+
+    obs::TopAudioMic *PluginManager::GetTopAudioMicManager(void)
+    {
+        return m_topAudioMicManager;
     }
 
     /**************************/

@@ -20,6 +20,7 @@
 #include "obs/subtitles/SubtitlesManager.hpp"
 #include "obs/speechRecognition/Transcriptor.hpp"
 #include "obs/profile/UserProfile.hpp"
+#include "obs/topAudioMic/TopAudioMic.hpp"
 
 #include "IPluginManager.hpp"
 
@@ -49,6 +50,7 @@ namespace es
         transcript::Transcriptor *GetTranscriptor(void) final;
         subtitles::SubtitlesManager *GetSubtitlesManager(void) final;
         user::UserProfile *GetUserProfile(void) final;
+        obs::TopAudioMic *GetTopAudioMicManager(void) final;
 
     private:
         // Asynchrounous routines (run in separate threads)
@@ -76,6 +78,7 @@ namespace es
         std::atomic<subtitles::SubtitlesManager *> m_SubtitlesManager = nullptr;
         transcript::Transcriptor *m_Transcriptor = nullptr;
         std::unordered_map<std::string, obs::SourceRecorder *> _recorders;
+        obs::TopAudioMic *m_topAudioMicManager = nullptr;
     };
 } // namespace es
 
