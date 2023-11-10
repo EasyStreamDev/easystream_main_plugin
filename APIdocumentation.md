@@ -271,14 +271,15 @@
     "statusCode": "integer",
     "message": "string",
     "data": {
-        "length": "integer",
-        "text_fields": [
-            {
-                "uuid": "string",
-                "name": "string",
-            },
-            ... // Next element
-        ]
+      "length": "integer",
+      "text_fields": [
+        {
+          "uuid": "string",
+          "name": "string",
+          "linked_mics": ["MicA", "MicB"]
+        },
+        ... // Next element
+      ]
     }
 }
 ```
@@ -400,8 +401,7 @@
 ### **Enabling / Disabling subtitles**
 
 - **Description**  
-  Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone spécifique.  
-  Le paramètre `language` n'est pris en compte que si la transciption est activée.
+  Activer / Désactiver les sous-titres transcrit de l'entrée d'un microphone spécifique.
 
 - **Request**
 
@@ -409,9 +409,9 @@
 {
   "command": "/subtitles/set",
   "params": {
-    "enable": "boolean",
-    "uuid": "string"
-    // "language": "string", // IETF language tag
+    "uuid": "uuid", // Correspondant au textfield d'affichage.
+    "linked_mics": ["MicA", "MicB"], // Nom des microphones à partir desquels créer les sous-titres.
+    "language": "string" (optional), // IETF language tag, translates transciption to the specified language.
   }
 }
 ```
