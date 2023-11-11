@@ -27,7 +27,7 @@
 #include "interface/IServer.hpp"
 #include "AsioTcpConnection.hpp"
 #include "ResponseGenerator.hpp"
-#include "errorCode.hpp"
+#include "CommunicationErrors.hpp"
 #include "common_using.hpp"
 
 // Linked

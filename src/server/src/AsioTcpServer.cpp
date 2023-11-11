@@ -75,16 +75,21 @@ namespace es::server
                 Shared<AsioTcpConnection> socket = __req_pair.first; // Get sender socket
                 const json &request = __req_pair.second;             // Get request
 
-                // Check if request exists.
-                //      @note: May crash if request doesn't contain "command" field.
-                //      @todo: Create "try/catch" statement around condition ?
-                if (m_Handler.find(request.at("command")) != m_Handler.end())
+                if (request.contains("command") == false)
                 {
-                    this->_executeRequest(request, socket);
+                    m_OutRequestQueue.ts_push(std::make_pair(socket, ResponseGenerator::BadCommand("Missing \'command\' field.")));
                 }
-                else
+                else // => "command" field exists in request.
                 {
-                    m_OutRequestQueue.ts_push(std::make_pair(socket, ResponseGenerator::BadCommand()));
+                    // Check if request exists.
+                    if (m_Handler.find(request.at("command")) != m_Handler.end())
+                    {
+                        this->_executeRequest(request, socket);
+                    }
+                    else
+                    {
+                        m_OutRequestQueue.ts_push(std::make_pair(socket, ResponseGenerator::BadCommand()));
+                    }
                 }
 
                 // Pop out processed element from received requests queue.
@@ -122,6 +127,12 @@ namespace es::server
                     socket,
                     ResponseGenerator::BadRequest("incomplete - missing value")));
             }
+        }
+        catch (const RequestError &err)
+        {
+            m_OutRequestQueue.ts_push(std::make_pair(
+                socket,
+                ResponseGenerator::BadRequest(err.what())));
         }
     }
 

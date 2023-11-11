@@ -10,6 +10,7 @@
 
 // Global
 #include "../../Common.hpp"
+#include "../../server/include/CommunicationErrors.hpp"
 
 // Linked
 #include <iostream>
@@ -21,7 +22,7 @@ namespace es::obs
         std::string MicUuid;
         std::vector<std::string> DisplaysUuid;
     };
-    
+
     struct VolumesData
     {
         double Time;

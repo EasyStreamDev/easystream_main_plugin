@@ -30,11 +30,14 @@ void es::obs::TopAudioMic::InputAudioCaptureCallback(void *priv_data, obs_source
     }
 
     float inputAudioLevel = topAudioMic->CalculateAudioLevel(data, false);
-    blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, have an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
+    blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, has an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
     for (auto it : topAudioMic->m_MicsVolumes)
+    {
         if (it.first == obs_source_get_uuid(source))
+        {
             it.second.push_back({std::clock() / (double)CLOCKS_PER_SEC, inputAudioLevel});
-
+        }
+    }
     topAudioMic->UpdateTopMic();
 }
 
@@ -68,16 +71,24 @@ void es::obs::TopAudioMic::AddMicDisplayLinks(MicDisplayLink Link)
 {
     obs_source_t *MicSource = obs_get_source_by_uuid(Link.MicUuid.c_str());
 
+    // Mic source not found
     if (MicSource == nullptr)
-        return;
+    {
+        throw es::server::RequestError("Microphone not found");
+    }
 
-    obs_source_add_audio_capture_callback(MicSource, InputAudioCaptureCallback, this);
-
-    m_MicDisplayLinks.insert({Link.MicUuid, Link.DisplaysUuid});
-    auto pair = std::pair<std::string, std::vector<VolumesData>>(Link.MicUuid, {});
-    m_MicsVolumes.push_back(pair);
-
-    blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink added: %s", obs_source_get_name(MicSource));
+    // Mic source not registered: creating callback on it
+    if (m_MicDisplayLinks.find(Link.MicUuid) == m_MicDisplayLinks.end())
+    {
+        obs_source_add_audio_capture_callback(MicSource, InputAudioCaptureCallback, this);
+        m_MicDisplayLinks.insert({Link.MicUuid, Link.DisplaysUuid});
+        m_MicsVolumes.push_back(std::pair<std::string, std::vector<VolumesData>>(Link.MicUuid, {}));
+        blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink added: %s", obs_source_get_name(MicSource));
+    }
+    else
+    {
+        throw es::server::RequestError("Microphone already exists in this context.");
+    }
 }
 
 void es::obs::TopAudioMic::RemoveMicDisplayLinks(std::string MicUuid)
@@ -85,21 +96,29 @@ void es::obs::TopAudioMic::RemoveMicDisplayLinks(std::string MicUuid)
     obs_source_t *MicSource = obs_get_source_by_uuid(MicUuid.c_str());
 
     if (MicSource == nullptr)
+    {
         return;
+    }
 
     obs_source_remove_audio_capture_callback(MicSource, InputAudioCaptureCallback, this);
 
     m_MicDisplayLinks.erase(MicUuid);
-
-    m_MicsVolumes.erase(std::remove_if(m_MicsVolumes.begin(), m_MicsVolumes.end(), 
-            [=](std::pair<std::string, std::vector<VolumesData>> data) {return data.first == MicUuid;}), m_MicsVolumes.end());
+    m_MicsVolumes.erase(
+        std::remove_if(
+            m_MicsVolumes.begin(), m_MicsVolumes.end(),
+            [=](std::pair<std::string, std::vector<VolumesData>> data)
+            { return data.first == MicUuid; }),
+        m_MicsVolumes.end());
 }
 
 void es::obs::TopAudioMic::UpdateMicDisplayLinks(std::string MicUuid, std::vector<std::string> NewDisplaysUuid)
 {
     auto it = m_MicDisplayLinks.find(MicUuid);
+
     if (it != m_MicDisplayLinks.end())
+    {
         it->second = NewDisplaysUuid;
+    }
 }
 
 void es::obs::TopAudioMic::UpdateTopMic()
@@ -111,14 +130,22 @@ void es::obs::TopAudioMic::UpdateTopMic()
 
     for (auto it : m_MicsVolumes)
     {
-        it.second.erase(std::remove_if(it.second.begin(), it.second.end(), 
-                            [=](const VolumesData &Vdata) {return ActualTime - Vdata.Time > 2;}), it.second.end());
+        it.second.erase(
+            std::remove_if(
+                it.second.begin(), it.second.end(),
+                [=](const VolumesData &Vdata)
+                { return ActualTime - Vdata.Time > 2; }),
+            it.second.end());
+
         float ActualMean = 0;
         for (auto [time, volume] : it.second)
+        {
             ActualMean += volume;
+        }
         if (it.second.size() > 0)
+        {
             ActualMean /= it.second.size();
-
+        }
         if (ActualMean > TopVolumeMean)
         {
             TopVolumeMean = ActualMean;
@@ -128,12 +155,20 @@ void es::obs::TopAudioMic::UpdateTopMic()
     }
 
     for (auto it : m_MicDisplayLinks)
+    {
         for (std::string DisplayUuid : it.second)
+        {
             obs_source_set_enabled(obs_get_source_by_uuid(DisplayUuid.c_str()), false);
-
-
+        }
+    }
     for (auto it : m_MicDisplayLinks)
+    {
         if (it.first == TopAudioSourceUuid)
+        {
             for (std::string DisplayUuid : it.second)
+            {
                 obs_source_set_enabled(obs_get_source_by_uuid(DisplayUuid.c_str()), true);
+            }
+        }
+    }
 }
