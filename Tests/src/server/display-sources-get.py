@@ -6,12 +6,12 @@ connect(s, HOST, PORT)
 
 # setMicLevel
 request_dict = {
-    "command": "getSubtitlesSettings",
+    "command": "/display-sources/get",
 }
 request_body = json.dumps(request_dict)
 request = request_body.encode()
 print("\n--------------------------------------------")
-print("getSubtitlesSettings : sending...")
+print("/display-sources/get: sending...")
 send(s, request)
 print("Sent ! Waiting for server response...")
 receive(s, True)

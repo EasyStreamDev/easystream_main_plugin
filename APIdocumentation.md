@@ -438,11 +438,11 @@
 
 ```json
 {
-    "command": "/mtdsis/create",
-    "params": {
-        "mic_id": "uuid",
-        "display_sources_ids": ["uuid", ...],
-    }
+  "command": "/mtdsis/create",
+  "params": {
+    "mic_id": "uuid",
+    "display_sources_ids": ["uuid", ...],
+  }
 }
 ```
 

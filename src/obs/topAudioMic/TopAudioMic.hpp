@@ -32,10 +32,12 @@ namespace es::obs
     class TopAudioMic
     {
     public:
+        static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
+
+    public:
         TopAudioMic();
         ~TopAudioMic();
 
-        static void InputAudioCaptureCallback(void *priv_data, obs_source_t *, const struct audio_data *data, bool muted);
         float CalculateAudioLevel(const struct audio_data *data, bool muted);
 
         void AddMicDisplayLinks(MicDisplayLink Link);
@@ -46,6 +48,8 @@ namespace es::obs
         // void AddNewVideoSource(obs_source_t *source);
 
         void UpdateTopMic();
+
+        inline const std::unordered_map<std::string, std::vector<std::string>> GetLinks() const { return m_MicDisplayLinks; };
 
     private:
         std::unordered_map<std::string, std::vector<std::string>> m_MicDisplayLinks;

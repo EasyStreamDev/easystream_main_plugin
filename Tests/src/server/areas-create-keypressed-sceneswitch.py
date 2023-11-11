@@ -6,7 +6,7 @@ connect(s, HOST, PORT)
 
 # setMicLevel
 request_dict = {
-    "command": "setActionReaction",
+    "command": "/areas/create",
     "params": {
         "action": {
             "type": "KEY_PRESSED",
@@ -27,7 +27,7 @@ request_dict = {
 request_body = json.dumps(request_dict)
 request = request_body.encode()
 print("\n--------------------------------------------")
-print("setActionReaction : sending...")
+print("/areas/create: sending...")
 send(s, request)
 print("Sent ! Waiting for server response...")
 receive(s, True)

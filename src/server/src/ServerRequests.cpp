@@ -115,16 +115,22 @@ namespace es::server
 
     void AsioTcpServer::r_GetAllLinksMicsToDisplaySources(const json &req, Shared<AsioTcpConnection> con)
     {
-        // response shoud be: {
-        //     length: uint
-        //     data: [
-        //         {
-        //             mic_ids: uuid,
-        //             display_source_id: [uuid, …],
-        //         },
-        //     ]
-        // }
-        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", {})));
+        const auto links_mic_to_display_sources_map = m_PluginManager->GetTopAudioMicManager()->GetLinks();
+        std::vector<json> links = {};
+
+        for (const auto &link : links_mic_to_display_sources_map)
+        {
+            links.push_back(json{
+                {"mic_id", link.first},
+                {"display_sources_ids", link.second},
+            });
+        }
+
+        const json mtdsisSettings = json{
+            {"length", links.size()},
+            {"links", links},
+        };
+        m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success("OK", mtdsisSettings)));
     }
 
     void AsioTcpServer::r_broadcastArea()
@@ -280,6 +286,12 @@ namespace es::server
         const std::string &mic_target_uuid = params.at("mic_id");
         const std::vector<std::string> &display_sources_uuids = params.at("display_sources_ids");
 
+        m_PluginManager->GetTopAudioMicManager()->AddMicDisplayLinks(
+            es::obs::MicDisplayLink{
+                mic_target_uuid,
+                display_sources_uuids,
+            });
+
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
     }
 
@@ -386,9 +398,9 @@ namespace es::server
     void AsioTcpServer::r_UnlinkMicToDisplaySources(const json &j, Shared<AsioTcpConnection> con)
     {
         const std::string &mic_target_uuid = j.at("params").at("mic_id");
-        // request: {const json &params = j.at("params");
-        //     mic_id: uuid,
-        // }
+
+        m_PluginManager->GetTopAudioMicManager()->RemoveMicDisplayLinks(mic_target_uuid);
+
         m_OutRequestQueue.ts_push(std::make_pair(con, ResponseGenerator::Success()));
     }
 

@@ -22,6 +22,7 @@
 #include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
 #include "../../obs/subtitles/SubtitlesManager.hpp"
 #include "../../obs/profile/UserProfile.hpp"
+#include "../../obs/topAudioMic/TopAudioMic.hpp"
 
 // Local
 #include "interface/IServer.hpp"
@@ -93,21 +94,18 @@ namespace es::server
         void _runRequestHandler(void *);
         void _executeRequest(const json &, Shared<AsioTcpConnection>);
 
-        /* REQUESTS */
+        /* REQUESTS (@note: Methods called by receiving a specific request start with `r_`) */
         // --- GET requests
         void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
         void r_GetAllScenes(const json &, Shared<AsioTcpConnection>);
         void r_GetAllTextFields(const json &, Shared<AsioTcpConnection>);
         void r_GetAllDisplaySources(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
-        void r_GetCurrentMicsTranscription(const json &, Shared<AsioTcpConnection>);
         void r_GetProfileSettings(const json &, Shared<AsioTcpConnection>);
         void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
         void r_GetAllLinksMicsToDisplaySources(const json &, Shared<AsioTcpConnection>);
         void r_broadcastArea();
         // --- SET requests
-        void r_SetNewRecorder(const json &, Shared<AsioTcpConnection>);
-        void r_SetNewOffset(const json &, Shared<AsioTcpConnection>);
         void r_SetCompressorLevel(const json &, Shared<AsioTcpConnection>);
         void r_SetNewARea(const json &, Shared<AsioTcpConnection>);
         void r_SetSubtitles(const json &, Shared<AsioTcpConnection>);

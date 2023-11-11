@@ -97,7 +97,7 @@ void es::obs::TopAudioMic::RemoveMicDisplayLinks(std::string MicUuid)
 
     if (MicSource == nullptr)
     {
-        return;
+        throw es::server::RequestError("Microphone not found");
     }
 
     obs_source_remove_audio_capture_callback(MicSource, InputAudioCaptureCallback, this);

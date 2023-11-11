@@ -3,20 +3,19 @@ from _base import test_socket as s
 
 connect(s, HOST, PORT)
 
-
-# setMicLevel
-request_dict = {
-    "command": "setCompressorLevel",
+request_dict1 = {
+    "command": "/subtitles/set",
     "params": {
-        "micName": "Mic/Aux",
-        "level": 50,
-        "isActive": True,
+        "uuid": "7795b244-2a3c-48cc-a4f3-f08329c90c66",
+        "length": 1,
+        "linked_mics": ["Mic/Aux"],
     },
 }
-request_body = json.dumps(request_dict)
+
+request_body = json.dumps(request_dict1)
 request = request_body.encode()
 print("\n--------------------------------------------")
-print("setMicLevel : sending...")
+print("/subtitles/set: sending...")
 send(s, request)
 print("Sent ! Waiting for server response...")
 receive(s, True)
