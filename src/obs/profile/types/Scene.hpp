@@ -1,9 +1,13 @@
-#pragma once
+#ifndef TYPES_SCENE_HPP_
+#define TYPES_SCENE_HPP_
 
 #include "SceneItem.hpp"
 #include "TextField.hpp"
 #include "Camera.hpp"
 #include "Screen.hpp"
+#include "Image.hpp"
+#include "Color.hpp"
+#include "Browser.hpp"
 
 namespace es::obs::types
 {
@@ -26,3 +30,5 @@ namespace es::obs::types
         std::vector<SceneItem *> m_Children;
     };
 }
+
+#endif /* TYPES_SCENE_HPP_ */

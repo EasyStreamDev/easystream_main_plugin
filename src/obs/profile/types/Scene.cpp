@@ -23,6 +23,21 @@ namespace es::obs::types
             [](obs_source_t *source, const UUID &parent_uuid)
             { return new Screen(source, parent_uuid); },
         },
+        {
+            "color_source",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new Color(source, parent_uuid); },
+        },
+        {
+            "image_source",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new Image(source, parent_uuid); },
+        },
+        {
+            "browser_source",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new Browser(source, parent_uuid); },
+        },
     };
 
     Scene::Scene(obs_source_t *source, const std::optional<UUID> &parent_uuid)

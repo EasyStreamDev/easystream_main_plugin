@@ -15,7 +15,7 @@
 
 // Local
 #include "autoAudioLeveler/AutoAudioLeveler.hpp"
-#include "types/Scene.hpp"
+#include "profile/types/Scene.hpp"
 
 // Linked
 #include <unordered_map>
