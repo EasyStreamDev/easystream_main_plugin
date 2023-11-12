@@ -2,10 +2,13 @@
 
 #include "SceneItem.hpp"
 #include "TextField.hpp"
+#include "Camera.hpp"
+#include "Screen.hpp"
 
 namespace es::obs::types
 {
     using UUID = std::string;
+    using SceneItemCtor = std::function<SceneItem *(obs_source_t *, const UUID &)>;
 
     class Scene : public SceneItem
     {

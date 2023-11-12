@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TYPES_TEXTFIELD_HPP_
+#define TYPES_TEXTFIELD_HPP_
 
 #include "SceneItem.hpp"
 
@@ -19,3 +20,5 @@ namespace es::obs::types
         // Text field specific data
     };
 }
+
+#endif /* TYPES_TEXTFIELD_HPP_ */

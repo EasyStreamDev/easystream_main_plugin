@@ -2,6 +2,29 @@
 
 namespace es::obs::types
 {
+    static const std::unordered_map<std::string, SceneItemCtor> MAP_UNV_KIND_TO_TYPE_CTOR = {
+        {
+            "scene",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new Scene(source, parent_uuid); },
+        },
+        {
+            "text_ft2_source",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new TextField(source, parent_uuid); },
+        },
+        {
+            "v4l2_input",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new Camera(source, parent_uuid); },
+        },
+        {
+            "xshm_input",
+            [](obs_source_t *source, const UUID &parent_uuid)
+            { return new Screen(source, parent_uuid); },
+        },
+    };
+
     Scene::Scene(obs_source_t *source, const std::optional<UUID> &parent_uuid)
         : SceneItem(source, parent_uuid)
     {
@@ -95,15 +118,15 @@ namespace es::obs::types
         Scene *parent = static_cast<Scene *>(private_data);
         obs_source_t *source = obs_sceneitem_get_source(scene_item); // Does not need to be released
         const std::string unv_kind = obs_source_get_unversioned_id(source);
+        const auto ctor_iterator = MAP_UNV_KIND_TO_TYPE_CTOR.find(unv_kind);
 
-        std::cerr << "--- --- Child detected with kind: " << unv_kind << std::endl;
-        if (unv_kind == "scene")
+        if (ctor_iterator != MAP_UNV_KIND_TO_TYPE_CTOR.end())
         {
-            parent->m_Children.push_back(new Scene(source, parent->m_UUID));
+            parent->m_Children.push_back(ctor_iterator->second(source, parent->m_UUID));
         }
-        else if (unv_kind == "text_ft2_source")
+        else
         {
-            parent->m_Children.push_back(new TextField(source, parent->m_UUID));
+            std::cerr << "[Scene::retrieve_and_add_item] Child detected with unsupported kind: " << unv_kind << std::endl;
         }
 
         return true;

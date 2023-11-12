@@ -11,7 +11,7 @@ try:
     request_body = json.dumps(request_dict)
     request = request_body.encode()
     print("\n--------------------------------------------")
-    print("profile/get: sending...")
+    print("/profile/get: sending...")
     send(s, request)
     print("Sent ! Waiting for server response...")
     receive(s, True)
