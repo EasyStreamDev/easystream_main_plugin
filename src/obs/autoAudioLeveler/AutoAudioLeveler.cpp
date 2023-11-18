@@ -7,7 +7,7 @@
 
 #include "AutoAudioLeveler.hpp"
 
-es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(source), _levelToGo(0), _startTime(std::clock()), _active(true), _toStop(false)
+es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(source), _levelToGo(0), _startTime(std::clock()), _active(false), _toStop(false)
 {
     obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
 

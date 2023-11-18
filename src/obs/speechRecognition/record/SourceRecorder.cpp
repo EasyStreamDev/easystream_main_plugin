@@ -17,6 +17,12 @@ namespace es::obs
 
     SourceRecorder::~SourceRecorder()
     {
+        std::cerr << "=== SourceRecorder::dtor()" << std::endl;
+        // if (this->_noise_filter_source)
+        // {
+        //     obs_source_filter_remove(_source, _noise_filter_source);
+        //     obs_source_release(_noise_filter_source);
+        // }
         _outFile.close();
         std::filesystem::remove_all(_temporaryPath);
     }
@@ -29,7 +35,7 @@ namespace es::obs
         _temporaryPath += "/tempEasyStreamAudio";
         // std::cout << _micName << std::endl;
         std::filesystem::create_directory(_temporaryPath);
-        clearMicName();
+        this->clearMicName();
         // _outFile.open(_temporaryPath.string()+ "/output.wav", std::ios::binary);
         const struct audio_output_info *obs_audio = audio_output_get_info(obs_get_audio());
 
@@ -48,7 +54,8 @@ namespace es::obs
             resample_info src = {
                 obs_audio->samples_per_sec,
                 obs_audio->format,
-                obs_audio->speakers};
+                obs_audio->speakers,
+            };
 
             this->_resampler = audio_resampler_create(&resample_to, &src);
             if (!this->_resampler)
@@ -58,6 +65,19 @@ namespace es::obs
             // blog(LOG_INFO, "### [MMMMMMMMMMMMMMMMMMMMMMMMMMM] %d, %d, %d", obs_audio->samples_per_sec, obs_audio->format, obs_audio->speakers);
         }
 
+        if (true)
+        { // Create noise filter on source if needed
+            obs_source_t *noise_filter_source = obs_source_get_filter_by_name(_source, "easystream-noise-filter");
+
+            if (!noise_filter_source)
+            {
+                noise_filter_source = obs_source_create(RNNOISE_FILTER_TYPE, "easystream-noise-filter", nullptr, nullptr);
+
+                obs_source_filter_add(_source, noise_filter_source);
+            }
+
+            this->_noise_filter_source = noise_filter_source;
+        }
         obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
         blog(LOG_INFO, "### [SourceRecorder] - Recorder set for input: %s", obs_source_get_name(_source));
     }
