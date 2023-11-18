@@ -109,7 +109,9 @@ namespace es::subtitles
         {
             mics += m + ";";
             if (tField.linkedMics.find(m) == tField.linkedMics.npos)
+            {
                 tm->enableSubtitlesOnMic(m.c_str());
+            }
         }
         for (size_t i = 0, j = tField.linkedMics.find(';'); i < tField.linkedMics.size() && j != tField.linkedMics.npos; i = j + 1, j = tField.linkedMics.find(';', j + 1))
         {
