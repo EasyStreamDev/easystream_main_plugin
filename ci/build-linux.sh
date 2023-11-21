@@ -26,11 +26,11 @@ source $variableScript
 if [[ $skip == false ]]; then
     source "${rootProject}/ci/linux/install-dependencies-ubuntu.sh"
     source "${rootProject}/ci/linux/setup-py.sh"
-    if [[ $ci_env == false ]]; then
-        source "${rootProject}/ci/linux/build-obs.sh" $buildType
-    else
-        source "${rootProject}/ci/linux/compile-ci.sh" $buildType
-    fi
+    # if [[ $ci_env == false ]]; then
+    #     source "${rootProject}/ci/linux/build-obs.sh" $buildType
+    # else
+    #     source "${rootProject}/ci/linux/compile-ci.sh" $buildType
+    # fi
 fi
 
 export PATH="$HOME/.local/bin:$PATH"
