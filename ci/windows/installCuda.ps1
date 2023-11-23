@@ -1,3 +1,9 @@
+#Requires -RunAsAdministrato
+param(
+    [Parameter()]
+    [Switch]$Check
+)
+
 function checkWindows10 {
     return (Get-WmiObject Win32_OperatingSystem).Caption -Match "Windows 10"
 }
@@ -34,34 +40,43 @@ function checkIfCudaAvailable {
     return $false
 }
 
-function DownloadAndInstallCuda {
-
-}
 
 function main
 {
-    if (!(checkIfCudaAvailable)) {
-        return
-    }
+    # $var = 1
+    # while ($var -eq 1) {
+    #     Write-Host "Test"
+    # }
 
-    if (checkIfCudaInstalled) {
-        Write-Host "Cuda is already installed, aborting"
-        return
-    }
-
-    if (checkWindows11) {
-        $Url = "https://developer.download.nvidia.com/compute/cuda/12.2.2/local_installers/cuda_12.2.2_537.13_windows.exe"
-        $Destination = "CudaSetup.exe"
-        Invoke-WebRequest -Uri $Url -OutFile $Destination
-        .\CudaSetup.exe
-    } elseif (checkWindows10) {
-        $Url = "https://developer.download.nvidia.com/compute/cuda/12.2.2/local_installers/cuda_12.2.2_537.13_windows.exe"
-        $Destination = "CudaSetup.exe"
-        Invoke-WebRequest -Uri $Url -OutFile $Destination
-        .\CudaSetup.exe
+    if ($Check.IsPresent) {
+        if (!(checkIfCudaAvailable)) {
+            # Start-Sleep -Seconds 10
+            exit 0
+        }
+    
+        if (checkIfCudaInstalled) {
+            Write-Host "Cuda is already installed, aborting"
+            # Start-Sleep -Seconds 10
+            exit 1
+        }
+        # Start-Sleep -Seconds 10
+        exit 2
     } else {
-        Write-Host "Cannot detect windows version, aborting"
+        if (checkWindows11) {
+            $Url = "https://developer.download.nvidia.com/compute/cuda/12.2.2/local_installers/cuda_12.2.2_537.13_windows.exe"
+            $Destination = "CudaSetup.exe"
+            Invoke-WebRequest -Uri $Url -OutFile $Destination
+            .\CudaSetup.exe
+        } elseif (checkWindows10) {
+            $Url = "https://developer.download.nvidia.com/compute/cuda/12.2.2/local_installers/cuda_12.2.2_537.13_windows.exe"
+            $Destination = "CudaSetup.exe"
+            Invoke-WebRequest -Uri $Url -OutFile $Destination
+            .\CudaSetup.exe
+        } else {
+            Write-Host "Cannot detect windows version, aborting"
+        }
     }
+
 }
 
 main

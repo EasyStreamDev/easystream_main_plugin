@@ -17,7 +17,7 @@ function installConan {
     Set-Location $EnvFolder
     py -m ensurepip --upgrade
     pip install --user virtualenv
-    python -m venv easystreamEnv
+    virtualenv.exe EasystreamEnv
     ./easystreamEnv/scripts/Activate.ps1
     pip install conan==1.59.0
     pip install -r ./requirements_win.txt
