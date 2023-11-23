@@ -69,6 +69,15 @@ void es::obs::SourceTracker::handleInputNameChanged(obs_source_t *source, std::s
     const std::string uuid = obs_source_get_uuid(source);
     const std::string unv_kind = obs_source_get_unversioned_id(source); // @warning : depends on device hardware/OS
 
+    if (!filterAudioSources("audio_input", source))
+    {
+        _audioLevelers.insert(std::pair<std::string, std::shared_ptr<AutoAudioLeveler>>(
+            name,
+            _audioLevelers.at(oldName)));
+        _audioLevelers.erase(oldName);
+        blog(LOG_INFO, "### Updating Audio Leveler for %s", name.c_str());
+    }
+
     // Check if source is an audio input/output
     if (vector_contains(UNV_KINDS_AUDIO_IO, unv_kind))
     {
