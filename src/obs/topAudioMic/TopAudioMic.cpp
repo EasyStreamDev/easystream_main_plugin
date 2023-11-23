@@ -30,7 +30,7 @@ void es::obs::TopAudioMic::InputAudioCaptureCallback(void *priv_data, obs_source
     }
 
     float inputAudioLevel = topAudioMic->CalculateAudioLevel(data, false);
-    blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, has an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
+    // blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, has an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
     for (auto it : topAudioMic->m_MicsVolumes)
     {
         if (it.first == obs_source_get_uuid(source))
