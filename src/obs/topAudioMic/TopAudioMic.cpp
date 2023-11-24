@@ -83,7 +83,16 @@ void es::obs::TopAudioMic::AddMicDisplayLinks(MicDisplayLink Link)
         obs_source_add_audio_capture_callback(mic_source, InputAudioCaptureCallback, this);
         m_MicDisplayLinks.insert({Link.MicUuid, Link.DisplaysUuid});
         m_MicsVolumes.push_back(std::pair<std::string, std::vector<VolumesData>>(Link.MicUuid, {}));
+
         blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink added: %s", obs_source_get_name(mic_source));
+        for (auto uuid : Link.DisplaysUuid) {
+            OBSSourceAutoRelease video_source = obs_get_source_by_uuid(uuid.c_str());
+            if (video_source.Get() == nullptr)
+            {
+                throw es::server::RequestError("Video not found");
+            }
+            blog(LOG_INFO, "[es::Obs::topAudioMic] \t\t\tlinked to: %s", obs_source_get_name(video_source));
+        }
     }
     else
     {
@@ -109,6 +118,8 @@ void es::obs::TopAudioMic::RemoveMicDisplayLinks(std::string MicUuid)
             [=](std::pair<std::string, std::vector<VolumesData>> data)
             { return data.first == MicUuid; }),
         m_MicsVolumes.end());
+
+    blog(LOG_INFO, "[es::Obs::topAudioMic] MicDisplayLink removed: %s", obs_source_get_name(mic_source));
 }
 
 void es::obs::TopAudioMic::UpdateMicDisplayLinks(std::string MicUuid, std::vector<std::string> NewDisplaysUuid)
@@ -118,6 +129,21 @@ void es::obs::TopAudioMic::UpdateMicDisplayLinks(std::string MicUuid, std::vecto
     if (it != m_MicDisplayLinks.end())
     {
         it->second = NewDisplaysUuid;
+    }
+
+    OBSSourceAutoRelease mic_source = obs_get_source_by_uuid(MicUuid.c_str());
+    if (mic_source.Get() == nullptr)
+    {
+        throw es::server::RequestError("Microphone not found");
+    }
+    blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink Update: %s", obs_source_get_name(mic_source));
+    for (auto uuid : NewDisplaysUuid) {
+        OBSSourceAutoRelease video_source = obs_get_source_by_uuid(uuid.c_str());
+        if (video_source.Get() == nullptr)
+        {
+            throw es::server::RequestError("Video not found");
+        }
+        blog(LOG_INFO, "[es::Obs::topAudioMic] \t\t\tlinked to: %s", obs_source_get_name(video_source));
     }
 }
 
