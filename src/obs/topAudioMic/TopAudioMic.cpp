@@ -30,7 +30,7 @@ void es::obs::TopAudioMic::InputAudioCaptureCallback(void *priv_data, obs_source
     }
 
     float inputAudioLevel = topAudioMic->CalculateAudioLevel(data, false);
-    // blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, has an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
+    blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, has an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
     for (auto it : topAudioMic->m_MicsVolumes)
     {
         if (it.first == obs_source_get_uuid(source))
@@ -85,13 +85,14 @@ void es::obs::TopAudioMic::AddMicDisplayLinks(MicDisplayLink Link)
         m_MicsVolumes.push_back(std::pair<std::string, std::vector<VolumesData>>(Link.MicUuid, {}));
 
         blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink added: %s", obs_source_get_name(mic_source));
-        for (auto uuid : Link.DisplaysUuid) {
+        for (auto uuid : Link.DisplaysUuid)
+        {
             OBSSourceAutoRelease video_source = obs_get_source_by_uuid(uuid.c_str());
             if (video_source.Get() == nullptr)
             {
                 throw es::server::RequestError("Video not found");
             }
-            blog(LOG_INFO, "[es::Obs::topAudioMic] \t\t\tlinked to: %s", obs_source_get_name(video_source));
+            blog(LOG_INFO, "[es::Obs::topAudioMic] \t\tlinked to: %s", obs_source_get_name(video_source));
         }
     }
     else
@@ -137,13 +138,14 @@ void es::obs::TopAudioMic::UpdateMicDisplayLinks(std::string MicUuid, std::vecto
         throw es::server::RequestError("Microphone not found");
     }
     blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink Update: %s", obs_source_get_name(mic_source));
-    for (auto uuid : NewDisplaysUuid) {
+    for (auto uuid : NewDisplaysUuid)
+    {
         OBSSourceAutoRelease video_source = obs_get_source_by_uuid(uuid.c_str());
         if (video_source.Get() == nullptr)
         {
             throw es::server::RequestError("Video not found");
         }
-        blog(LOG_INFO, "[es::Obs::topAudioMic] \t\t\tlinked to: %s", obs_source_get_name(video_source));
+        blog(LOG_INFO, "[es::Obs::topAudioMic] \t\tlinked to: %s", obs_source_get_name(video_source));
     }
 }
 
