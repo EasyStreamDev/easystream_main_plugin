@@ -32,6 +32,7 @@ namespace es::obs
         "pipewire-desktop-capture-source",
         "xshm_input",
         "scene",
+        "window_capture"
     };
 
     template <typename T>
