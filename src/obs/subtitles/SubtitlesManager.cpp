@@ -98,7 +98,7 @@ namespace es::subtitles
         _cVar.notify_all();
     }
 
-    void SubtitlesManager::setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics)
+    void SubtitlesManager::setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics, const std::string  &language)
     {
         std::string mics;
         obs_source_t *source = obs_get_source_by_uuid(uuid.c_str());
@@ -110,7 +110,7 @@ namespace es::subtitles
             mics += m + ";";
             if (tField.linkedMics.find(m) == tField.linkedMics.npos)
             {
-                tm->enableSubtitlesOnMic(m.c_str());
+                tm->enableSubtitlesOnMic(m.c_str(), language);
             }
         }
         for (size_t i = 0, j = tField.linkedMics.find(';'); i < tField.linkedMics.size() && j != tField.linkedMics.npos; i = j + 1, j = tField.linkedMics.find(';', j + 1))

@@ -34,7 +34,7 @@ namespace es::subtitles
     public:
         void run(void *) final;
         void pushSubtitles(std::string micName, std::string transcript);
-        void setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics);
+        void setSubtitles(const std::string &uuid, const std::vector<std::string> &lMics, const std::string  &language = "none");
         const json getSubtitlesSettings(void) const;
 
     private:

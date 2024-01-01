@@ -34,7 +34,7 @@ namespace es::transcript
             Transcriptor();
             ~Transcriptor();
 
-            void enableSubtitlesOnMic(const char *micName);
+            void enableSubtitlesOnMic(const char *micName, const std::string &language = "none");
             void disableSubtitlesOnMic(std::string);
             // void enableWordDetectOnMic(const char *micName);
             // void disableWordDetcctOnMic(const char*micName);
