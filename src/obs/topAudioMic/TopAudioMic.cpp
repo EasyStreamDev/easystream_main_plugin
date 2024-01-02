@@ -29,7 +29,7 @@ void es::obs::TopAudioMic::InputAudioCaptureCallback(void *priv_data, obs_source
         return;
     }
 
-    float inputAudioLevel = topAudioMic->CalculateAudioLevel(data, false);
+    float inputAudioLevel = topAudioMic->CalculateAudioLevel(data, muted);
     // blog(LOG_INFO, "[es::Obs::topAudioMic] input: %s, has an audio input of: %f", obs_source_get_name(source), inputAudioLevel);
     for (auto &it : topAudioMic->m_MicsVolumes)
     {
@@ -83,7 +83,7 @@ void es::obs::TopAudioMic::AddMicDisplayLinks(MicDisplayLink Link)
         obs_source_add_audio_capture_callback(mic_source, InputAudioCaptureCallback, this);
         m_MicDisplayLinks.insert({Link.MicUuid, Link.DisplaysUuid});
         m_MicsVolumes.push_back(std::pair<std::string, std::vector<VolumesData>>(Link.MicUuid, {}));
-        blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink added: %s", obs_source_get_name(mic_source));
+        // blog(LOG_INFO, "[es::Obs::topAudioMic] new MicDisplayLink added: %s", obs_source_get_name(mic_source));
     }
     else
     {
@@ -101,6 +101,14 @@ void es::obs::TopAudioMic::RemoveMicDisplayLinks(std::string MicUuid)
     }
 
     obs_source_remove_audio_capture_callback(mic_source, InputAudioCaptureCallback, this);
+
+    for (auto it : m_MicDisplayLinks)
+    {
+        for (std::string DisplayUuid : it.second)
+        {
+            obs_source_set_enabled(OBSSourceAutoRelease(obs_get_source_by_uuid(DisplayUuid.c_str())), true);
+        }
+    }
 
     m_MicDisplayLinks.erase(MicUuid);
     m_MicsVolumes.erase(
@@ -150,7 +158,7 @@ void es::obs::TopAudioMic::UpdateTopMic()
         {
             TopVolumeMean = ActualMean;
             TopAudioSourceUuid = it.first;
-            blog(LOG_INFO, "[es::Obs::topAudioMic] top Mic is: %s", TopAudioSourceUuid.c_str());
+            // blog(LOG_INFO, "[es::Obs::topAudioMic] top Mic is: %s", TopAudioSourceUuid.c_str());
         }
     }
 
