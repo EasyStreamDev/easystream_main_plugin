@@ -76,7 +76,7 @@ function main {
 
     if ($Dependencies.IsPresent) {
         # installBoost $BoostFolder
-        # installConan
+        installConan
     }
     if ($CloneObs.IsPresent) {
         if ($IsOnCI.IsPresent) {
