@@ -21,6 +21,7 @@ function InstallEchostraCuda {
     ./easystreamEnv/scripts/Activate.ps1
     pip install -r ./requirements_win.txt
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    
 }
 
 function InstallEchostraWithoutCuda {
