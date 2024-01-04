@@ -266,7 +266,10 @@ namespace es::server
             return;
         }
 
-        m_PluginManager->GetSubtitlesManager()->setSubtitles(target_uuid, _lMics);
+        if (params.find("language") != params.end())
+            m_PluginManager->GetSubtitlesManager()->setSubtitles(target_uuid, _lMics, params["language"]);
+        else
+            m_PluginManager->GetSubtitlesManager()->setSubtitles(target_uuid, _lMics);
 
         m_OutRequestQueue.ts_push(std::make_pair(
             con,

@@ -1,12 +1,13 @@
 function installConan {
-    param(
-        [Parameter(Mandatory)]
-        [string]$EnvFolder,
+    # param(
+    #     [Parameter(Mandatory)]
+    #     [string]$EnvFolder,
 
-        [Parameter(Mandatory)]
-        [bool]$Release
-    )
+    #     [Parameter(Mandatory)]
+    #     [bool]$Release
+    # )
 
+    # $EnvFolder = "${rootDir}/easystreamEnv"
 
     $pyEx = &{python -V} 2>&1
     $version = if($pyEx -is [System.Management.Automation.ErrorRecord]) {
@@ -14,12 +15,12 @@ function installConan {
     } else {
         $pyEx
     }
-    Set-Location $EnvFolder
+    pip install conan==1.59.0
     py -m ensurepip --upgrade
     pip install --user virtualenv
-    virtualenv.exe EasystreamEnv
+    python -m venv easystreamEnv
+    # Set-Location $EnvFolder
     ./easystreamEnv/scripts/Activate.ps1
-    pip install conan==1.59.0
     pip install -r ./requirements_win.txt
     # Set-Location "../"
     # $currDir = Get-Location
