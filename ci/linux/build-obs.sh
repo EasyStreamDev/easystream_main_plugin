@@ -40,6 +40,7 @@ else
     cmake --preset linux-x86_64 -DCMAKE_BUILD_TYPE=$1 -DENABLE_BROWSER=OFF -DENABLE_AJA=OFF -DENABLE_WEBRTC=OFF -DENABLE_NEW_MPEGTS_OUTPUT=OFF
     cmake --build --preset linux-x86_64
 fi
+
 cd "build_x86_64"
 sudo cmake -P cmake_install.cmake
 sudo cp /usr/local/lib/cmake/libobs/libobsConfig.cmake /usr/local/lib/cmake/libobs/LibObsConfig.cmake

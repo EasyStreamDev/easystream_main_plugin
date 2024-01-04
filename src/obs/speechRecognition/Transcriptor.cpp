@@ -50,7 +50,7 @@ void es::transcript::Transcriptor::stop()
     _cVar.notify_all();
 }
 
-void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName)
+void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName, const std::string &language)
 {
     obs_source_t *source = obs_get_source_by_name(micName);
 
@@ -65,7 +65,7 @@ void es::transcript::Transcriptor::enableSubtitlesOnMic(const char *micName)
 
     json message{
         {"command", "createSTTStream"},
-        {"params", {{"bit_depth", 16}, {"sample_rate", 48000}, {"stereo", true}, {"mic_id", it.first->first}}}};
+        {"params", {{"bit_depth", 16}, {"sample_rate", 48000}, {"stereo", true}, {"mic_id", it.first->first}, {"language", language}}}};
     _tcpCli.writeMessage(message.dump().c_str());
     // TcpClient send message for new transcription
 }

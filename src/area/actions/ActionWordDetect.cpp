@@ -13,6 +13,9 @@ namespace es::area
         : Action(reaction, area_id, param)
     {
         this->_words = param.at("words").get<std::vector<std::string>>();
+        
+        for (auto &w: _words)
+            std::transform(w.begin(), w.end(), w.begin(), ::tolower);
     }
 
     ActionWordDetect::~ActionWordDetect()

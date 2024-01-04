@@ -7,7 +7,7 @@
 
 #include "AutoAudioLeveler.hpp"
 
-es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(source), _levelToGo(0), _startTime(std::clock()), _active(true), _toStop(false)
+es::obs::AutoAudioLeveler::AutoAudioLeveler(obs_source_t *source) : _source(source), _levelToGo(0), _startTime(std::clock()), _active(false), _toStop(false)
 {
     obs_source_add_audio_capture_callback(_source, InputAudioCaptureCallback, this);
 
@@ -125,6 +125,15 @@ float es::obs::AutoAudioLeveler::CalculateAudioLevel(const struct audio_data *da
 const float &es::obs::AutoAudioLeveler::getDesiredLevel() const
 {
     return (_desiredAudioLevel);
+}
+
+const std::string es::obs::AutoAudioLeveler::GetUuid(void) const
+{
+    if (!this->_source)
+    {
+        return "";
+    }
+    return obs_source_get_uuid(this->_source);
 }
 
 void es::obs::AutoAudioLeveler::setDesiredLevel(const float &v)

@@ -22,7 +22,10 @@ param(
 
     [Parameter(Mandatory)]
     [ValidateSet('Setup', 'Source', 'None')]
-    [string]$Setup
+    [string]$Setup,
+
+    [Parameter()]
+    [switch]$IsOnCI
 
 )
 
@@ -73,10 +76,14 @@ function main {
 
     if ($Dependencies.IsPresent) {
         # installBoost $BoostFolder
-        installConan
+        # installConan
     }
     if ($CloneObs.IsPresent) {
-        getObs -obsFolder $obsFolder -buildMode $BuildTypeObs
+        if ($IsOnCI.IsPresent) {
+            getObsCi -obsFolder $obsFolder -buildMode $BuildTypeObs
+        } else {
+            getObs -obsFolder $obsFolder -buildMode $BuildTypeObs
+        }
     }
     buildEasyStream
 

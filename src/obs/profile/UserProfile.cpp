@@ -2,8 +2,14 @@
 
 namespace es::user
 {
-    UserProfile::UserProfile()
+    UserProfile::UserProfile(IPluginManager *pm)
     {
+        if (pm == nullptr)
+        {
+            perror("[UserProfile] Invalid pointer to plugin manager.");
+            exit(1);
+        }
+        this->m_PluginManager = pm;
         this->update();
     }
 
@@ -41,73 +47,27 @@ namespace es::user
         m_Inputs = es::utils::obs::listHelper::GetInputList();
         m_Outputs = es::utils::obs::listHelper::GetOutputList();
 
-        if (false)
-        { /* DISPLAY PART */
-
-            std::cout << "\n------------------------------" << std::endl;
-            std::cout << "--------VIDEO SETTINGS--------" << std::endl;
-            std::cout << "------------------------------" << std::endl;
-            std::cout << "Frame Rate:" << std::endl;
-            std::cout << "\tNumerator: " << m_VideoSettings.fps_numerator << std::endl;
-            std::cout << "\tDenominator: " << m_VideoSettings.fps_denominator << std::endl;
-            std::cout << "\tRate: " << (float)m_VideoSettings.fps_numerator / (float)m_VideoSettings.fps_denominator << std::endl;
-            std::cout << "Output dimensions: "
-                      << m_VideoSettings.output_dimensions.x << "x"
-                      << m_VideoSettings.output_dimensions.y << std::endl;
-            std::cout << "Colors:" << std::endl;
-            std::cout << "\tColorspace: " << m_VideoSettings.colorspace << std::endl;
-            std::cout << "\tColor range: " << m_VideoSettings.color_range << std::endl;
-            std::cout << "\tColor format: " << m_VideoSettings.color_format << std::endl;
-
-            std::cout << "\n------------------------------" << std::endl;
-            std::cout << "--------AUDIO SETTINGS--------" << std::endl;
-            std::cout << "------------------------------" << std::endl;
-            std::cout << "Format index: " << m_AudioSettings.format_enum << std::endl;
-            std::cout << "Sample rate: " << m_AudioSettings.sample_rate << std::endl;
-            std::cout << "Channels: " << m_AudioSettings.channels << std::endl;
-
-            std::cout << "\n------------------------------" << std::endl;
-            std::cout << "------------INPUTS------------" << std::endl;
-            std::cout << "------------------------------" << std::endl;
-            for (const json &in_data : m_Inputs)
-            {
-                std::cout << "{" << std::endl;
-                std::cout << "\tname: " << in_data["inputName"] << std::endl;
-                std::cout << "\tkind: " << in_data["inputKind"] << std::endl;
-                std::cout << "\tunv_kind: " << in_data["unversionedInputKind"] << std::endl;
-                std::cout << "}" << std::endl;
-            }
-
-            std::cout << "\n------------------------------" << std::endl;
-            std::cout << "------------OUTPUTS------------" << std::endl;
-            std::cout << "------------------------------" << std::endl;
-            for (const json &out_data : m_Outputs)
-            {
-                std::cout << "{" << std::endl;
-                std::cout << "\tname: " << out_data["outputName"] << std::endl;
-                std::cout << "\tkind: " << out_data["outputKind"] << std::endl;
-                std::cout << "}" << std::endl;
-            }
-        }
-
-        { // Tests
-          // config_t *profile_config = obs_frontend_get_profile_config();
-
-            // for (int i = 0; i < config_num_sections(profile_config); ++i)
-            // {
-            //     std::cout << "\tSection: " << config_get_section(profile_config, i) << std::endl;
-            // }
-            // const char *v = config_get_string(profile_config, "Video", "colorspace");
-            // if (v != NULL)
-            // {
-            //     std::cout << "############### " << v << std::endl;
-            // }
-        }
+        m_EasystreamSettings = json{
+            {"areas", this->getAreasSettings()},
+            {"subtitles", this->getSubtitlesSettings()},
+            {"compressors", this->getCompressorSettings()},
+        };
     }
 
-    const json UserProfile::getData(void)
+    const json UserProfile::getObsSettings(const bool &update)
     {
-        this->update();
+        std::vector<json> scenes_architectures = {};
+        const auto scenes = m_PluginManager->GetSourceTracker()->getSceneMap();
+
+        for (const auto &it : scenes)
+        {
+            scenes_architectures.push_back(it.second->getArchitecture());
+        }
+
+        if (update)
+        {
+            this->update();
+        }
 
         return json{
             {"video_settings",
@@ -141,6 +101,79 @@ namespace es::user
              }},
             {"inputs", m_Inputs},
             {"outputs", m_Outputs},
+            {
+                "architecture",
+                {
+                    {"length", scenes_architectures.size()},
+                    {"scenes", scenes_architectures},
+                },
+            }};
+    }
+
+    const json UserProfile::getEeasystreamSettings(const bool &update)
+    {
+        if (update)
+        {
+            this->update();
+        }
+
+        return this->m_EasystreamSettings;
+    }
+
+    const json UserProfile::getAreasSettings(void)
+    {
+        std::vector<json> areas_vec;
+
+        for (const auto &area : m_PluginManager->GetAreaMain()->GetAreas())
+        {
+            json area_data = {
+                {"actReactId", area.id},
+                {"isActive", area.is_active},
+                {"action", {
+                               //  {"actionId", area.action_data.id},
+                               {"type", area::ActionTypeToString(area.action_data.type)},
+                               {"params", area.action_data.params},
+                           }},
+                {"reaction", {
+                                 //  {"reactionId", area.reaction_data.id},
+                                 {"name", area.reaction_data.name},
+                                 {"type", area::ReactionTypeToString(area.reaction_data.type)},
+                                 {"params", area.reaction_data.params},
+                             }},
+            };
+            areas_vec.push_back(std::move(area_data));
+        }
+
+        return json{
+            {"length", areas_vec.size()},
+            {"actReacts", areas_vec},
         };
+    }
+
+    const json UserProfile::getCompressorSettings(void)
+    {
+        std::vector<json> mics = es::utils::obs::listHelper::GetMicsList();
+        const auto autoLevelerMap_ = m_PluginManager->GetSourceTracker()->getAudioMap();
+
+        for (auto &m : mics)
+        {
+            std::shared_ptr<es::obs::AutoAudioLeveler> micAudioLeveler_ = autoLevelerMap_.find(m["micName"])->second;
+            float tmpValue = micAudioLeveler_->getDesiredLevel() + 60;
+
+            // Adding compressor level related to microphone
+            m["level"] = 100.0 - floor((tmpValue * 100) / 60);
+            m["isActive"] = micAudioLeveler_->isActive();
+            m["uuid"] = micAudioLeveler_->GetUuid();
+        }
+
+        return json{
+            {"length", mics.size()},
+            {"mics", mics},
+        };
+    }
+
+    const json UserProfile::getSubtitlesSettings(void)
+    {
+        return m_PluginManager->GetSubtitlesManager()->getSubtitlesSettings();
     }
 }

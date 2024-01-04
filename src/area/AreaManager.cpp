@@ -21,7 +21,6 @@ namespace es::area
     void AreaManager::run(void *)
     {
         this->thread_sleep_ms(2000);
-
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
         {
@@ -36,7 +35,8 @@ namespace es::area
         std::string sentence;
         this->_actions_mutex.lock();
         {
-            if (!_words.empty()) {
+            if (!_words.empty())
+            {
                 std::lock_guard lock(_mtx);
                 sentence = _words.front();
                 _words.pop();
@@ -47,7 +47,8 @@ namespace es::area
             Action *action = it.second;
             auto tmp = action->ToStruct();
 
-            if (tmp.type == area::ActionType::WORD_DETECT) {
+            if (tmp.type == area::ActionType::WORD_DETECT)
+            {
                 static_cast<ActionWordDetect *>(action)->publishTranscription(sentence);
             }
             action->Solve();
@@ -64,7 +65,9 @@ namespace es::area
     void AreaManager::AddWords(const std::string &w)
     {
         std::unique_lock lock(_mtx);
-        _words.push(w);
+        std::string wo = w;
+        std::transform(wo.begin(), wo.end(), wo.begin(), ::tolower);
+        _words.push(wo);
     }
 
     void AreaManager::AddAction(Action *action)

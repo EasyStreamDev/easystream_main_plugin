@@ -447,7 +447,7 @@ namespace es::obs
         return (_audioLevelers);
     }
 
-    const std::unordered_map<std::string, std::string> &SourceTracker::getSceneMap() const
+    const std::unordered_map<std::string, Scene *> &SourceTracker::getSceneMap() const
     {
         return (_scenes);
     }
@@ -455,6 +455,11 @@ namespace es::obs
     const std::unordered_map<std::string, json> &SourceTracker::getTextFieldMap() const
     {
         return (_textfields);
+    }
+
+    const std::unordered_map<std::string, json> &SourceTracker::getDisplaySourcesMap() const
+    {
+        return (_displaySources);
     }
 
     void SourceTracker::submitToBroadcast(const json &broad_request)

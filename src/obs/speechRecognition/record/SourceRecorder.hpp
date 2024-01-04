@@ -18,6 +18,7 @@
 namespace es::obs
 {
     // 1597476
+    static const char *RNNOISE_FILTER_TYPE = "noise_suppress_filter_v2";
 
     typedef struct wav_header_s
     {
@@ -54,6 +55,7 @@ namespace es::obs
     private:
         std::filesystem::path _temporaryPath;
         obs_source_t *_source;
+        obs_source_t *_noise_filter_source;
         audio_resampler_t *_resampler = nullptr;
         std::ofstream _outFile;
         bool _headerWav;

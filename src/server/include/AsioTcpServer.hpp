@@ -15,18 +15,20 @@
 
 // Global
 #include "../../Runnable.hpp"
+#include "../../IPluginManager.hpp"
 #include "../../utils/Obs.hpp"
 #include "../../utils/types/ThreadSafeQueue.hpp"
 #include "../../area/AreaManager.hpp"
 #include "../../obs/autoAudioLeveler/AutoAudioLeveler.hpp"
 #include "../../obs/subtitles/SubtitlesManager.hpp"
-#include "../../IPluginManager.hpp"
+#include "../../obs/profile/UserProfile.hpp"
+#include "../../obs/topAudioMic/TopAudioMic.hpp"
 
 // Local
 #include "interface/IServer.hpp"
 #include "AsioTcpConnection.hpp"
 #include "ResponseGenerator.hpp"
-#include "errorCode.hpp"
+#include "CommunicationErrors.hpp"
 #include "common_using.hpp"
 
 // Linked
@@ -92,28 +94,28 @@ namespace es::server
         void _runRequestHandler(void *);
         void _executeRequest(const json &, Shared<AsioTcpConnection>);
 
-        /* REQUESTS */
+        /* REQUESTS (@note: Methods called by receiving a specific request start with `r_`) */
         // --- GET requests
-        void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
         void r_GetAllMics(const json &, Shared<AsioTcpConnection>);
         void r_GetAllScenes(const json &, Shared<AsioTcpConnection>);
         void r_GetAllTextFields(const json &, Shared<AsioTcpConnection>);
+        void r_GetAllDisplaySources(const json &, Shared<AsioTcpConnection>);
         void r_GetActReactCouples(const json &, Shared<AsioTcpConnection>);
-        void r_GetCurrentMicsTranscription(const json &, Shared<AsioTcpConnection>);
-        // void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
-        // void r_GetAllRecorders(const json &, Shared<AsioTcpConnection>);
+        void r_GetProfileSettings(const json &, Shared<AsioTcpConnection>);
+        void r_GetSubtitlesSettings(const json &, Shared<AsioTcpConnection>);
+        void r_GetAllLinksMicsToDisplaySources(const json &, Shared<AsioTcpConnection>);
         void r_broadcastArea();
         // --- SET requests
-        void r_SetNewRecorder(const json &, Shared<AsioTcpConnection>);
-        void r_SetNewOffset(const json &, Shared<AsioTcpConnection>);
         void r_SetCompressorLevel(const json &, Shared<AsioTcpConnection>);
         void r_SetNewARea(const json &, Shared<AsioTcpConnection>);
         void r_SetSubtitles(const json &, Shared<AsioTcpConnection>);
+        void r_LinkMicToDisplaySources(const json &, Shared<AsioTcpConnection>);
         // --- UPDATE requests
         void r_UpdateAction(const json &, Shared<AsioTcpConnection>);
         void r_UpdateReaction(const json &j, Shared<AsioTcpConnection> con);
         // --- REMOVE requests
         void r_RemoveActReact(const json &, Shared<AsioTcpConnection>);
+        void r_UnlinkMicToDisplaySources(const json &, Shared<AsioTcpConnection>);
         // --- SUBSCRIPTION requests
         void r_SubscribeToBroadcast(const json &, Shared<AsioTcpConnection>);
 
@@ -144,8 +146,6 @@ namespace es::server
         ThreadSafeQueue<json> m_BroadcastQueue;
         std::unordered_map<std::string, void (AsioTcpServer::*)(const json &, Shared<AsioTcpConnection>)> m_Handler;
     };
-
-    const json get_mics_data(es::obs::SourceTracker *source_tracker);
 }
 
 #endif /* !ASIOTCPSERVER_HPP_ */
