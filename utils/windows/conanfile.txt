@@ -1,5 +1,5 @@
 [requires]
-qt/6.4.2
+qt/6.1.2
 asio/1.24.0
 
 [generators]

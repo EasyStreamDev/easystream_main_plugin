@@ -20,6 +20,7 @@ function InstallEchostraCuda {
     virtualenv.exe EasystreamEnv
     ./easystreamEnv/scripts/Activate.ps1
     pip install -r ./requirements_win.txt
+    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 }
 
 function InstallEchostraWithoutCuda {
@@ -34,8 +35,9 @@ function InstallEchostraWithoutCuda {
     Set-Location "${Destination}\Echostra-main"
     pip install --user virtualenv
     virtualenv.exe EasystreamEnv
-    ./easystreamEnv/scripts/Activate.ps1
+    ./EasystreamEnv/scripts/Activate.ps1
     pip install -r ./requirements_win.txt
+    pip3 install torch torchvision torchaudio
 }
 
 function main {
