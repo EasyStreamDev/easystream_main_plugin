@@ -8,8 +8,5 @@ function generateSetup {
     )
 
     Set-Location "${buildPath}"
-    cpack --config CPackConfig.cmake
-    if ($source.IsPresent) {
-        cpack --config CPackSourceConfig.cmake
-    }
+    makensis.exe .\test.nsi
 }

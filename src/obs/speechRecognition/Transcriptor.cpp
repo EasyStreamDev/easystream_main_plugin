@@ -13,10 +13,11 @@ void es::transcript::Transcriptor::run(void *pm)
 {
     _isRunning = true;
 
-    if (!_tcpCli.connectToServer())
+    while (!_tcpCli.connectToServer())
     {
-        std::cerr << "[EASYSTREAM TRANSCRIPTOR]: could not connect to echostra" << std::endl;
-        return;
+        std::cerr << "[EASYSTREAM TRANSCRIPTOR]: could not connect to echostra! trying again in 1s" << std::endl;
+        // return;
+        _tcpCli.connectToServer();
     }
 
     _tcpCli.setPushFunc(

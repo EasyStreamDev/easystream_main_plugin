@@ -7,12 +7,14 @@ on:
     branches:
       - "devCedrick"
       - "main"
+      - "noise_filtering"
 
 jobs:
   ubuntuBuild:
     runs-on: ubuntu-22.04
     env:
       PACKAGE_NAME: Easystream-1.0.0-Linux.deb
+      SETUP_NAME: INSTALL.sh
     steps:
       - uses: actions/checkout@v2
       - name: Install deps
@@ -50,8 +52,8 @@ jobs:
         with:
           allowUpdates: true
           tag: ${{github.run_number}}
-          name: Release $GITHUB_RELEASE_NAME
-          body: $GITHUB_RELEASE_DESCRIPTION
+          name: Release 1.0.1
+          body: "New release for Delivery"
 
       - name: Get release
         id: get_release
@@ -68,9 +70,19 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: './ci/${{env.SETUP_NAME}}'
+          asset_name: easystreamInstaller.sh
+          asset_content_type: application/x-sh
+
+      - name: Upload debian package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset_name: easyStream.deb
-          asset_content_type: application/octect-stream
+          asset_name: easystream.deb
+          asset_content_type: application/octet-stream
 
         
 
@@ -84,9 +96,7 @@ jobs:
       CMAKE_SYSTEM_VERSION: "10.0.18363.657"
       WINDOWS_DEPS_VERSION: "2022"
       WINDOWS_DEPS_CACHE_VERSION: "1"
-      PACKAGE_NAME: "Easystream-1.0.0-win64.exe"
-      ZIP_PACKAGE_NAME: "Easystream-1.0.0-win64.zip"
-      SOURCE_PACKAGE_NAME: "Easystream-1.0.0-Source.zip"
+      PACKAGE_NAME: "EasyStream_Installer.exe"
     steps:
       - name: "Add msbuild to PATH"
         uses: microsoft/setup-msbuild@v1.0.2
@@ -105,7 +115,7 @@ jobs:
       - name: "Build OBS"
         working-directory: ${{github.workspace}}
         run: |
-            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Source
+            pwsh ci/windows/genWindows.ps1 -Dependencies -CloneObs -BuildTypeObs Release -BuildType Release -Setup Setup
       # - name: Package
       #   if: ${{ github.event_name == 'push' }}
       #   run: ci/windows/package-windows.cmd
@@ -142,25 +152,14 @@ jobs:
         with:
           tag: ${{github.run_number}}
 
-
-      - name: Upload Setup Zip
-        uses: actions/upload-release-asset@v1
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: './build/${{env.ZIP_PACKAGE_NAME}}'
-          asset_name: easyStream64.zip
-          asset_content_type: application/zip
-
       - name: Upload Setup
         uses: actions/upload-release-asset@v1
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset_name: easyStream64.exe
+          asset_path: './${{env.PACKAGE_NAME}}'
+          asset_name: easyStreamWin64.exe
           asset_content_type: application/octect-stream
 
           
