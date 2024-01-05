@@ -7,7 +7,7 @@
 ;--------------------------------
 
 ; default values
-  !define VERSION "0.5.3"
+  !define VERSION "1.0.0"
   InstallDir "C:\Program Files\obs-studio\obs-plugins\64bit\"
   RequestExecutionLevel admin
 

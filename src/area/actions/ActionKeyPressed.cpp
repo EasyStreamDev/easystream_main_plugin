@@ -62,8 +62,8 @@ namespace es::area
                        [](unsigned char c)
                        { return std::tolower(c); });
 
-        _CTRL_modifier = false;  // param["ctrl_modifier"].get<bool>();
-        _ALT_modifier = false;   // param["alt_modifier"].get<bool>();
+        _CTRL_modifier = true;  // param["ctrl_modifier"].get<bool>();
+        _ALT_modifier = true;   // param["alt_modifier"].get<bool>();
         _SHIFT_modifier = false; // param["shift_modifier"].get<bool>();
     }
 

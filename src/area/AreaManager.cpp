@@ -22,6 +22,22 @@ namespace es::area
     {
         _pm = (IPluginManager *)data;
         this->thread_sleep_ms(2000);
+
+        {   // Test reaction start stream
+            action_t a_ = {
+                1,
+                ActionType::KEY_PRESSED,
+                {{"key", "u"}}};
+            
+            reaction_t r_ = {
+                1,
+                "test_area_start_recording",
+                ReactionType::START_RECORDING,
+                {}};
+
+            this->CreateArea(a_, r_);
+        }
+
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
         {
