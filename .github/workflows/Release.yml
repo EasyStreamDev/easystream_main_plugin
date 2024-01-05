@@ -13,7 +13,7 @@ jobs:
   ubuntuBuild:
     runs-on: ubuntu-22.04
     env:
-      PACKAGE_NAME: easytream.deb
+      PACKAGE_NAME: Easystream-1.0.0-Linux.deb
       SETUP_NAME: INSTALL.sh
     steps:
       - uses: actions/checkout@v2
