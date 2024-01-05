@@ -230,7 +230,7 @@ namespace es
         }
         else
         {
-            char command[] = "cd ~/Echostra/Echostra-main/ && source ./easystreamEnv/scripts/Activate && python -m src.main"
+            char command[] = "cd ~/Echostra/Echostra-main/ && source ./easystreamEnv/scripts/Activate && python -m src.main";
             system(command);
         }
 #endif
