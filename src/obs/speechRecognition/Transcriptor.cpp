@@ -17,7 +17,8 @@ void es::transcript::Transcriptor::run(void *pm)
     {
         std::cerr << "[EASYSTREAM TRANSCRIPTOR]: could not connect to echostra! trying again in 1s" << std::endl;
         // return;
-        _tcpCli.connectToServer();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        // _tcpCli.connectToServer();
     }
 
     _tcpCli.setPushFunc(

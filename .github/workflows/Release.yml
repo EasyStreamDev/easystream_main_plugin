@@ -7,7 +7,7 @@ on:
     branches:
       - "devCedrick"
       - "main"
-      - "noise_filtering"
+      - "prod"
 
 jobs:
   ubuntuBuild:
@@ -35,14 +35,6 @@ jobs:
       #   id: checkTag
       #   with:
       #     tag: ${{github.run_number}}
-
-      - name: "Store Release Name"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_NAME=$(cat release_name)" >> $GITHUB_ENV
-
-      - name: "Store Release Description"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_DESCRIPTION=$(cat release_description)" >> $GITHUB_ENV
       
       - name: Release
         id: EasystreamRelease
@@ -52,7 +44,7 @@ jobs:
         with:
           allowUpdates: true
           tag: ${{github.run_number}}
-          name: Release 1.0.1
+          name: Release 1.0.2
           body: "New release for Delivery"
 
       - name: Get release
@@ -124,13 +116,6 @@ jobs:
       #   id: checkTag
       #   with:
       #     tag: ${{github.run_number}}
-      - name: "Store Release Name"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_NAME=$(cat release_name)" >> $GITHUB_ENV
-
-      - name: "Store Release Description"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_DESCRIPTION=$(cat release_description)" >> $GITHUB_ENV
 
       - name: Release
         id: EasystreamRelease
@@ -140,8 +125,8 @@ jobs:
         with:
           allowUpdates: true
           tag: ${{github.run_number}}
-          name: Release $GITHB_RELEASE_NAME
-          body: $GITHUB_RELEASE_DESCRIPTION
+          name: Release 1.0.2
+          body: "New release for Delivery"
           
 
       - name: Get release
