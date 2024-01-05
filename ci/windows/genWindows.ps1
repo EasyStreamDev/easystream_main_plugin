@@ -88,7 +88,7 @@ function main {
     buildEasyStream
 
     if ($Setup -eq 'Setup') {
-        generateSetup -buildPath $buildFolder
+        generateSetup -buildPath $rootDir
     } elseif ($Setup -eq 'Source') {
         generateSetup -buildPath $buildFolder -source
     }

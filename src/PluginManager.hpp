@@ -24,6 +24,10 @@
 
 #include "IPluginManager.hpp"
 
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 #ifdef unix
 #include <string.h>
 #include <signal.h>
@@ -79,6 +83,13 @@ namespace es
         transcript::Transcriptor *m_Transcriptor = nullptr;
         std::unordered_map<std::string, obs::SourceRecorder *> _recorders;
         obs::TopAudioMic *m_topAudioMicManager = nullptr;
+
+#if BUILD_TYPE == RELEASE_EASYSTREAM
+#ifdef _WIN32
+        STARTUPINFO _siEchostra;
+        PROCESS_INFORMATION _piEchostra;
+#endif
+#endif
     };
 } // namespace es
 

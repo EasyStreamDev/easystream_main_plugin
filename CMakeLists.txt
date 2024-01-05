@@ -32,6 +32,12 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
 endif()
 
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(BUILD_TYPE 2)
+else()
+    set(BUILD_TYPE 1)
+endif()
+
 # message(${CMAKE_BUILD_TYPE})
 SET(PACKAGE_TYPE "ALONE" CACHE STRING "With or with not OBS" FORCE)
 

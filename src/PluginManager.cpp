@@ -6,6 +6,7 @@
 */
 
 #include "PluginManager.hpp"
+#include <tchar.h>
 
 namespace es::testing
 {
@@ -26,8 +27,16 @@ namespace es
 
     PluginManager::~PluginManager()
     {
+#if BUILD_TYPE == RELEASE
+#ifdef _WIN32
+    CloseHandle(_piEchostra.hProcess);
+    CloseHandle(_piEchostra.hThread);
+#endif
+
+
 #ifdef unix
         kill(_pyProgramPid, 9);
+#endif
 #endif
         this->Stop();
     }
@@ -41,11 +50,13 @@ namespace es
     void PluginManager::Start(void)
     {
         // Start asynchrounous routines
+    #if BUILD_TYPE==RELEASE_EASYSTREAM
+        m_ThreadPool->push(std::function(PluginManager::RunEchostra), this);
+    #endif
         m_ThreadPool->push(std::function(PluginManager::RunServer), this);
         m_ThreadPool->push(std::function(PluginManager::RunArea), this);
-        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         m_ThreadPool->push(std::function(PluginManager::RunSubTitles), this);
-        // m_ThreadPool->push(std::function(PluginManager::RunEchostra), this);
+        m_ThreadPool->push(std::function(PluginManager::RunTranscriptor), this);
         // m_ThreadPool->push(std::function(PluginManager::RunSceneSwitcherAI), nullptr);
 
         this->m_UserProfile = new es::user::UserProfile(this);
@@ -142,7 +153,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_AreaManager.load()->run(nullptr);
+        pm->m_AreaManager.load()->run(nullptr); 
     }
 
     void PluginManager::RunSceneSwitcherAI(void *private_data)
@@ -162,12 +173,47 @@ namespace es
         PluginManager *pm = static_cast<PluginManager *>(private_data);
         transcript::Transcriptor *tm = pm->m_Transcriptor;
 
+        // std::this_thread::sleep_for(std::chrono::seconds(10));
         tm->run(pm);
     }
 
     void PluginManager::RunEchostra(void *private_data)
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
+
+#if BUILD_TYPE == RELEASE_EASYSTREAM
+#ifdef _WIN32
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+        // std::string command("cd ./Echostra/Echostra-main/ && python src.main");
+        TCHAR command[] = _T("cmd.exe /K bash -c \"cd ../../obs-plugins/64bit/Echostra/Echostra-main/ && source ./EasystreamEnv/Scripts/Activate && python -m src.main \"");
+        // const TCHAR command[48] = (TCHAR *)"cd ./Echostra/Echostra-main/ && python src.main";
+        wchar_t wtext[48];
+
+        // mbstowcs(wtext, command, 49);
+        ZeroMemory(&(pm->_siEchostra), sizeof((pm->_siEchostra)));
+        pm->_siEchostra.cb = sizeof(pm->_siEchostra);
+        ZeroMemory(&(pm->_piEchostra), sizeof((pm->_piEchostra)));
+
+        if (!CreateProcess(
+            _T("C:\\Windows\\System32\\cmd.exe"),
+            command,
+            // reinterpret_cast<LPWSTR>("cd ./Echostra/Echostra-main/ && python src.main"),
+            NULL,
+            NULL,
+            FALSE,
+            CREATE_NEW_CONSOLE | CREATE_UNICODE_ENVIRONMENT,
+            NULL,
+            NULL,
+            &pm->_siEchostra,
+            &pm->_piEchostra
+        )) {
+            std::cerr << "process not created " << GetLastError() << std::endl;
+
+        } else {
+        }
+
+#endif
 
 #ifdef unix
         pm->_pyProgramPid = fork();
@@ -183,9 +229,10 @@ namespace es
         }
         else
         {
-            // char *args[] = {strdup(TRANSCRIPTPATH), NULL};
-            // execv(args[0], args);
+            char command[] = "cd ~/Echostra/Echostra-main/ && source ./easystreamEnv/scripts/Activate && python -m src.main"
+            system(command);
         }
+#endif
 #endif
     }
 }
