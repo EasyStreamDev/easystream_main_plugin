@@ -3,7 +3,7 @@
 ORANGE='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
-url="https://github.com/EasyStreamDev/easystream_main_plugin/releases/latest/download/easyStream.deb"
+url="https://github.com/EasyStreamDev/easystream_main_plugin/releases/latest/download/libobs-easystream-main-plugin.so"
 
 
 echo "=========================================="
@@ -30,8 +30,8 @@ done
 
 echo "Now Installing EasyStream"
 sudo apt install curl
-curl "$url" --output easyStream.deb
-sudo apt install ./easyStream.deb
+curl "$url" --output libobs-easystream-main-plugin.so
+sudo cp ./libobs-easystream-main-plugin.so /usr/local/lib/obs-plugins/
 
 echo "Do you want to install The transcription Module"
 while true 

@@ -13,7 +13,7 @@ jobs:
   ubuntuBuild:
     runs-on: ubuntu-22.04
     env:
-      PACKAGE_NAME: Easystream-1.0.0-Linux.deb
+      PACKAGE_NAME: libobs-easystream-main-plugin.so
       SETUP_NAME: INSTALL.sh
     steps:
       - uses: actions/checkout@v2
@@ -35,14 +35,6 @@ jobs:
       #   id: checkTag
       #   with:
       #     tag: ${{github.run_number}}
-
-      - name: "Store Release Name"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_NAME=$(cat release_name)" >> $GITHUB_ENV
-
-      - name: "Store Release Description"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_DESCRIPTION=$(cat release_description)" >> $GITHUB_ENV
       
       - name: Release
         id: EasystreamRelease
@@ -80,8 +72,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: './build/${{env.PACKAGE_NAME}}'
-          asset_name: easystream.deb
+          asset_path: './build/lib/${{env.PACKAGE_NAME}}'
+          asset_name: easystream.so
           asset_content_type: application/octet-stream
 
         
@@ -124,13 +116,6 @@ jobs:
       #   id: checkTag
       #   with:
       #     tag: ${{github.run_number}}
-      - name: "Store Release Name"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_NAME=$(cat release_name)" >> $GITHUB_ENV
-
-      - name: "Store Release Description"
-        working-directory: ${{github.workspace}}
-        run: echo "GITHUB_RELEASE_DESCRIPTION=$(cat release_description)" >> $GITHUB_ENV
 
       - name: Release
         id: EasystreamRelease
@@ -140,8 +125,8 @@ jobs:
         with:
           allowUpdates: true
           tag: ${{github.run_number}}
-          name: Release $GITHB_RELEASE_NAME
-          body: $GITHUB_RELEASE_DESCRIPTION
+          name: Release 1.0.3
+          body: New release for delivery
           
 
       - name: Get release
