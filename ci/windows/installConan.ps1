@@ -15,5 +15,5 @@ function installConan {
     } else {
         $pyEx
     }
-    pip install conan==1.59.0
+    pip install conan==1.60.0
 }
