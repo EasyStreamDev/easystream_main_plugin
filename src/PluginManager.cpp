@@ -6,8 +6,9 @@
 */
 
 #include "PluginManager.hpp"
+#ifdef _WIN32
 #include <tchar.h>
-
+#endif
 namespace es::testing
 {
 }

@@ -52,8 +52,8 @@ jobs:
         with:
           allowUpdates: true
           tag: ${{github.run_number}}
-          name: Release $GITHUB_RELEASE_NAME
-          body: $GITHUB_RELEASE_DESCRIPTION
+          name: Release 1.0.1
+          body: "New release for Delivery"
 
       - name: Get release
         id: get_release
