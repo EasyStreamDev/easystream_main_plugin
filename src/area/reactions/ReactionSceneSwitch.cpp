@@ -12,9 +12,25 @@ namespace es::area
     ReactionSceneSwitch::ReactionSceneSwitch(const size_t &area_id, const std::string &name, const json &param)
         : Reaction(area_id, name, param)
     {
-        std::string uuid = param["uuid"].get<std::string>();
+        obs_source_t *scene_source = nullptr;
+        std::string uuid;
 
-        obs_source_t *scene_source = obs_get_source_by_uuid(uuid.c_str());
+        if (param.contains("uuid"))
+        {
+            uuid = param["uuid"].get<std::string>();
+            scene_source = obs_get_source_by_uuid(uuid.c_str());
+        }
+        else if (param.contains("name"))
+        {
+            std::string name = param["name"].get<std::string>();
+            scene_source = obs_get_source_by_name(name.c_str());
+            if (!scene_source)
+            {
+                throw AreaException("Scene with provided name does not exist.");
+            }
+            uuid = obs_source_get_uuid(scene_source);
+        }
+
         if (!scene_source)
         {
             throw AreaException("UUID doesn't exist.");

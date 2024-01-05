@@ -18,8 +18,9 @@ request_dict = {
             "name": "area1",
             "type": "SCENE_SWITCH",
             "params": {
-                "uuid": "ec40025d-6c17-4199-afaf-28c1870f931a",  # valid UUID
-                # "uuid": "7b7df3b-6155-4582-9d4e-9500057a7851", # invalid UUID
+                "name": "ScreenOnly",
+                # "uuid": "68726bf4-0317-4d0c-ba99-daa7630c8d96",  # valid UUID
+                "uuid": "7b7df3b-6155-4582-9d4e-9500057a7851",  # invalid UUID
             },
         },
     },
