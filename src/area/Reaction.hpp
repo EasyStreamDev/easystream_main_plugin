@@ -11,6 +11,11 @@
 #include "../Common.hpp"
 #include "AreaException.hpp"
 
+namespace es
+{
+    class IPluginManager;
+}
+
 namespace es::area
 {
     class Reaction
@@ -24,6 +29,8 @@ namespace es::area
         virtual es::area::reaction_t ToStruct() = 0;
 
         inline const std::string &GetName(void) const { return _name; };
+
+        es::IPluginManager *_pm;
 
     protected:
         const size_t _id;

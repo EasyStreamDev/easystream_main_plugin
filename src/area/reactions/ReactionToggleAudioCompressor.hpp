@@ -24,6 +24,7 @@ namespace es::area
     protected:
     private:
         bool _toggle;
+        std::string _uuid;
     };
 }
 

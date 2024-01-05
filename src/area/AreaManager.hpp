@@ -38,7 +38,7 @@ namespace es::area
                  { return new ActionKeyPressed(reaction, area_id, param); }},
                 {area::ActionType::APP_LAUNCH, [](Reaction *reaction, const size_t &area_id, const json &param) -> Action *
                  { return new ActionAppLaunch(reaction, area_id, param); }},
-                {area::ActionType::WORD_DETECT, [this] (Reaction *reaction, const size_t &area_id, const json &param) -> Action *
+                {area::ActionType::WORD_DETECT, [this](Reaction *reaction, const size_t &area_id, const json &param) -> Action *
                  { return new ActionWordDetect(reaction, area_id, param); }},
             };
         const std::unordered_map<area::ReactionType, std::function<Reaction *(const size_t &, const std::string &, const json &)>>
@@ -90,7 +90,7 @@ namespace es::area
         std::unordered_map<size_t, Action *> _actions;
         std::mutex _mtx;
         std::queue<std::string> _words;
-        // std::queue<std::strin
+        es::IPluginManager *_pm;
     };
 }
 

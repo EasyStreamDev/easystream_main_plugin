@@ -18,8 +18,9 @@ namespace es::area
         this->_actions.clear();
     }
 
-    void AreaManager::run(void *)
+    void AreaManager::run(void *data)
     {
+        _pm = (IPluginManager *)data;
         this->thread_sleep_ms(2000);
         blog(LOG_INFO, "###  - AREA system started.");
         while (1)
@@ -149,6 +150,7 @@ namespace es::area
             if (REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type))
             {
                 react = REACTION_TYPE_TO_CREATE_FUNC.at(react_data.type)(area_id, react_data.name, react_data.params);
+                react->_pm = this->_pm;
             }
             else
             {

@@ -142,7 +142,7 @@ namespace es
     {
         PluginManager *pm = static_cast<PluginManager *>(private_data);
 
-        pm->m_AreaManager.load()->run(nullptr);
+        pm->m_AreaManager.load()->run(pm);
     }
 
     void PluginManager::RunSceneSwitcherAI(void *private_data)

@@ -6,13 +6,21 @@
 */
 
 #include "ReactionToggleAudioCompressor.hpp"
+#include "../../PluginManager.hpp"
 
 namespace es::area
 {
     ReactionToggleAudioCompressor::ReactionToggleAudioCompressor(const size_t &area_id, const std::string &name, const json &param)
         : Reaction(area_id, name, param)
     {
-        _toggle = param.at("toggle").get<bool>();
+        try
+        {
+            _toggle = param.at("audio-source").get<std::string>() == "false" ? false : true;
+        }
+        catch (std::exception e)
+        {
+            _toggle = true;
+        }
     }
 
     ReactionToggleAudioCompressor::~ReactionToggleAudioCompressor()
@@ -21,9 +29,10 @@ namespace es::area
 
     void ReactionToggleAudioCompressor::Resolve()
     {
-        // for (auto [audioLevelerName, audioLevelerPtr] : tracker->getAudioMap()) {
-        //     audioLevelerPtr->SetActive(_toggle);
-        // }
+        for (auto [audioLevelerName, audioLevelerPtr] : this->_pm->GetSourceTracker()->getAudioMap())
+        {
+            audioLevelerPtr->SetActive(_toggle);
+        }
     }
 
     reaction_t ReactionToggleAudioCompressor::ToStruct()
