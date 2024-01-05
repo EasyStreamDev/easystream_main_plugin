@@ -13,16 +13,16 @@ echo "=                                        ="
 echo "=========================================="
 
 
-echo "Do you want to install OBS?"
 while true 
 do
-    read -p "y or n" obs
-    if [["$obs" = "y"]] 
+    read -p "Do you want to install OBS? " -n 1 -r
+    # read -p "y or n" obs
+    if [[ $REPLY =~ ^[Yy]$ ]] 
     then
         sudo add-apt-repository ppa:obsproject/obs-studio
         sudo apt install obs-studo
         break
-    elif [["$obs" = "n"]]
+    elif [[ $REPLY =~ ^[Nn]$ ]]
     then
         break
     fi
@@ -36,8 +36,8 @@ sudo apt install ./easyStream.deb
 echo "Do you want to install The transcription Module"
 while true 
 do
-    read -p "yc for Echostra+cuda, y for Echostra and n for no" Echostra
-    if [["$Echostra" = "yc"]] 
+    read -p "c for Echostra+cuda, y for Echostra and n for no" -n 1 -r
+    if [[ $REPLY =~ ^[Cc]$ ]] 
     then
         cd ~/
         sudo apt install nvidia-cuda-toolkit
@@ -51,7 +51,7 @@ do
         pip install -r ./requirements_linux.txt
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
         break
-    elif [["$Echostra" = "y"]]
+    elif [[ $REPLY =~ ^[Yy]$ ]]
     then
         cd ~/
         sudo apt install git
@@ -63,7 +63,7 @@ do
         pip install -r ./requirements_linux.txt
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
         break
-    elif [["$Echostra" = "n"]]
+    elif [[ $REPLY =~ ^[Nn]$ ]]
     then
         break
     fi
